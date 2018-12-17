@@ -247,12 +247,13 @@ tree %>%
       geom_treemap_text(colour = "white", 
                         place = "topleft", 
                         reflow = T,
-                        size = 11)+
+                        size = 9.5)+
       scale_fill_economist()+ 
   theme_fivethirtyeight()+
   facet_wrap(~GEOID) +
       theme(legend.position = "bottom",
-            plot.title = element_text(size=12)) + 
+            plot.title = element_text(size=12),
+            legend.title=element_blank()) + 
       labs(title = "Educational attainment by race for population over 25")
 ```
 
@@ -284,11 +285,14 @@ us_house_districts %>%
         axis.text.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
-        legend.position = 'bottom') +
-  labs(title = "% no degree White males by congressional district")
+        legend.position = 'bottom') #+
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
+
+``` r
+  #labs(title = "% no degree White males by congressional district")
+```
 
 ------------------------------------------------------------------------
 
