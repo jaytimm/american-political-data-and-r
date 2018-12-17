@@ -1,3 +1,6 @@
+Federal election data & R: some resources
+-----------------------------------------
+
 A collection of political data resources. Or something like this.
 
 And perhaps formally aggregate/collate some of these resources.
@@ -19,8 +22,7 @@ library(treemapify)
 library(formattable)
 ```
 
-VoteView & things
------------------
+### VoteView & things
 
 Senate/House details by congress. Perhaps add 'divergent' visual over time.
 
@@ -56,8 +58,14 @@ Voteview data with Poole & xyz scores (that change per congress). Scores via `Rv
 
 Perhaps add some visualizations. A la divisiveness.
 
-CivilServiceUSA
----------------
+``` r
+sen115 <- read.csv(url("https://voteview.com/static/data/out/members/HSall_members.csv"),
+  stringsAsFactors = FALSE) %>%
+  mutate(bioname = gsub(',.*$', '', bioname)) %>%
+  filter(chamber == 'Senate' & congress == 115)
+```
+
+### CivilServiceUSA
 
 ``` r
 library(jsonlite)
@@ -73,11 +81,31 @@ senate_dets <-  jsonlite::fromJSON(url(sen_url)) %>%
   mutate(party = ifelse(party == 'independent', 'democrat', party))
 ```
 
-Using `rtweets` & lists
------------------------
+``` r
+#We don't run this.
+house_dets <- jsonlite::fromJSON(url('https://raw.githubusercontent.com/CivilServiceUSA/us-house/master/us-house/data/us-house.json')) 
+```
 
-Presidential elections (& others)
----------------------------------
+``` r
+library(lubridate)
+house_dets %>%
+  mutate (years = 
+            lubridate::year(as.Date(Sys.Date())) -
+            lubridate::year(as.Date(date_of_birth))) %>%
+  ggplot (aes(years)) +
+  geom_histogram(bins=20, fill = 'cornflowerblue') +
+  labs(title = 'Age distributions in the House of Representatives')
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
+
+``` r
+  #ggthemes::theme_fivethirtyeight()
+```
+
+### Using `rtweets` & lists
+
+### Presidential elections (& others)
 
 [Daily KOS data sets](https://www.dailykos.com/stories/2018/2/21/1742660/-The-ultimate-Daily-Kos-Elections-guide-to-all-of-our-data-sets)
 
@@ -93,34 +121,10 @@ ALSO: Add source names to table names.
 
 ``` r
 library(gsheet)
-```
-
-    ## Warning: package 'gsheet' was built under R version 3.4.4
-
-``` r
 url <- 'https://docs.google.com/spreadsheets/d/1oRl7vxEJUUDWJCyrjo62cELJD2ONIVl-D9TSUKiK9jk/edit#gid=1178631925'
 
 house <- gsheet::gsheet2tbl(url) 
-```
 
-    ## Warning: Missing column names filled in: 'X5' [5], 'X7' [7], 'X16' [16],
-    ## 'X18' [18], 'X20' [20], 'X22' [22], 'X24' [24], 'X26' [26], 'X28' [28],
-    ## 'X29' [29], 'X30' [30], 'X31' [31], 'X32' [32], 'X34' [34], 'X35' [35],
-    ## 'X36' [36], 'X37' [37], 'X38' [38], 'X40' [40], 'X41' [41], 'X42' [42],
-    ## 'X43' [43], 'X44' [44], 'X47' [47], 'X48' [48], 'X49' [49], 'X51' [51],
-    ## 'X52' [52], 'X54' [54], 'X55' [55], 'X57' [57], 'X58' [58], 'X60' [60],
-    ## 'X61' [61], 'X62' [62], 'X64' [64], 'X65' [65], 'X66' [66], 'X68' [68],
-    ## 'X70' [70], 'X71' [71], 'X72' [72], 'X74' [74], 'X75' [75], 'X76' [76],
-    ## 'X77' [77], 'X78' [78], 'X79' [79], 'X81' [81], 'X82' [82], 'X83' [83],
-    ## 'X84' [84], 'X85' [85], 'X86' [86], 'X88' [88], 'X89' [89], 'X90' [90],
-    ## 'X91' [91], 'X92' [92], 'X93' [93], 'X95' [95], 'X96' [96], 'X97' [97],
-    ## 'X98' [98], 'X99' [99], 'X100' [100]
-
-    ## Warning: Duplicated column names deduplicated: '2016 President' => '2016
-    ## President_1' [50], '2012 President' => '2012 President_1' [53], '2008
-    ## President' => '2008 President_1' [56]
-
-``` r
 fix <- as.data.frame(cbind(colnames(house), as.character(house[1,])), 
   string_as_factor = FALSE) %>%
   mutate(V1 = gsub('^X', NA, V1)) %>%
@@ -134,8 +138,7 @@ house <- house %>% slice(3:nrow(.))
 keeps <- house[,!grepl('Pronun|ACS|Census|Survey', colnames(house))]
 ```
 
-Some census play
-----------------
+### Some census play
 
 Race, education & census data (for good measure):
 
@@ -185,12 +188,6 @@ data <- tidycensus::get_acs(geography = 'congressional district',
   left_join (race_table) %>%
   select(GEOID, label, gender, race, estimate:summary_moe)
 ```
-
-    ## Getting data from the 2012-2016 5-year ACS
-
-    ## Joining, by = "variable"
-
-    ## Joining, by = "code"
 
 Create plots of some cherry-picked district cross-sections (per Daily Kos).
 
@@ -283,8 +280,6 @@ us_house_districts %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
-Some funky geographies from Daily Kos.
---------------------------------------
+### Some funky geographies from Daily Kos.
 
-A work in progress.
--------------------
+### A work in progress.
