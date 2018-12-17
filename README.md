@@ -285,14 +285,11 @@ us_house_districts %>%
         axis.text.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
-        legend.position = 'bottom') #+
+        legend.position = 'bottom') +
+  labs(title = "% no degree White males by congressional district")
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
-
-``` r
-  #labs(title = "% no degree White males by congressional district")
-```
 
 ------------------------------------------------------------------------
 
