@@ -22,6 +22,8 @@ library(treemapify)
 library(formattable)
 ```
 
+------------------------------------------------------------------------
+
 ### VoteView & things
 
 Senate/House details by congress. Perhaps add 'divergent' visual over time.
@@ -65,6 +67,8 @@ sen115 <- read.csv(url("https://voteview.com/static/data/out/members/HSall_membe
   filter(chamber == 'Senate' & congress == 115)
 ```
 
+------------------------------------------------------------------------
+
 ### CivilServiceUSA
 
 ``` r
@@ -103,7 +107,11 @@ house_dets %>%
   #ggthemes::theme_fivethirtyeight()
 ```
 
+------------------------------------------------------------------------
+
 ### Using `rtweets` & lists
+
+------------------------------------------------------------------------
 
 ### Presidential elections (& others)
 
@@ -137,6 +145,8 @@ house <- house %>% slice(3:nrow(.))
 
 keeps <- house[,!grepl('Pronun|ACS|Census|Survey', colnames(house))]
 ```
+
+------------------------------------------------------------------------
 
 ### Some census play
 
@@ -242,7 +252,7 @@ tree %>%
   theme_fivethirtyeight()+
   facet_wrap(~GEOID) +
       theme(legend.position = "bottom",
-            plot.title = element_text(size=14)) + 
+            plot.title = element_text(size=12)) + 
       labs(title = "Educational attainment by race for population over 25")
 ```
 
@@ -280,6 +290,10 @@ us_house_districts %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
+------------------------------------------------------------------------
+
 ### Some funky geographies from Daily Kos.
+
+------------------------------------------------------------------------
 
 ### A work in progress.
