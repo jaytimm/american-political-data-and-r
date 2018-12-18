@@ -1,5 +1,5 @@
 -   [Federal election data & R: some resources](#federal-election-data-r-some-resources)
-    -   [1. VoteView & things](#voteview-things)
+    -   [Political ideologies](#political-ideologies)
     -   [2.CivilServiceUSA](#civilserviceusa)
     -   [Using `rtweets` & lists](#using-rtweets-lists)
     -   [3 Political geometries via the `tigris` package](#political-geometries-via-the-tigris-package)
@@ -14,6 +14,8 @@ Federal election data & R: some resources
 A collection of political data resources.
 
 Many of the data collated here should be more easily & publicly accessible. It is not clear why they are not. In this age of alleged dat transparency, sources like 538 & CNN (especially the former) present ...
+
+-   [Poliitcal Ideologies via `Rvoteview`](#political-ideogiees)
 
 ``` r
 library(Rvoteview)#devtools::install_github("voteview/Rvoteview")
@@ -36,7 +38,9 @@ LAWMAKER DETAILS: IDEOLOGY & BIOGRAPHICALS
 
 Congressional composition & voting patterns.
 
-### 1. VoteView & things
+### Political ideologies
+
+***So what do you want to do this weekend?*** &gt; We shall see then wont we & back up off me then.
 
 Senate/House details by congress. Perhaps add 'divergent' visual over time.
 
@@ -490,7 +494,7 @@ data <- tidycensus::get_acs(geography = 'congressional district',
   select(GEOID, label, gender, race, estimate:summary_moe)
 ```
 
-White men without college degree. As percentage of total population over 25. ie, as a percentage of the electorate.
+White men without college degree. As percentage of total population over 25. ie, as a percentage of the electorate. Also -- map zoomed into some interesting sub0location.
 
 ``` r
 #Non-continental US
