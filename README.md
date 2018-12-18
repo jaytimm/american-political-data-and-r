@@ -214,6 +214,220 @@ dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]',
 
     ## Joining, by = c("STUSPS", "CD115FP")
 
+``` r
+dailykos_pres_elections %>% head() %>% formattable::formattable()
+```
+
+<table class="table table-condensed">
+<thead>
+<tr>
+<th style="text-align:right;">
+District
+</th>
+<th style="text-align:right;">
+STUSPS
+</th>
+<th style="text-align:right;">
+CD115FP
+</th>
+<th style="text-align:right;">
+year
+</th>
+<th style="text-align:right;">
+candidate
+</th>
+<th style="text-align:right;">
+percent
+</th>
+<th style="text-align:right;">
+GEOID
+</th>
+<th style="text-align:right;">
+STATEFP
+</th>
+<th style="text-align:right;">
+geometry
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+Alabama 1st
+</td>
+<td style="text-align:right;">
+AL
+</td>
+<td style="text-align:right;">
+01
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+Clinton
+</td>
+<td style="text-align:right;">
+34.1
+</td>
+<td style="text-align:right;">
+0101
+</td>
+<td style="text-align:right;">
+01
+</td>
+<td style="text-align:right;">
+MULTIPOLYGON (((-88.05338 3...
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Alabama 2nd
+</td>
+<td style="text-align:right;">
+AL
+</td>
+<td style="text-align:right;">
+02
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+Clinton
+</td>
+<td style="text-align:right;">
+33.0
+</td>
+<td style="text-align:right;">
+0102
+</td>
+<td style="text-align:right;">
+01
+</td>
+<td style="text-align:right;">
+MULTIPOLYGON (((-87.4272 31...
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Alabama 3rd
+</td>
+<td style="text-align:right;">
+AL
+</td>
+<td style="text-align:right;">
+03
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+Clinton
+</td>
+<td style="text-align:right;">
+32.3
+</td>
+<td style="text-align:right;">
+0103
+</td>
+<td style="text-align:right;">
+01
+</td>
+<td style="text-align:right;">
+MULTIPOLYGON (((-86.57753 3...
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Alabama 4th
+</td>
+<td style="text-align:right;">
+AL
+</td>
+<td style="text-align:right;">
+04
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+Clinton
+</td>
+<td style="text-align:right;">
+17.4
+</td>
+<td style="text-align:right;">
+0104
+</td>
+<td style="text-align:right;">
+01
+</td>
+<td style="text-align:right;">
+MULTIPOLYGON (((-88.27414 3...
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Alabama 5th
+</td>
+<td style="text-align:right;">
+AL
+</td>
+<td style="text-align:right;">
+05
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+Clinton
+</td>
+<td style="text-align:right;">
+31.3
+</td>
+<td style="text-align:right;">
+0105
+</td>
+<td style="text-align:right;">
+01
+</td>
+<td style="text-align:right;">
+MULTIPOLYGON (((-88.20296 3...
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Alabama 6th
+</td>
+<td style="text-align:right;">
+AL
+</td>
+<td style="text-align:right;">
+06
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+Clinton
+</td>
+<td style="text-align:right;">
+26.1
+</td>
+<td style="text-align:right;">
+0106
+</td>
+<td style="text-align:right;">
+01
+</td>
+<td style="text-align:right;">
+MULTIPOLYGON (((-87.42194 3...
+</td>
+</tr>
+</tbody>
+</table>
+
 ------------------------------------------------------------------------
 
 ### Some census play
@@ -288,7 +502,7 @@ us_house_districts %>%
   labs(title = "% no degree White males by congressional district")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 Create plots of some cherry-picked district cross-sections (per Daily Kos).
 
@@ -340,7 +554,7 @@ tree %>%
       labs(title = "Educational attainment by race for population over 25")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 ``` r
 #Add Year + Source.  
@@ -373,7 +587,7 @@ dailykos_pres_elections %>%
 
     ## Joining, by = "GEOID"
 
-![](README_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 ------------------------------------------------------------------------
 
