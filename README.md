@@ -1,13 +1,3 @@
--   [Federal election data & R: some resources](#federal-election-data-r-some-resources)
-    -   [1 Political ideologies](#political-ideologies)
-    -   [2 Lawmaker biographies](#lawmaker-biographies)
-    -   [Using `rtweets` & lists](#using-rtweets-lists)
-    -   [3 Political geometries via the `tigris` package](#political-geometries-via-the-tigris-package)
-    -   [Presidential elections (& others)](#presidential-elections-others)
-    -   [Some census play](#some-census-play)
-    -   [Some funky geographies from Daily Kos.](#some-funky-geographies-from-daily-kos.)
-    -   [A work in progress.](#a-work-in-progress.)
-
 Federal election data & R: some resources
 -----------------------------------------
 
@@ -16,7 +6,8 @@ A collection of political data resources.
 Many of the data collated here should be more easily & publicly accessible. It is not clear why they are not. In this age of alleged dat transparency, sources like 538 & CNN (especially the former) present ...
 
 -   [1 Political Ideologies](#1-political-ideologies)
--   [2 Lawmaker biographies](#2-Lawmaker-biographies) -- [CivilServiceUSA](#CivilServiceUSA)
+-   [2 Lawmaker biographies](#2-Lawmaker-biographies)
+    -   [CivilServiceUSA](#CivilServiceUSA)
 
 ``` r
 library(Rvoteview)#devtools::install_github("voteview/Rvoteview")
