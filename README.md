@@ -138,6 +138,104 @@ house_dets %>%
 
 ### 3 Twitter
 
+A nice [set of lists](https://twitter.com/cspan/lists) provided by cspan.
+
+``` r
+rtweet::lists_members(slug = 'New-Members-of-Congress', owner_user = 'cspan') %>%
+  head() %>%
+  select(name, description, followers_count) %>%
+  formattable::formattable()
+```
+
+<table class="table table-condensed">
+<thead>
+<tr>
+<th style="text-align:right;">
+name
+</th>
+<th style="text-align:right;">
+description
+</th>
+<th style="text-align:right;">
+followers\_count
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+Lance Gooden
+</td>
+<td style="text-align:right;">
+Husband, father, TX State Rep and Congressman-Elect for TX's 5th Congressional District.
+</td>
+<td style="text-align:right;">
+218
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Jahana Hayes for Congress
+</td>
+<td style="text-align:right;">
+Congresswoman-Elect CT 5th Congressional District
+</td>
+<td style="text-align:right;">
+17106
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Bryan Steil
+</td>
+<td style="text-align:right;">
+Problem Solver. Badger. Manufacturing. Running for Congress. \#TeamSteil
+</td>
+<td style="text-align:right;">
+1602
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Joe Morelle
+</td>
+<td style="text-align:right;">
+\#NY25 Democratic candidate. Husband, father, believer in the promise of a future that is as strong, resilient & bold as the people who call Monroe County home.
+</td>
+<td style="text-align:right;">
+1020
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+John Joyce
+</td>
+<td style="text-align:right;">
+Father, husband, granddad, doctor, advocate, PSU alum. Congressman-elect in \#PA13. Fighting everyday for central Pennsylvania. \#TeamJoyce
+</td>
+<td style="text-align:right;">
+559
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Kelly Armstrong
+</td>
+<td style="text-align:right;">
+Lifelong North Dakotan. Proud husband and dad. Republican candidate for the U.S. House of Representatives.
+
+Real Conservative. Real results.
+</td>
+<td style="text-align:right;">
+1040
+</td>
+</tr>
+</tbody>
+</table>
+``` r
+#rtweet::lists_members(slug = 'Governors', owner_user = 'cspan')
+```
+
 ------------------------------------------------------------------------
 
 ### 4 Political geometries
@@ -511,7 +609,7 @@ us_house_districts %>%
   labs(title = "% no degree White males by congressional district")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 Create plots of some cherry-picked district cross-sections (per Daily Kos).
 
@@ -563,7 +661,7 @@ tree %>%
       labs(title = "Educational attainment by race for population over 25")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 ``` r
 #Add Year + Source.  
@@ -594,7 +692,7 @@ dailykos_pres_elections %>%
   labs(title = "Composition of corpus (in tokens) over time")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
 ------------------------------------------------------------------------
 
