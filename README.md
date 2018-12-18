@@ -16,18 +16,7 @@ Many of the data collated here should be more easily & publicly accessible. It i
 -   [8 A work in progress](#8-A-work-in-progress)
 
 ``` r
-library(Rvoteview)#devtools::install_github("voteview/Rvoteview")
 library(tidyverse)
-```
-
-Viz packages.
-
-``` r
-library(ggthemes)
-library(ggrepel)#devtools::install_github("slowkow/ggrepel")
-library(ggridges)
-library(treemapify)
-library(formattable)
 ```
 
 ------------------------------------------------------------------------
@@ -70,7 +59,7 @@ house30 %>%
   labs(title = "House Composition over the last 50 congresses")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 ``` r
 house30 %>%
@@ -84,7 +73,7 @@ house30 %>%
       labs(title = "Political ideologies in the US Senates 90 to 115")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
 An alternative approach. --- Voteview data with NOKKEN & POOLE scores.
 
@@ -139,7 +128,7 @@ house_dets %>%
   labs(title = 'Age distributions in the 115th US House')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 ``` r
   #ggthemes::theme_fivethirtyeight()
@@ -522,7 +511,7 @@ us_house_districts %>%
   labs(title = "% no degree White males by congressional district")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 Create plots of some cherry-picked district cross-sections (per Daily Kos).
 
@@ -558,23 +547,23 @@ tree %>%
                fill = paste0(race_cat, ' ', ed_cat),
                label = paste0(race_cat, ' ', ed_cat),
                subgroup = paste0(race_cat, ' ', ed_cat)))+
-      geom_treemap(alpha=.85)+
-      geom_treemap_subgroup_border() +
+      treemapify::geom_treemap(alpha=.85)+
+      treemapify::geom_treemap_subgroup_border() +
 
-      geom_treemap_text(colour = "white", 
+      treemapify::geom_treemap_text(colour = "white", 
                         place = "topleft", 
                         reflow = T,
                         size = 9.5)+
-      scale_fill_economist()+ 
-  theme_fivethirtyeight()+
-  facet_wrap(~GEOID) +
+      ggthemes::scale_fill_economist()+ 
+      ggthemes::theme_fivethirtyeight()+
+      facet_wrap(~GEOID) +
       theme(legend.position = "bottom",
             plot.title = element_text(size=12),
             legend.title=element_blank()) + 
       labs(title = "Educational attainment by race for population over 25")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 ``` r
 #Add Year + Source.  
@@ -605,9 +594,7 @@ dailykos_pres_elections %>%
   labs(title = "Composition of corpus (in tokens) over time")
 ```
 
-    ## Joining, by = "GEOID"
-
-![](README_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 ------------------------------------------------------------------------
 
