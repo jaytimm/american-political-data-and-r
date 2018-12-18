@@ -1,8 +1,8 @@
 -   [Federal election data & R: some resources](#federal-election-data-r-some-resources)
     -   [1. VoteView & things](#voteview-things)
-    -   [CivilServiceUSA](#civilserviceusa)
+    -   [2.CivilServiceUSA](#civilserviceusa)
     -   [Using `rtweets` & lists](#using-rtweets-lists)
-    -   [Political geometries via the `tigris` package](#political-geometries-via-the-tigris-package)
+    -   [3 Political geometries via the `tigris` package](#political-geometries-via-the-tigris-package)
     -   [Presidential elections (& others)](#presidential-elections-others)
     -   [Some census play](#some-census-play)
     -   [Some funky geographies from Daily Kos.](#some-funky-geographies-from-daily-kos.)
@@ -73,10 +73,11 @@ house30 %>%
   filter(congress > 89) %>%
     ggplot(aes(x=nominate.dim1, y=as.factor(congress), fill = congress)) +
       ggridges::geom_density_ridges(rel_min_height = 0.01) +
+    geom_vline(xintercept = 0, color = 'black', linetype = 2) +
       theme(legend.position = "none", 
             plot.title = element_text(size=14)) + 
       ylab("")+
-      labs(title = "Political ideologies in the US Senate: Senates 90 to 115")
+      labs(title = "Political ideologies in the US Senates 90 to 115")
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
@@ -96,7 +97,7 @@ sen115 <- read.csv(url("https://voteview.com/static/data/out/members/HSall_membe
 
 ------------------------------------------------------------------------
 
-### CivilServiceUSA
+### 2.CivilServiceUSA
 
 Mention the `bioguide` which helps cross.
 
@@ -144,7 +145,7 @@ house_dets %>%
 
 ------------------------------------------------------------------------
 
-### Political geometries via the `tigris` package
+### 3 Political geometries via the `tigris` package
 
 ``` r
 library(tigris); options(tigris_use_cache = TRUE, tigris_class = "sf")
