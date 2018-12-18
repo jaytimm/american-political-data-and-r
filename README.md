@@ -349,7 +349,7 @@ tree %>%
 Trump ed/race dems by binned degrees of support.
 
 ``` r
-x <- dailykos_pres_elections %>%
+dailykos_pres_elections %>%
   filter(candidate == 'Trump') %>%
   mutate(cut = cut_number(percent, n =10),
          rank_cut = dense_rank(cut)) %>%
@@ -372,6 +372,8 @@ x <- dailykos_pres_elections %>%
 ```
 
     ## Joining, by = "GEOID"
+
+![](README_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 ------------------------------------------------------------------------
 
