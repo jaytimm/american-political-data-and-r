@@ -8,6 +8,12 @@ Many of the data collated here should be more easily & publicly accessible. It i
 -   [1 Political Ideologies](#1-political-ideologies)
 -   [2 Lawmaker biographies](#2-Lawmaker-biographies)
     -   [CivilServiceUSA](#CivilServiceUSA)
+-   [3 Twitter](#Twitter)
+-   [4 Political geometries](#4-political-geometries)
+-   [5 Federal election results](#5-Federal-election-results)
+-   [6 Census data and congressional districts](#6-Census-data-and-congressional-districts)
+-   [7 Funky geometries](#7-Funky-geometries)
+-   [8 A work in progress](#8-A-work-in-progress)
 
 ``` r
 library(Rvoteview)#devtools::install_github("voteview/Rvoteview")
@@ -141,11 +147,11 @@ house_dets %>%
 
 ------------------------------------------------------------------------
 
-### Using `rtweets` & lists
+### 3 Twitter
 
 ------------------------------------------------------------------------
 
-### 3 Political geometries via the `tigris` package
+### 4 Political geometries
 
 ``` r
 library(tigris); options(tigris_use_cache = TRUE, tigris_class = "sf")
@@ -175,7 +181,7 @@ us_house_districts <- tigris::congressional_districts(cb = TRUE) %>% select(GEOI
 
 ------------------------------------------------------------------------
 
-### Presidential elections (& others)
+### 5 Federal election results
 
 [Daily Kos data sets](https://www.dailykos.com/stories/2018/2/21/1742660/-The-ultimate-Daily-Kos-Elections-guide-to-all-of-our-data-sets)
 
@@ -444,7 +450,7 @@ MULTIPOLYGON (((-87.42194 3...
 
 ------------------------------------------------------------------------
 
-### Some census play
+### 6 Census data and congressional districts
 
 Race, education & census data (for good measure):
 
@@ -605,8 +611,8 @@ dailykos_pres_elections %>%
 
 ------------------------------------------------------------------------
 
-### Some funky geographies from Daily Kos.
+### 7 Funky geometries
 
 ------------------------------------------------------------------------
 
-### A work in progress.
+### 8 A work in progress
