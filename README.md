@@ -1,5 +1,17 @@
+-   [Federal election data & R: some resources](#federal-election-data-r-some-resources)
+    -   [$1. VoteView & things](#voteview-things)
+    -   [CivilServiceUSA](#civilserviceusa)
+    -   [Using `rtweets` & lists](#using-rtweets-lists)
+    -   [Political geometries via the `tigris` package](#political-geometries-via-the-tigris-package)
+    -   [Presidential elections (& others)](#presidential-elections-others)
+    -   [Some census play](#some-census-play)
+    -   [Some funky geographies from Daily Kos.](#some-funky-geographies-from-daily-kos.)
+    -   [A work in progress.](#a-work-in-progress.)
+
 Federal election data & R: some resources
 -----------------------------------------
+
+Many of the data collated here should be more easily accessible. In this age of alleged dat transparency, sources like 538 & CNN (especially the former) present ...
 
 A collection of political data resources. --- And perhaps formally aggregate/collate some of these resources.
 
@@ -24,7 +36,7 @@ library(formattable)
 
 ------------------------------------------------------------------------
 
-### §1. VoteView & things
+### $1. VoteView & things
 
 Senate/House details by congress. Perhaps add 'divergent' visual over time.
 
@@ -104,7 +116,7 @@ house_dets %>%
             lubridate::year(as.Date(date_of_birth))) %>%
   ggplot (aes(years)) +
   geom_histogram(bins=20, fill = 'cornflowerblue') +
-  labs(title = 'Age distributions in the House of Representatives')
+  labs(title = 'Age distributions in the 115th US House')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
@@ -119,9 +131,39 @@ house_dets %>%
 
 ------------------------------------------------------------------------
 
+### Political geometries via the `tigris` package
+
+``` r
+library(tigris); options(tigris_use_cache = TRUE, tigris_class = "sf")
+```
+
+    ## Warning: package 'tigris' was built under R version 3.4.4
+
+    ## To enable 
+    ## caching of data, set `options(tigris_use_cache = TRUE)` in your R script or .Rprofile.
+
+    ## 
+    ## Attaching package: 'tigris'
+
+    ## The following object is masked from 'package:graphics':
+    ## 
+    ##     plot
+
+``` r
+us_house_districts <- tigris::congressional_districts(cb = TRUE) %>% select(GEOID,STATEFP, CD115FP) %>%
+  
+  left_join(tigris::states(cb = TRUE) %>% 
+              data.frame() %>%
+              select(STATEFP, STUSPS)) 
+```
+
+    ## Joining, by = "STATEFP"
+
+------------------------------------------------------------------------
+
 ### Presidential elections (& others)
 
-[Daily KOS data sets](https://www.dailykos.com/stories/2018/2/21/1742660/-The-ultimate-Daily-Kos-Elections-guide-to-all-of-our-data-sets)
+[Daily Kos data sets](https://www.dailykos.com/stories/2018/2/21/1742660/-The-ultimate-Daily-Kos-Elections-guide-to-all-of-our-data-sets)
 
 As list, perhaps -- ? Using DailyKOS & `gsheets`.
 
@@ -147,7 +189,8 @@ fix <- as.data.frame(cbind(colnames(house), as.character(house[1,])),
   string_as_factor = FALSE) %>%
   mutate(V1 = gsub('^X', NA, V1)) %>%
   fill(V1) %>%
-  mutate(nw_cols = ifelse(is.na(V2), V1, paste0(V1, '_', V2)))
+  mutate(nw_cols = ifelse(is.na(V2), V1, paste0(V1, '_', V2)),
+         nw_cols = gsub(' ', '_', nw_cols))
 
 colnames(house) <- fix$nw_cols
 
@@ -155,6 +198,21 @@ house <- house %>% slice(3:nrow(.))
 
 keeps <- house[,!grepl('Pronun|ACS|Census|Survey', colnames(house))]
 ```
+
+Presidential elections (for now).
+
+``` r
+dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]', colnames(house), value=T))] %>%
+  gather (key = election, value = percent, `2016_President_Clinton`:`2008_President_McCain`) %>%
+  mutate(election = gsub('President_', '', election),
+         percent = as.numeric(percent)) %>%
+  separate(Code, c('STUSPS', 'CD115FP')) %>%
+  separate(election, c('year', 'candidate'))%>%
+  mutate(CD115FP = ifelse(CD115FP == 'AL', '00', CD115FP)) %>%
+  left_join(us_house_districts)
+```
+
+    ## Joining, by = c("STUSPS", "CD115FP")
 
 ------------------------------------------------------------------------
 
@@ -181,11 +239,6 @@ race_table <- as.data.frame(cbind(code,race),
                             stringsAsFactors=FALSE)
 ```
 
-``` r
-library(tigris); options(tigris_use_cache = TRUE, tigris_class = "sf")
-us_house_districts <- tigris::congressional_districts(cb = TRUE)
-```
-
 C15002: SEX BY EDUCATIONAL ATTAINMENT FOR THE POPULATION 25 YEARS AND OVER
 
 ``` r
@@ -209,19 +262,39 @@ data <- tidycensus::get_acs(geography = 'congressional district',
   select(GEOID, label, gender, race, estimate:summary_moe)
 ```
 
-Create plots of some cherry-picked district cross-sections (per Daily Kos).
+White men without college degree. As percentage of total population over 25. ie, as a percentage of the electorate.
 
 ``` r
-types <- c('College White', 'Non-College White',
-           'College Non-White', 'Non-College Non-White')
+#Non-continental US
+nonx <- c('78', '69', '66', '72', '60', '15', '02')
+  
+us_house_districts %>% 
+  left_join(data %>% 
+              filter(label != 'Bachelor\'s degree or higher' &
+                       gender == 'Male' & 
+                       race == 'WHITE ALONE, NOT HISPANIC OR LATINO')) %>%
+  mutate(per = estimate / summary_est) %>%
+  filter(!gsub('..$' ,'', GEOID) %in% nonx) %>%
+  ggplot() + 
+  geom_sf(aes(fill = per)) + #, color = 'darkgray'
+  
+  scale_fill_distiller(palette='PRGn')+
+  
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        legend.position = 'bottom') +
+  labs(title = "% no degree White males by congressional district")
 ```
 
+![](README_files/figure-markdown_github/unnamed-chunk-16-1.png)
+
+Create plots of some cherry-picked district cross-sections (per Daily Kos).
+
+Definitions: WHITE ALONE means/equals all the whites, hispanic or otherwise. OR, WHITE ALONE, HISPANIC + WHITE ALONE, NOT HISPANIC.
+
 ``` r
-#Create a WHITE ALONE, NOT HISPANIC category here.  As mutually exculsive.  
-#HOW?? --> WHITE ALONE means/equals all the whites, hispanic or otherwise.  OR, WHITE ALONE, HISPANIC + WHITE ALONE, NOT HISPANIC.   
-
-#Importantly, all other non-White/Hispanics are already POCs.
-
 tree <- data %>%
   mutate (race = gsub(', | ', '_', race)) %>%
   select(-moe:-summary_moe) %>%
@@ -267,39 +340,38 @@ tree %>%
       labs(title = "Educational attainment by race for population over 25")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 ``` r
 #Add Year + Source.  
 ```
 
-White men without college degree. As percentage of total population over 25. ie, as a percentage of the electorate.
+Trump ed/race dems by binned degrees of support.
 
 ``` r
-#Non-continental US
-nonx <- c('78', '69', '66', '72', '60', '15', '02')
+x <- dailykos_pres_elections %>%
+  filter(candidate == 'Trump') %>%
+  mutate(cut = cut_number(percent, n =10),
+         rank_cut = dense_rank(cut)) %>%
+
+  left_join(tree) %>%
+  mutate(type = paste0(race_cat, ' ', ed_cat))%>%
+  select(type, rank_cut, estimate) %>%
+  group_by(type, rank_cut) %>%
   
-us_house_districts %>% 
-  left_join(data %>% 
-              filter(label != 'Bachelor\'s degree or higher' &
-                       gender == 'Male' & 
-                       race == 'WHITE ALONE, NOT HISPANIC OR LATINO')) %>%
-  mutate(per = estimate / summary_est) %>%
-  filter(!gsub('..$' ,'', GEOID) %in% nonx) %>%
-  ggplot() + 
-  geom_sf(aes(fill = per)) + #, color = 'darkgray'
+  summarize(estimate = sum(estimate)) %>%
   
-  scale_fill_distiller(palette='PRGn')+
+  group_by(rank_cut)%>%
+  mutate(new_per = estimate/sum(estimate)) %>%
   
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        legend.position = 'bottom') +
-  labs(title = "% no degree White males by congressional district")
+  ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
+  geom_area(alpha = 0.75, color = 'gray') +
+  ggthemes::scale_fill_economist()+
+  theme(legend.position = "bottom")+
+  labs(title = "Composition of corpus (in tokens) over time")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
+    ## Joining, by = "GEOID"
 
 ------------------------------------------------------------------------
 
