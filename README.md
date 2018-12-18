@@ -1,11 +1,11 @@
 Federal election data & R: some resources
 -----------------------------------------
 
-A collection of political data resources. Or something like this.
-
-And perhaps formally aggregate/collate some of these resources.
+A collection of political data resources. --- And perhaps formally aggregate/collate some of these resources.
 
 PERHAPS: Focus on House of Representatives. We have to finish some of these thoughts before new congress.
+
+ALSO --&gt; we want this to be easily added-on to/ amended/ etc. Not sure if this is the best format for that.
 
 ``` r
 library(Rvoteview)#devtools::install_github("voteview/Rvoteview")
@@ -24,7 +24,7 @@ library(formattable)
 
 ------------------------------------------------------------------------
 
-### VoteView & things
+### §1. VoteView & things
 
 Senate/House details by congress. Perhaps add 'divergent' visual over time.
 
@@ -56,7 +56,9 @@ house30 %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
-Voteview data with Poole & xyz scores (that change per congress). Scores via `Rvoteview` only DW\_Nominate, which reflect an aggregate score based on lawmaker's entire voting history (eben if they switch houses, which is weird).
+An alternative approach. --- Voteview data with NOKKEN & POOLE scores.
+
+(that change per congress). Scores via `Rvoteview` only DW\_Nominate, which reflect an aggregate score based on lawmaker's entire voting history (eben if they switch houses, which is weird).
 
 Perhaps add some visualizations. A la divisiveness.
 
@@ -70,6 +72,8 @@ sen115 <- read.csv(url("https://voteview.com/static/data/out/members/HSall_membe
 ------------------------------------------------------------------------
 
 ### CivilServiceUSA
+
+Mention the `bioguide` which helps cross.
 
 ``` r
 library(jsonlite)
@@ -89,6 +93,8 @@ senate_dets <-  jsonlite::fromJSON(url(sen_url)) %>%
 #We don't run this.
 house_dets <- jsonlite::fromJSON(url('https://raw.githubusercontent.com/CivilServiceUSA/us-house/master/us-house/data/us-house.json')) 
 ```
+
+So, a quick demo.
 
 ``` r
 library(lubridate)
@@ -132,7 +138,11 @@ library(gsheet)
 url <- 'https://docs.google.com/spreadsheets/d/1oRl7vxEJUUDWJCyrjo62cELJD2ONIVl-D9TSUKiK9jk/edit#gid=1178631925'
 
 house <- gsheet::gsheet2tbl(url) 
+```
 
+Data are super dirty. A simple cleaning procedure that will scale (for the most part) to other data sources at the Daily Kos. With a simple focus on ... :
+
+``` r
 fix <- as.data.frame(cbind(colnames(house), as.character(house[1,])), 
   string_as_factor = FALSE) %>%
   mutate(V1 = gsub('^X', NA, V1)) %>%
@@ -257,7 +267,7 @@ tree %>%
       labs(title = "Educational attainment by race for population over 25")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 ``` r
 #Add Year + Source.  
@@ -289,7 +299,7 @@ us_house_districts %>%
   labs(title = "% no degree White males by congressional district")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 ------------------------------------------------------------------------
 
