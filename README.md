@@ -1,6 +1,6 @@
 -   [Federal election data & R: some resources](#federal-election-data-r-some-resources)
-    -   [Political ideologies](#political-ideologies)
-    -   [Lawmaker biographies](#lawmaker-biographies)
+    -   [1 Political ideologies](#political-ideologies)
+    -   [2 Lawmaker biographies](#lawmaker-biographies)
     -   [Using `rtweets` & lists](#using-rtweets-lists)
     -   [3 Political geometries via the `tigris` package](#political-geometries-via-the-tigris-package)
     -   [Presidential elections (& others)](#presidential-elections-others)
@@ -15,9 +15,8 @@ A collection of political data resources.
 
 Many of the data collated here should be more easily & publicly accessible. It is not clear why they are not. In this age of alleged dat transparency, sources like 538 & CNN (especially the former) present ...
 
--   [Poliitcal Ideologies](#political-ideogies)
--   [Lawmaker biographies](#Lawmaker-biographies)
--   [CivilServiceUSA](#CivilServiceUSA)
+-   [1 Political Ideologies](#1-political-ideologies)
+-   [2 Lawmaker biographies](#2-Lawmaker-biographies) -- [CivilServiceUSA](#CivilServiceUSA)
 
 ``` r
 library(Rvoteview)#devtools::install_github("voteview/Rvoteview")
@@ -40,7 +39,7 @@ LAWMAKER DETAILS: IDEOLOGY & BIOGRAPHICALS
 
 Congressional composition & voting patterns.
 
-### Political ideologies
+### 1 Political ideologies
 
 ***So what do you want to do this weekend?***
 
@@ -105,11 +104,11 @@ sen115 <- read.csv(url("https://voteview.com/static/data/out/members/HSall_membe
 
 ------------------------------------------------------------------------
 
-### Lawmaker biographies
+### 2 Lawmaker biographies
 
 Mention the `bioguide` which helps cross.
 
-##### CivilServiceUSA
+#### CivilServiceUSA
 
 ``` r
 library(jsonlite)
