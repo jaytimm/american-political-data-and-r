@@ -94,7 +94,7 @@ sen115 <- read.csv(url("https://voteview.com/static/data/out/members/HSall_membe
 
 Mention the `bioguide` which helps cross.
 
-#### CivilServiceUSA
+CivilServiceUSA
 
 ``` r
 library(jsonlite)
@@ -138,7 +138,7 @@ house_dets %>%
 
 ### 3 Twitter
 
-A nice [set of lists](https://twitter.com/cspan/lists) provided by cspan.
+A nice [set of lists](https://twitter.com/cspan/lists) provided by C-SPAN.
 
 ``` r
 rtweet::lists_members(slug = 'New-Members-of-Congress', owner_user = 'cspan') %>%
@@ -157,6 +157,90 @@ rtweet::lists_members(slug = 'New-Members-of-Congress', owner_user = 'cspan') %>
 | Kelly Armstrong           | Lifelong North Dakotan. Proud husband and dad. Republican candidate for the U.S. House of Representatives.                                                       |
 
 Real Conservative. Real results.
+
+Gather some tweets.
+
+``` r
+library(cleanNLP)
+library(corpuslingr)
+cleanNLP::cnlp_init_udpipe(model_name="english",
+                           feature_flag = FALSE,
+                           parser = "none")
+```
+
+``` r
+ocasio_tweets <- rtweet::get_timeline('Ocasio2018', n = 100) %>%
+  rename(doc_id=status_id)
+```
+
+``` r
+ocasio_annotated <-
+  cleanNLP::cnlp_annotate(ocasio_tweets$text,
+                          as_strings = TRUE,
+                          doc_ids = ocasio_tweets$doc_id)$token %>%
+  corpuslingr::clr_set_corpus(doc_var='id',
+                              token_var='word',
+                              lemma_var='lemma',
+                              tag_var='pos',
+                              pos_var='upos',
+                              sentence_var='sid',
+                              meta = ocasio_tweets[, c('doc_id', 'created_at')])
+```
+
+``` r
+ocasio_annotated %>%
+  corpuslingr::clr_search_context(search = 'HELP',
+                                  LW=15, RW = 15)%>%
+  corpuslingr::clr_context_kwic(include= c('created_at')) %>% 
+  formattable::formattable()
+```
+
+<table class="table table-condensed">
+<thead>
+<tr>
+<th style="text-align:right;">
+created\_at
+</th>
+<th style="text-align:right;">
+kwic
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+2018-12-17 22:16:31
+</td>
+<td style="text-align:right;">
+Sunnyside fire recovery efforts , there is a relief event tonight and fund established to <mark> help </mark> the local businesses impacted : <https://t.co/LOtLpgpEAz>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2018-12-11 22:02:05
+</td>
+<td style="text-align:right;">
+\# GreenNewDeal to national urgency , secured 30 cosponsors on a Select Committee , and <mark> helped </mark> stop a bad tax rule . I d say we re off to a good
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2018-12-11 18:01:08
+</td>
+<td style="text-align:right;">
+The political / financial power structure anointed Ryan because his ideas would <mark> help </mark> the wealthy . The same power structure maligns @ Ocasio2018 because her ideas would help
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2018-12-11 18:01:08
+</td>
+<td style="text-align:right;">
+help the wealthy . The same power structure maligns @ Ocasio2018 because her ideas would <mark> help </mark> the poor & amp ; working clsss and are a threat to the privileged .
+</td>
+</tr>
+</tbody>
+</table>
 
 ------------------------------------------------------------------------
 
@@ -181,15 +265,9 @@ us_house_districts <- sf::st_transform(us_house_districts, laea)
 
 [Daily Kos data sets](https://www.dailykos.com/stories/2018/2/21/1742660/-The-ultimate-Daily-Kos-Elections-guide-to-all-of-our-data-sets)
 
-As list, perhaps - - ? Using DailyKOS & `gsheets`.
-
 Not fantastic structure-wise. Some lawmaker bio details (Name, First elected, Birth Year, Gender, RAce/ethnicity, Religion, LGBT). House sheet: 2016/2012/2008 presidential election results by congressional district; along with 2016/2014 house congressional results; No 2018 results.
 
 Also includes some socio-dems by district, but this is likely more easily addressed using `tidycensus`.
-
-Need to create a GEOID column to add lawmaker details + mapping.
-
-ALSO: Add source names to table names.
 
 ``` r
 url <- 'https://docs.google.com/spreadsheets/d/1oRl7vxEJUUDWJCyrjo62cELJD2ONIVl-D9TSUKiK9jk/edit#gid=1178631925'
@@ -208,15 +286,11 @@ fix <- as.data.frame(cbind(colnames(house), as.character(house[1,])),
          nw_cols = gsub(' ', '_', nw_cols))
 
 colnames(house) <- fix$nw_cols
-
 house <- house %>% slice(3:nrow(.))
-
 keeps <- house[,!grepl('Pronun|ACS|Census|Survey', colnames(house))]
 ```
 
-We should also grab raw counts.
-
-Presidential elections (for now). Structure is not ideal at present.
+Here we filter to data to the last three Presidential elections.
 
 ``` r
 dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]', colnames(house), value=T))] %>%
@@ -229,13 +303,13 @@ dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]',
   left_join(us_house_districts)
 ```
 
-    ## Joining, by = c("STUSPS", "CD115FP")
-
 ------------------------------------------------------------------------
 
 ### 6 Census data and congressional districts
 
 Race, education & census data (for good measure):
+
+    ## To install your API key for use in future sessions, run this function with `install = TRUE`.
 
 Census race/ethnicity per US Census classifications.
 
@@ -290,8 +364,8 @@ nonx <- c('78', '69', '66', '72', '60', '15', '02')
 us_house_districts %>% 
   left_join(data %>% 
               filter(label != 'Bachelor\'s degree or higher' &
-                       gender == 'Male' & 
-                       race == 'WHITE ALONE, NOT HISPANIC OR LATINO')) %>%
+                     gender == 'Male' & 
+                     race == 'WHITE ALONE, NOT HISPANIC OR LATINO')) %>%
   mutate(per = estimate / summary_est) %>%
   filter(!gsub('..$' ,'', GEOID) %in% nonx) %>%
   ggplot() + 
@@ -308,7 +382,7 @@ us_house_districts %>%
        caption = 'Source: ACS Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
 Create plots of some cherry-picked district cross-sections (per Daily Kos).
 
@@ -363,13 +437,14 @@ tree %>%
            caption = 'Source: ACS Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
 Trump ed/race dems by binned degrees of support.
 
 ``` r
 ed_45 <- dailykos_pres_elections %>%
   filter(candidate == 'Trump') %>%
+  group_by(candidate) %>%
   mutate(cut = cut_number(percent, n =10),
          rank_cut = dense_rank(cut)) 
 ```
@@ -386,24 +461,31 @@ table(ed_45$cut)
     ## (53.1,56.2] (56.2,60.9] (60.9,65.6] (65.6,80.4] 
     ##          44          44          42          44
 
+Describe plot. The average educational attainment profile for each level (ie, bin) of support for 45.
+
 ``` r
 ed_45 %>%
   left_join(tree) %>%
   mutate(type = paste0(race_cat, ' ', ed_cat)) %>%
-  select(type, rank_cut, estimate) %>%
-  group_by(type, rank_cut) %>%
+  select(type, rank_cut, cut, estimate) %>%
+  group_by(type, cut, rank_cut) %>%
   summarize(estimate = sum(estimate)) %>%
-  group_by(rank_cut)%>%
+  group_by(cut)%>%
   mutate(new_per = estimate/sum(estimate)) %>%
   
-  ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
+ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
   geom_area(alpha = 0.75, color = 'gray') +
   ggthemes::scale_fill_economist()+
+  scale_x_continuous(breaks = 1:10, labels = 1:10) + 
   theme(legend.position = "bottom")+
-  labs(title = "Composition of corpus (in tokens) over time")
+  labs(title = "Average educational attainment by level of support for 45",
+       subtitle = '2016 Presidential Election')+
+  xlab(NULL)+ylab(NULL)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-28-1.png)
+
+Compare to Hilary.
 
 ------------------------------------------------------------------------
 
@@ -481,7 +563,7 @@ dailykos_shapes$cds %>%
         legend.position = 'bottom')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-28-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
 #### Tile map of US states
 
@@ -514,7 +596,7 @@ dailykos_tile$outer %>%
         legend.position = 'bottom')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-30-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
 ------------------------------------------------------------------------
 
