@@ -36,7 +36,7 @@ Senate/House details by congress. Perhaps add 'divergent' visual over time.
 ``` r
 #sen115 <- Rvoteview:: member_search(chamber= 'Senate', congress = 115)
 
-house30 <- lapply(c(66:115), function (x)
+rvoteview_house_50 <- lapply(c(66:115), function (x)
                     Rvoteview::member_search (
                       chamber = 'House', 
                       congress = x)) %>% 
@@ -46,7 +46,7 @@ house30 <- lapply(c(66:115), function (x)
 A bit of a viz. Note that these percentages are not erfect, as non-major political parties are not included (which comprise a very small overall peracentage).
 
 ``` r
-house30 %>%
+rvoteview_house_50 %>%
   filter(party_name %in% c('Democratic Party', 'Republican Party')) %>%
   group_by(congress, party_name) %>%
   summarize(n = n()) %>%
@@ -62,7 +62,7 @@ house30 %>%
 ![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 ``` r
-house30 %>%
+rvoteview_house_50 %>%
   filter(congress > 89) %>%
     ggplot(aes(x=nominate.dim1, y=as.factor(congress), fill = congress)) +
       ggridges::geom_density_ridges(rel_min_height = 0.01) +
@@ -144,97 +144,19 @@ A nice [set of lists](https://twitter.com/cspan/lists) provided by cspan.
 rtweet::lists_members(slug = 'New-Members-of-Congress', owner_user = 'cspan') %>%
   head() %>%
   select(name, description, followers_count) %>%
-  formattable::formattable()
+  knitr::kable()
 ```
 
-<table class="table table-condensed">
-<thead>
-<tr>
-<th style="text-align:right;">
-name
-</th>
-<th style="text-align:right;">
-description
-</th>
-<th style="text-align:right;">
-followers\_count
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-Lance Gooden
-</td>
-<td style="text-align:right;">
-Husband, father, TX State Rep and Congressman-Elect for TX's 5th Congressional District.
-</td>
-<td style="text-align:right;">
-218
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-Jahana Hayes for Congress
-</td>
-<td style="text-align:right;">
-Congresswoman-Elect CT 5th Congressional District
-</td>
-<td style="text-align:right;">
-17106
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-Bryan Steil
-</td>
-<td style="text-align:right;">
-Problem Solver. Badger. Manufacturing. Running for Congress. \#TeamSteil
-</td>
-<td style="text-align:right;">
-1602
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-Joe Morelle
-</td>
-<td style="text-align:right;">
-\#NY25 Democratic candidate. Husband, father, believer in the promise of a future that is as strong, resilient & bold as the people who call Monroe County home.
-</td>
-<td style="text-align:right;">
-1020
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-John Joyce
-</td>
-<td style="text-align:right;">
-Father, husband, granddad, doctor, advocate, PSU alum. Congressman-elect in \#PA13. Fighting everyday for central Pennsylvania. \#TeamJoyce
-</td>
-<td style="text-align:right;">
-559
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-Kelly Armstrong
-</td>
-<td style="text-align:right;">
-Lifelong North Dakotan. Proud husband and dad. Republican candidate for the U.S. House of Representatives.
+| name                      | description                                                                                                                                                      |  followers\_count|
+|:--------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------:|
+| Lance Gooden              | Husband, father, TX State Rep and Congressman-Elect for TX's 5th Congressional District.                                                                         |               218|
+| Jahana Hayes for Congress | Congresswoman-Elect CT 5th Congressional District                                                                                                                |             17112|
+| Bryan Steil               | Problem Solver. Badger. Manufacturing. Running for Congress. \#TeamSteil                                                                                         |              1604|
+| Joe Morelle               | \#NY25 Democratic candidate. Husband, father, believer in the promise of a future that is as strong, resilient & bold as the people who call Monroe County home. |              1020|
+| John Joyce                | Father, husband, granddad, doctor, advocate, PSU alum. Congressman-elect in \#PA13. Fighting everyday for central Pennsylvania. \#TeamJoyce                      |               559|
+| Kelly Armstrong           | Lifelong North Dakotan. Proud husband and dad. Republican candidate for the U.S. House of Representatives.                                                       |                  |
 
-Real Conservative. Real results.
-</td>
-<td style="text-align:right;">
-1040
-</td>
-</tr>
-</tbody>
-</table>
-``` r
-#rtweet::lists_members(slug = 'Governors', owner_user = 'cspan')
-```
+Real Conservative. Real results. 1043
 
 ------------------------------------------------------------------------
 
@@ -242,29 +164,12 @@ Real Conservative. Real results.
 
 ``` r
 library(tigris); options(tigris_use_cache = TRUE, tigris_class = "sf")
-```
-
-    ## Warning: package 'tigris' was built under R version 3.4.4
-
-    ## To enable 
-    ## caching of data, set `options(tigris_use_cache = TRUE)` in your R script or .Rprofile.
-
-    ## 
-    ## Attaching package: 'tigris'
-
-    ## The following object is masked from 'package:graphics':
-    ## 
-    ##     plot
-
-``` r
 us_house_districts <- tigris::congressional_districts(cb = TRUE) %>% select(GEOID,STATEFP, CD115FP) %>%
   
   left_join(tigris::states(cb = TRUE) %>% 
               data.frame() %>%
               select(STATEFP, STUSPS)) 
 ```
-
-    ## Joining, by = "STATEFP"
 
 ------------------------------------------------------------------------
 
@@ -283,7 +188,6 @@ Need to create a GEOID column to add lawmaker details + mapping.
 ALSO: Add source names to table names.
 
 ``` r
-library(gsheet)
 url <- 'https://docs.google.com/spreadsheets/d/1oRl7vxEJUUDWJCyrjo62cELJD2ONIVl-D9TSUKiK9jk/edit#gid=1178631925'
 
 house <- gsheet::gsheet2tbl(url) 
@@ -306,7 +210,7 @@ house <- house %>% slice(3:nrow(.))
 keeps <- house[,!grepl('Pronun|ACS|Census|Survey', colnames(house))]
 ```
 
-Presidential elections (for now).
+Presidential elections (for now). Structure is not ideal at present.
 
 ``` r
 dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]', colnames(house), value=T))] %>%
@@ -318,8 +222,6 @@ dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]',
   mutate(CD115FP = ifelse(CD115FP == 'AL', '00', CD115FP)) %>%
   left_join(us_house_districts)
 ```
-
-    ## Joining, by = c("STUSPS", "CD115FP")
 
 ``` r
 dailykos_pres_elections %>% head() %>% formattable::formattable()
@@ -697,6 +599,66 @@ dailykos_pres_elections %>%
 ------------------------------------------------------------------------
 
 ### 7 Funky geometries
+
+The Daily Kos has a cache of fun shapefiles.
+
+``` r
+url <- 'https://drive.google.com/uc?authuser=0&id=1E_P0r1Uv438fZsvKsvidIR02Nb5Ju9zf&export=download/HexCDv12.zip'
+```
+
+Download & load shapefile as an `sf` object -- as process.
+
+``` r
+get_url_shape <- function (url) {
+  temp <- tempdir()
+  zip_name <- paste0(temp, '\\', basename(url))
+  download.file(url, zip_name, 
+                quiet = TRUE)
+  unzip(zip_name, exdir = temp)
+  x <- sf::st_read(dsn = gsub('\\.zip', '', zip_name), 
+                   layer = gsub('\\.zip','', basename(url)),
+                   quiet = TRUE) 
+  unlink(temp) 
+  x}
+```
+
+Apply function.
+
+``` r
+dailykos_hex_shape <- get_url_shape(url)
+```
+
+``` r
+dailykos_pres_flips <- dailykos_pres_elections %>%
+  data.frame() %>%
+  select(-geometry) %>%
+  group_by(District, year) %>%
+  filter(percent == max(percent))%>%
+  mutate(dups = n()) %>%
+  arrange(year, District) %>%
+  filter(dups != 2) %>% #Kill ties --> n = 3
+  select(-percent, -dups) %>%
+  spread(year, candidate) %>%
+  na.omit()%>%
+  mutate(flips = paste0(`2012`, ' -> ', `2016`))
+```
+
+Need to add state hex shape.
+
+``` r
+dailykos_hex_shape %>%
+  inner_join(dailykos_pres_flips)%>%
+  ggplot() + 
+  geom_sf(aes(fill = flips),
+           color = 'white') + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        legend.position = 'bottom')
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 ------------------------------------------------------------------------
 
