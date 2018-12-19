@@ -193,7 +193,7 @@ ocasio_annotated %>%
                                   LW=15, RW = 15)%>%
   corpuslingr::clr_context_kwic(include= c('created_at'))%>% 
   
-  DT::datatable(selection="none",
+  DT::datatable(options = list(pageLength = 5, dom = 't'),
                 class = 'cell-border stripe', 
                 rownames = FALSE,
                 width="100%", 
