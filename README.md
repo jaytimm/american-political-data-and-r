@@ -180,7 +180,7 @@ us_house_districts <- sf::st_transform(us_house_districts, laea)
 
 [Daily Kos data sets](https://www.dailykos.com/stories/2018/2/21/1742660/-The-ultimate-Daily-Kos-Elections-guide-to-all-of-our-data-sets)
 
-As list, perhaps -- ? Using DailyKOS & `gsheets`.
+As list, perhaps - - ? Using DailyKOS & `gsheets`.
 
 Not fantastic structure-wise. Some lawmaker bio details (Name, First elected, Birth Year, Gender, RAce/ethnicity, Religion, LGBT). House sheet: 2016/2012/2008 presidential election results by congressional district; along with 2016/2014 house congressional results; No 2018 results.
 
