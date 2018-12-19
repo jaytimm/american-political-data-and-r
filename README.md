@@ -164,13 +164,14 @@ Real Conservative. Real results.
 
 ``` r
 library(tigris); options(tigris_use_cache = TRUE, tigris_class = "sf")
-us_house_districts <- tigris::congressional_districts(cb = TRUE) %>% select(GEOID,STATEFP, CD115FP) %>%
+us_house_districts <- tigris::congressional_districts(cb = TRUE) %>%
+  select(GEOID,STATEFP, CD115FP) %>%
   
   left_join(tigris::states(cb = TRUE) %>% 
               data.frame() %>%
               select(STATEFP, STUSPS)) 
 
-laea = sf::st_crs("+proj=laea +lat_0=30 +lon_0=-95") # Lambert equal area
+laea <- sf::st_crs("+proj=laea +lat_0=30 +lon_0=-95") # Lambert equal area
 us_house_districts <- sf::st_transform(us_house_districts, laea)
 ```
 
@@ -212,6 +213,8 @@ house <- house %>% slice(3:nrow(.))
 
 keeps <- house[,!grepl('Pronun|ACS|Census|Survey', colnames(house))]
 ```
+
+We should also grab raw counts.
 
 Presidential elections (for now). Structure is not ideal at present.
 
@@ -558,10 +561,10 @@ tree %>%
                         reflow = T,
                         size = 9.5)+
       ggthemes::scale_fill_economist()+ 
-      ggthemes::theme_fivethirtyeight()+
+      #ggthemes::theme_fivethirtyeight()+
       facet_wrap(~GEOID) +
       theme(legend.position = "bottom",
-            plot.title = element_text(size=12),
+            #plot.title = element_text(size=12),
             legend.title=element_blank()) + 
       labs(title = "Educational attainment by race for population over 25")
 ```
@@ -604,6 +607,8 @@ dailykos_pres_elections %>%
 ### 7 Funky geometries
 
 The Daily Kos has a cache of fun shapefiles.
+
+#### Hexmap of Congressional districs
 
 ``` r
 url <- 'https://drive.google.com/uc?authuser=0&id=1E_P0r1Uv438fZsvKsvidIR02Nb5Ju9zf&export=download/HexCDv12.zip'
@@ -675,6 +680,39 @@ dailykos_shapes$cds %>%
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
+
+#### Tile map of US states
+
+``` r
+outer_url <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJdGF4ZWRTQmVyV2s&export=download/TileOutv10.zip'
+
+inner_url <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJR1c0SzNyWlAtZjA&export=download/TileInv10.zip'
+
+dailykos_tile <- lapply (c(inner_url, outer_url), get_url_shape)
+names(dailykos_tile) <- c('inner', 'outer')
+```
+
+``` r
+dailykos_tile$outer %>%
+  ggplot() + 
+  geom_sf(aes(fill = 'red'),
+           color = 'black', alpha = .85) + 
+    geom_sf(data=dailykos_tile$inner, 
+          fill = NA, 
+          show.legend = F, 
+          color="black", 
+          lwd=0.4) +
+    ggsflabel::geom_sf_text(data = dailykos_tile$inner,
+                                aes(label = State), size = 2.5) +
+  #ggthemes::scale_fill_colorblind()+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        legend.position = 'bottom')
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-29-1.png)
 
 ------------------------------------------------------------------------
 
