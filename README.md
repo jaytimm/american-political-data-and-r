@@ -149,14 +149,14 @@ rtweet::lists_members(slug = 'New-Members-of-Congress', owner_user = 'cspan') %>
 
 | name                      | description                                                                                                                                                      |  followers\_count|
 |:--------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------:|
-| Lance Gooden              | Husband, father, TX State Rep and Congressman-Elect for TX's 5th Congressional District.                                                                         |               218|
-| Jahana Hayes for Congress | Congresswoman-Elect CT 5th Congressional District                                                                                                                |             17112|
-| Bryan Steil               | Problem Solver. Badger. Manufacturing. Running for Congress. \#TeamSteil                                                                                         |              1604|
+| Lance Gooden              | Husband, father, TX State Rep and Congressman-Elect for TX's 5th Congressional District.                                                                         |               219|
+| Jahana Hayes for Congress | Congresswoman-Elect CT 5th Congressional District                                                                                                                |             17119|
+| Bryan Steil               | Problem Solver. Badger. Manufacturing. Running for Congress. \#TeamSteil                                                                                         |              1607|
 | Joe Morelle               | \#NY25 Democratic candidate. Husband, father, believer in the promise of a future that is as strong, resilient & bold as the people who call Monroe County home. |              1020|
-| John Joyce                | Father, husband, granddad, doctor, advocate, PSU alum. Congressman-elect in \#PA13. Fighting everyday for central Pennsylvania. \#TeamJoyce                      |               559|
+| John Joyce                | Father, husband, granddad, doctor, advocate, PSU alum. Congressman-elect in \#PA13. Fighting everyday for central Pennsylvania. \#TeamJoyce                      |               561|
 | Kelly Armstrong           | Lifelong North Dakotan. Proud husband and dad. Republican candidate for the U.S. House of Representatives.                                                       |                  |
 
-Real Conservative. Real results. 1043
+Real Conservative. Real results. 1042
 
 ------------------------------------------------------------------------
 
@@ -169,6 +169,9 @@ us_house_districts <- tigris::congressional_districts(cb = TRUE) %>% select(GEOI
   left_join(tigris::states(cb = TRUE) %>% 
               data.frame() %>%
               select(STATEFP, STUSPS)) 
+
+laea = sf::st_crs("+proj=laea +lat_0=30 +lon_0=-95") # Lambert equal area
+us_house_districts <- sf::st_transform(us_house_districts, laea)
 ```
 
 ------------------------------------------------------------------------
@@ -286,7 +289,7 @@ Clinton
 01
 </td>
 <td style="text-align:right;">
-MULTIPOLYGON (((-88.05338 3...
+MULTIPOLYGON (((666115.5 76...
 </td>
 </tr>
 <tr>
@@ -315,7 +318,7 @@ Clinton
 01
 </td>
 <td style="text-align:right;">
-MULTIPOLYGON (((-87.4272 31...
+MULTIPOLYGON (((720359 1641...
 </td>
 </tr>
 <tr>
@@ -344,7 +347,7 @@ Clinton
 01
 </td>
 <td style="text-align:right;">
-MULTIPOLYGON (((-86.57753 3...
+MULTIPOLYGON (((779099.9 45...
 </td>
 </tr>
 <tr>
@@ -373,7 +376,7 @@ Clinton
 01
 </td>
 <td style="text-align:right;">
-MULTIPOLYGON (((-88.27414 3...
+MULTIPOLYGON (((624391 4109...
 </td>
 </tr>
 <tr>
@@ -402,7 +405,7 @@ Clinton
 01
 </td>
 <td style="text-align:right;">
-MULTIPOLYGON (((-88.20296 3...
+MULTIPOLYGON (((620395.9 57...
 </td>
 </tr>
 <tr>
@@ -431,7 +434,7 @@ Clinton
 01
 </td>
 <td style="text-align:right;">
-MULTIPOLYGON (((-87.42194 3...
+MULTIPOLYGON (((707509.3 35...
 </td>
 </tr>
 </tbody>
@@ -485,7 +488,7 @@ data <- tidycensus::get_acs(geography = 'congressional district',
   select(GEOID, label, gender, race, estimate:summary_moe)
 ```
 
-White men without college degree. As percentage of total population over 25. ie, as a percentage of the electorate. Also -- map zoomed into some interesting sub0location.
+White men without college degree. As percentage of total population over 25. ie, as a percentage of the electorate. Also -- map zoomed into some interesting sub0location. NEED to re-project.
 
 ``` r
 #Non-continental US
@@ -604,6 +607,8 @@ The Daily Kos has a cache of fun shapefiles.
 
 ``` r
 url <- 'https://drive.google.com/uc?authuser=0&id=1E_P0r1Uv438fZsvKsvidIR02Nb5Ju9zf&export=download/HexCDv12.zip'
+
+url2 <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJVWxYZGtxMGhrMEE&export=download/HexSTv11.zip'
 ```
 
 Download & load shapefile as an `sf` object -- as process.
@@ -625,8 +630,23 @@ get_url_shape <- function (url) {
 Apply function.
 
 ``` r
-dailykos_hex_shape <- get_url_shape(url)
+dailykos_shapes <- lapply (c(url, url2), get_url_shape)
 ```
+
+    ## Warning in CPL_read_ogr(dsn, layer, query, as.character(options), quiet, :
+    ## GDAL Message 1: organizePolygons() received an unexpected geometry. Either
+    ## a polygon with interior rings, or a polygon with less than 4 points, or a
+    ## non-Polygon geometry. Return arguments as a collection.
+
+``` r
+names(dailykos_shapes) <- c('cds', 'states')
+#State hex shapefile is slightly broken.
+dailykos_shapes$states <- lwgeom::st_make_valid(dailykos_shapes$states)
+```
+
+    ## Warning: package 'sf' was built under R version 3.4.4
+
+    ## Linking to GEOS 3.6.1, GDAL 2.2.3, PROJ 4.9.3
 
 ``` r
 dailykos_pres_flips <- dailykos_pres_elections %>%
@@ -640,22 +660,30 @@ dailykos_pres_flips <- dailykos_pres_elections %>%
   select(-percent, -dups) %>%
   spread(year, candidate) %>%
   na.omit()%>%
-  mutate(flips = paste0(`2012`, ' -> ', `2016`))
+  mutate(flips = paste0(`2008`, ' -> ',`2012`, ' -> ', `2016`))
 ```
 
 Need to add state hex shape.
 
 ``` r
-dailykos_hex_shape %>%
+dailykos_shapes$cds %>%
   inner_join(dailykos_pres_flips)%>%
   ggplot() + 
   geom_sf(aes(fill = flips),
-           color = 'white') + 
+           color = 'white', alpha = .85) + 
+    geom_sf(data=dailykos_shapes$states, 
+          fill = NA, 
+          show.legend = F, 
+          color="black", 
+          lwd=0.4) +
+    ggsflabel::geom_sf_text(data = dailykos_shapes$states,
+                                aes(label = STATE), size = 2.5) +
+  ggthemes::scale_fill_colorblind()+
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
-        legend.position = 'bottom')
+        legend.position = 'right')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
