@@ -191,56 +191,16 @@ ocasio_annotated <-
 ocasio_annotated %>%
   corpuslingr::clr_search_context(search = 'HELP',
                                   LW=15, RW = 15)%>%
-  corpuslingr::clr_context_kwic(include= c('created_at')) %>% 
-  formattable::formattable()
+  corpuslingr::clr_context_kwic(include= c('created_at'))%>% 
+  
+  DT::datatable(selection="none",
+                class = 'cell-border stripe', 
+                rownames = FALSE,
+                width="100%", 
+                escape=FALSE)
 ```
 
-<table class="table table-condensed">
-<thead>
-<tr>
-<th style="text-align:right;">
-created\_at
-</th>
-<th style="text-align:right;">
-kwic
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-2018-12-17 22:16:31
-</td>
-<td style="text-align:right;">
-Sunnyside fire recovery efforts , there is a relief event tonight and fund established to <mark> help </mark> the local businesses impacted : <https://t.co/LOtLpgpEAz>
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2018-12-11 22:02:05
-</td>
-<td style="text-align:right;">
-\# GreenNewDeal to national urgency , secured 30 cosponsors on a Select Committee , and <mark> helped </mark> stop a bad tax rule . I d say we re off to a good
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2018-12-11 18:01:08
-</td>
-<td style="text-align:right;">
-The political / financial power structure anointed Ryan because his ideas would <mark> help </mark> the wealthy . The same power structure maligns @ Ocasio2018 because her ideas would help
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2018-12-11 18:01:08
-</td>
-<td style="text-align:right;">
-help the wealthy . The same power structure maligns @ Ocasio2018 because her ideas would <mark> help </mark> the poor & amp ; working clsss and are a threat to the privileged .
-</td>
-</tr>
-</tbody>
-</table>
+![](README_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
 ------------------------------------------------------------------------
 
