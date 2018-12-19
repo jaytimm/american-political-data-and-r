@@ -143,20 +143,20 @@ A nice [set of lists](https://twitter.com/cspan/lists) provided by cspan.
 ``` r
 rtweet::lists_members(slug = 'New-Members-of-Congress', owner_user = 'cspan') %>%
   head() %>%
-  select(name, description, followers_count) %>%
+  select(name, description) %>%
   knitr::kable()
 ```
 
-| name                      | description                                                                                                                                                      |  followers\_count|
-|:--------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------:|
-| Lance Gooden              | Husband, father, TX State Rep and Congressman-Elect for TX's 5th Congressional District.                                                                         |               219|
-| Jahana Hayes for Congress | Congresswoman-Elect CT 5th Congressional District                                                                                                                |             17119|
-| Bryan Steil               | Problem Solver. Badger. Manufacturing. Running for Congress. \#TeamSteil                                                                                         |              1607|
-| Joe Morelle               | \#NY25 Democratic candidate. Husband, father, believer in the promise of a future that is as strong, resilient & bold as the people who call Monroe County home. |              1020|
-| John Joyce                | Father, husband, granddad, doctor, advocate, PSU alum. Congressman-elect in \#PA13. Fighting everyday for central Pennsylvania. \#TeamJoyce                      |               561|
-| Kelly Armstrong           | Lifelong North Dakotan. Proud husband and dad. Republican candidate for the U.S. House of Representatives.                                                       |                  |
+| name                      | description                                                                                                                                                      |
+|:--------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Lance Gooden              | Husband, father, TX State Rep and Congressman-Elect for TX's 5th Congressional District.                                                                         |
+| Jahana Hayes for Congress | Congresswoman-Elect CT 5th Congressional District                                                                                                                |
+| Bryan Steil               | Problem Solver. Badger. Manufacturing. Running for Congress. \#TeamSteil                                                                                         |
+| Joe Morelle               | \#NY25 Democratic candidate. Husband, father, believer in the promise of a future that is as strong, resilient & bold as the people who call Monroe County home. |
+| John Joyce                | Father, husband, granddad, doctor, advocate, PSU alum. Congressman-elect in \#PA13. Fighting everyday for central Pennsylvania. \#TeamJoyce                      |
+| Kelly Armstrong           | Lifelong North Dakotan. Proud husband and dad. Republican candidate for the U.S. House of Representatives.                                                       |
 
-Real Conservative. Real results. 1042
+Real Conservative. Real results.
 
 ------------------------------------------------------------------------
 
@@ -631,22 +631,10 @@ Apply function.
 
 ``` r
 dailykos_shapes <- lapply (c(url, url2), get_url_shape)
-```
-
-    ## Warning in CPL_read_ogr(dsn, layer, query, as.character(options), quiet, :
-    ## GDAL Message 1: organizePolygons() received an unexpected geometry. Either
-    ## a polygon with interior rings, or a polygon with less than 4 points, or a
-    ## non-Polygon geometry. Return arguments as a collection.
-
-``` r
 names(dailykos_shapes) <- c('cds', 'states')
 #State hex shapefile is slightly broken.
 dailykos_shapes$states <- lwgeom::st_make_valid(dailykos_shapes$states)
 ```
-
-    ## Warning: package 'sf' was built under R version 3.4.4
-
-    ## Linking to GEOS 3.6.1, GDAL 2.2.3, PROJ 4.9.3
 
 ``` r
 dailykos_pres_flips <- dailykos_pres_elections %>%
@@ -660,7 +648,7 @@ dailykos_pres_flips <- dailykos_pres_elections %>%
   select(-percent, -dups) %>%
   spread(year, candidate) %>%
   na.omit()%>%
-  mutate(flips = paste0(`2008`, ' -> ',`2012`, ' -> ', `2016`))
+  mutate(flips = paste0(`2008`, '~',`2012`, '~', `2016`))
 ```
 
 Need to add state hex shape.
@@ -683,7 +671,7 @@ dailykos_shapes$cds %>%
         axis.text.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
-        legend.position = 'right')
+        legend.position = 'bottom')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
