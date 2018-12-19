@@ -70,7 +70,7 @@ rvoteview_house_50 %>%
       theme(legend.position = "none", 
             plot.title = element_text(size=14)) + 
       ylab("")+
-      labs(title = "Political ideologies in the US Senates 90 to 115")
+      labs(title = "Political ideologies in US Houses 90 to 115")
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
@@ -229,219 +229,7 @@ dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]',
   left_join(us_house_districts)
 ```
 
-``` r
-dailykos_pres_elections %>% head() %>% formattable::formattable()
-```
-
-<table class="table table-condensed">
-<thead>
-<tr>
-<th style="text-align:right;">
-District
-</th>
-<th style="text-align:right;">
-STUSPS
-</th>
-<th style="text-align:right;">
-CD115FP
-</th>
-<th style="text-align:right;">
-year
-</th>
-<th style="text-align:right;">
-candidate
-</th>
-<th style="text-align:right;">
-percent
-</th>
-<th style="text-align:right;">
-GEOID
-</th>
-<th style="text-align:right;">
-STATEFP
-</th>
-<th style="text-align:right;">
-geometry
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-Alabama 1st
-</td>
-<td style="text-align:right;">
-AL
-</td>
-<td style="text-align:right;">
-01
-</td>
-<td style="text-align:right;">
-2016
-</td>
-<td style="text-align:right;">
-Clinton
-</td>
-<td style="text-align:right;">
-34.1
-</td>
-<td style="text-align:right;">
-0101
-</td>
-<td style="text-align:right;">
-01
-</td>
-<td style="text-align:right;">
-MULTIPOLYGON (((666115.5 76...
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-Alabama 2nd
-</td>
-<td style="text-align:right;">
-AL
-</td>
-<td style="text-align:right;">
-02
-</td>
-<td style="text-align:right;">
-2016
-</td>
-<td style="text-align:right;">
-Clinton
-</td>
-<td style="text-align:right;">
-33.0
-</td>
-<td style="text-align:right;">
-0102
-</td>
-<td style="text-align:right;">
-01
-</td>
-<td style="text-align:right;">
-MULTIPOLYGON (((720359 1641...
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-Alabama 3rd
-</td>
-<td style="text-align:right;">
-AL
-</td>
-<td style="text-align:right;">
-03
-</td>
-<td style="text-align:right;">
-2016
-</td>
-<td style="text-align:right;">
-Clinton
-</td>
-<td style="text-align:right;">
-32.3
-</td>
-<td style="text-align:right;">
-0103
-</td>
-<td style="text-align:right;">
-01
-</td>
-<td style="text-align:right;">
-MULTIPOLYGON (((779099.9 45...
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-Alabama 4th
-</td>
-<td style="text-align:right;">
-AL
-</td>
-<td style="text-align:right;">
-04
-</td>
-<td style="text-align:right;">
-2016
-</td>
-<td style="text-align:right;">
-Clinton
-</td>
-<td style="text-align:right;">
-17.4
-</td>
-<td style="text-align:right;">
-0104
-</td>
-<td style="text-align:right;">
-01
-</td>
-<td style="text-align:right;">
-MULTIPOLYGON (((624391 4109...
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-Alabama 5th
-</td>
-<td style="text-align:right;">
-AL
-</td>
-<td style="text-align:right;">
-05
-</td>
-<td style="text-align:right;">
-2016
-</td>
-<td style="text-align:right;">
-Clinton
-</td>
-<td style="text-align:right;">
-31.3
-</td>
-<td style="text-align:right;">
-0105
-</td>
-<td style="text-align:right;">
-01
-</td>
-<td style="text-align:right;">
-MULTIPOLYGON (((620395.9 57...
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-Alabama 6th
-</td>
-<td style="text-align:right;">
-AL
-</td>
-<td style="text-align:right;">
-06
-</td>
-<td style="text-align:right;">
-2016
-</td>
-<td style="text-align:right;">
-Clinton
-</td>
-<td style="text-align:right;">
-26.1
-</td>
-<td style="text-align:right;">
-0106
-</td>
-<td style="text-align:right;">
-01
-</td>
-<td style="text-align:right;">
-MULTIPOLYGON (((707509.3 35...
-</td>
-</tr>
-</tbody>
-</table>
+    ## Joining, by = c("STUSPS", "CD115FP")
 
 ------------------------------------------------------------------------
 
@@ -478,7 +266,9 @@ search_vars <- var_list[grepl('C1500', var_list$name),]
 
 data <- tidycensus::get_acs(geography = 'congressional district',
                             variables = search_vars$name,
-                            summary_var = 'B15002_001') %>%
+                            summary_var = 'B15002_001',
+                            year = 2017,
+                            survey = 'acs5') %>%
   left_join(search_vars %>% rename(variable = name)) %>%
   filter(!grepl('Total$|Female$|Male$', label)) %>%
   
@@ -514,10 +304,11 @@ us_house_districts %>%
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
         legend.position = 'bottom') +
-  labs(title = "% no degree White males by congressional district")
+  labs(title = "% no degree White males by congressional district",
+       caption = 'Source: ACS Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 Create plots of some cherry-picked district cross-sections (per Daily Kos).
 
@@ -525,15 +316,16 @@ Definitions: WHITE ALONE means/equals all the whites, hispanic or otherwise. OR,
 
 ``` r
 tree <- data %>%
+  left_join(data.frame(us_house_districts) %>% select(GEOID, STUSPS, CD115FP)) %>%
   mutate (race = gsub(', | ', '_', race)) %>%
   select(-moe:-summary_moe) %>%
   spread(race, estimate) %>%
   mutate(WHITE_ALONE_HISPANIC = WHITE_ALONE - WHITE_ALONE_NOT_HISPANIC_OR_LATINO) %>%
-  gather(key = race, value = estimate, AMERICAN_INDIAN_OR_ALASKAN_NATIVE_ALONE:WHITE_ALONE_HISPANIC) %>%
+  gather(key =race, value = estimate, AMERICAN_INDIAN_OR_ALASKAN_NATIVE_ALONE:WHITE_ALONE_HISPANIC) %>%
   filter(race != 'HISPANIC OR LATINO') %>%
   mutate(race_cat = ifelse(race == 'WHITE_ALONE_NOT_HISPANIC_OR_LATINO', 'White', 'Non-White'),
     ed_cat = ifelse(label == 'Bachelor\'s degree or higher', 'College', 'Non-College'))%>%
-  group_by(GEOID, race_cat, ed_cat) %>%
+  group_by(GEOID, STUSPS, CD115FP, race_cat, ed_cat) %>%
   summarize(estimate = sum(estimate)) %>%
   group_by(GEOID) %>%
   mutate(per = estimate/sum(estimate)) %>%
@@ -562,34 +354,45 @@ tree %>%
                         size = 9.5)+
       ggthemes::scale_fill_economist()+ 
       #ggthemes::theme_fivethirtyeight()+
-      facet_wrap(~GEOID) +
+      facet_wrap(~paste0(STUSPS, '-', CD115FP)) +
       theme(legend.position = "bottom",
             #plot.title = element_text(size=12),
             legend.title=element_blank()) + 
-      labs(title = "Educational attainment by race for population over 25")
+      labs(title = "Educational attainment by race for population over 25",
+           subtitle = 'American Community Survey, 5-Year estimates, 2013-17',
+           caption = 'Source: ACS Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-21-1.png)
-
-``` r
-#Add Year + Source.  
-```
+![](README_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 Trump ed/race dems by binned degrees of support.
 
 ``` r
-dailykos_pres_elections %>%
+ed_45 <- dailykos_pres_elections %>%
   filter(candidate == 'Trump') %>%
   mutate(cut = cut_number(percent, n =10),
-         rank_cut = dense_rank(cut)) %>%
+         rank_cut = dense_rank(cut)) 
+```
 
+A summary of congressional districts:
+
+``` r
+table(ed_45$cut)
+```
+
+    ## 
+    ##  [4.9,21.4] (21.4,30.5] (30.5,36.6] (36.6,43.1] (43.1,48.7] (48.7,53.1] 
+    ##          44          46          42          42          45          42 
+    ## (53.1,56.2] (56.2,60.9] (60.9,65.6] (65.6,80.4] 
+    ##          44          44          42          44
+
+``` r
+ed_45 %>%
   left_join(tree) %>%
-  mutate(type = paste0(race_cat, ' ', ed_cat))%>%
+  mutate(type = paste0(race_cat, ' ', ed_cat)) %>%
   select(type, rank_cut, estimate) %>%
   group_by(type, rank_cut) %>%
-  
   summarize(estimate = sum(estimate)) %>%
-  
   group_by(rank_cut)%>%
   mutate(new_per = estimate/sum(estimate)) %>%
   
@@ -600,7 +403,7 @@ dailykos_pres_elections %>%
   labs(title = "Composition of corpus (in tokens) over time")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-22-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
 ------------------------------------------------------------------------
 
@@ -648,7 +451,6 @@ dailykos_pres_flips <- dailykos_pres_elections %>%
   group_by(District, year) %>%
   filter(percent == max(percent))%>%
   mutate(dups = n()) %>%
-  arrange(year, District) %>%
   filter(dups != 2) %>% #Kill ties --> n = 3
   select(-percent, -dups) %>%
   spread(year, candidate) %>%
@@ -679,7 +481,7 @@ dailykos_shapes$cds %>%
         legend.position = 'bottom')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-28-1.png)
 
 #### Tile map of US states
 
@@ -712,7 +514,7 @@ dailykos_tile$outer %>%
         legend.position = 'bottom')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
 ------------------------------------------------------------------------
 
