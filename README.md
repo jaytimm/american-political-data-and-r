@@ -62,12 +62,11 @@ rvoteview_house_50 %>%
 rvoteview_house_50 %>%
   filter(congress > 89) %>%
     ggplot(aes(x=nominate.dim1, y=as.factor(congress), fill = congress)) +
-      ggridges::geom_density_ridges(rel_min_height = 0.01) +
+    ggridges::geom_density_ridges(rel_min_height = 0.01) +
     geom_vline(xintercept = 0, color = 'black', linetype = 2) +
-      theme(legend.position = "none", 
-            plot.title = element_text(size=14)) + 
-      ylab("")+
-      labs(title = "Political ideologies in US Houses 90 to 115")
+    theme(legend.position = "none") + 
+    ylab("")+
+    labs(title = "Political ideologies in US Houses 90 to 115")
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
@@ -379,12 +378,11 @@ tree %>%
       treemapify::geom_treemap_text(colour = "white", 
                         place = "topleft", 
                         reflow = T,
-                        size = 9.5)+
-      ggthemes::scale_fill_economist()+ 
-      #ggthemes::theme_fivethirtyeight()+
+                        size = 9)+
+      #ggthemes::scale_fill_stata()+ 
+      scale_fill_brewer(palette = 'Paired') +
       facet_wrap(~paste0(STUSPS, '-', CD115FP)) +
       theme(legend.position = "bottom",
-            #plot.title = element_text(size=12),
             legend.title=element_blank()) + 
       labs(title = "Educational attainment by race for population over 25",
            caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
@@ -428,7 +426,8 @@ ed_45 %>%
   
 ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
   geom_area(alpha = 0.75, color = 'gray') +
-  ggthemes::scale_fill_economist()+
+  #ggthemes::scale_fill_economist()+
+  scale_fill_brewer(palette = 'Paired') +
   scale_x_continuous(breaks = 1:10, labels = 1:10) + 
   theme(legend.position = "bottom")+
   labs(title = "Educational attainment profiles by level of support for 45",
