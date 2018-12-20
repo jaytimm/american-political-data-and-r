@@ -1,19 +1,20 @@
-Federal election data & R: some resources
------------------------------------------
+Federal election data & R: some resources & methods
+---------------------------------------------------
 
-A collection of political data resources.
+A collection of political data resources. Many of the data collated here should be more easily & publicly accessible. It is not clear why they are not.
 
-Many of the data collated here should be more easily & publicly accessible. It is not clear why they are not. In this age of alleged dat transparency, sources like 538 & CNN (especially the former) present ...
+Lots of help from the folks at ....
 
 -   [1 Political Ideologies](#1-political-ideologies)
 -   [2 Lawmaker biographies](#2-Lawmaker-biographies)
-    -   [CivilServiceUSA](#CivilServiceUSA)
--   [3 Twitter](#Twitter)
+-   [3 Twitter](#3-Twitter)
 -   [4 Political geometries](#4-political-geometries)
 -   [5 Federal election results](#5-Federal-election-results)
 -   [6 Census data and congressional districts](#6-Census-data-and-congressional-districts)
 -   [7 Funky geometries](#7-Funky-geometries)
 -   [8 A work in progress](#8-A-work-in-progress)
+
+Some additional text.
 
 ``` r
 library(tidyverse)
@@ -134,6 +135,8 @@ house_dets %>%
   #ggthemes::theme_fivethirtyeight()
 ```
 
+And perhaps a look at religion for good measure.
+
 ------------------------------------------------------------------------
 
 ### 3 Twitter
@@ -144,21 +147,82 @@ A nice [set of lists](https://twitter.com/cspan/lists) provided by C-SPAN.
 rtweet::lists_members(slug = 'New-Members-of-Congress', owner_user = 'cspan') %>%
   head() %>%
   select(name, description) %>%
-  knitr::kable()
+  formattable::formattable(align = c('l','l'))
 ```
 
-| name                      | description                                                                                                                                                      |
-|:--------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Lance Gooden              | Husband, father, TX State Rep and Congressman-Elect for TX's 5th Congressional District.                                                                         |
-| Jahana Hayes for Congress | Congresswoman-Elect CT 5th Congressional District                                                                                                                |
-| Bryan Steil               | Problem Solver. Badger. Manufacturing. Running for Congress. \#TeamSteil                                                                                         |
-| Joe Morelle               | \#NY25 Democratic candidate. Husband, father, believer in the promise of a future that is as strong, resilient & bold as the people who call Monroe County home. |
-| John Joyce                | Father, husband, granddad, doctor, advocate, PSU alum. Congressman-elect in \#PA13. Fighting everyday for central Pennsylvania. \#TeamJoyce                      |
-| Kelly Armstrong           | Lifelong North Dakotan. Proud husband and dad. Republican candidate for the U.S. House of Representatives.                                                       |
+<table class="table table-condensed">
+<thead>
+<tr>
+<th style="text-align:left;">
+name
+</th>
+<th style="text-align:left;">
+description
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Lance Gooden
+</td>
+<td style="text-align:left;">
+Husband, father, TX State Rep and Congressman-Elect for TX's 5th Congressional District.
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Jahana Hayes for Congress
+</td>
+<td style="text-align:left;">
+Congresswoman-Elect CT 5th Congressional District
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Bryan Steil
+</td>
+<td style="text-align:left;">
+Problem Solver. Badger. Manufacturing. Running for Congress. \#TeamSteil
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Joe Morelle
+</td>
+<td style="text-align:left;">
+\#NY25 Democratic candidate. Husband, father, believer in the promise of a future that is as strong, resilient & bold as the people who call Monroe County home.
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+John Joyce
+</td>
+<td style="text-align:left;">
+Father, husband, granddad, doctor, advocate, PSU alum. Congressman-elect in \#PA13. Fighting everyday for central Pennsylvania. \#TeamJoyce
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Kelly Armstrong
+</td>
+<td style="text-align:left;">
+Lifelong North Dakotan. Proud husband and dad. Republican candidate for the U.S. House of Representatives.
 
 Real Conservative. Real results.
-
+</td>
+</tr>
+</tbody>
+</table>
 Gather some tweets.
+
+``` r
+ocasio_tweets <- rtweet::get_timeline('Ocasio2018', n = 500) %>%
+  rename(doc_id=status_id) %>%
+  filter(is_retweet == 'FALSE' & is_quote == 'FALSE')
+```
+
+For good measure, we annotate our tweet corpus to facilitate search for lexical and grammatical patterns. I have become a fan of using `udpipe` via `clanNLP` for annotation pruposes. Below we initiate the udpipe annotator.
 
 ``` r
 library(cleanNLP)
@@ -168,10 +232,7 @@ cleanNLP::cnlp_init_udpipe(model_name="english",
                            parser = "none")
 ```
 
-``` r
-ocasio_tweets <- rtweet::get_timeline('Ocasio2018', n = 100) %>%
-  rename(doc_id=status_id)
-```
+Next we annotate our corpus, and ready the corpus for search within the `corpuslingr` paradigm.
 
 ``` r
 ocasio_annotated <-
@@ -187,17 +248,28 @@ ocasio_annotated <-
                               meta = ocasio_tweets[, c('doc_id', 'created_at')])
 ```
 
+    ## Warning in `[.data.table`(x, , `:=`(tupBeg, append(1, tup_bounds + 1))):
+    ## Supplied 2 items to be assigned to 1 items of column 'tupBeg' (1 unused)
+
+    ## Warning in `[.data.table`(x, , `:=`(tupEnd, append(tup_bounds, nchar(text)
+    ## + : Supplied 2 items to be assigned to 1 items of column 'tupEnd' (1
+    ## unused)
+
+Then we do some searching.
+
 ``` r
-ocasio_annotated %>%
+search_results <- ocasio_annotated %>%
   corpuslingr::clr_search_context(search = 'HELP',
-                                  LW=15, RW = 15)%>%
-  corpuslingr::clr_context_kwic(include= c('created_at'))%>% 
+                                  LW=25, RW = 25)%>%
+  corpuslingr::clr_context_kwic(include= c('created_at'))
   
-  DT::datatable(options = list(pageLength = 5, dom = 't'),
-                class = 'cell-border stripe', 
-                rownames = FALSE,
-                width="100%", 
-                escape=FALSE)
+DT::datatable(search_results, 
+              options = list(pageLength = nrow(search_results), 
+                             dom = 't'),
+              class = 'cell-border stripe', 
+              rownames = FALSE,
+              width="100%", 
+              escape=FALSE)
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-14-1.png)
@@ -262,6 +334,8 @@ dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]',
   mutate(CD115FP = ifelse(CD115FP == 'AL', '00', CD115FP)) %>%
   left_join(us_house_districts)
 ```
+
+Need to do something here. Perhaps a bit of a map.
 
 ------------------------------------------------------------------------
 
@@ -440,7 +514,7 @@ ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
   theme(legend.position = "bottom")+
   labs(title = "Average educational attainment by level of support for 45",
        subtitle = '2016 Presidential Election')+
-  xlab(NULL)+ylab(NULL)
+  xlab('Level of support for 45')+ylab(NULL)
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-28-1.png)
@@ -500,7 +574,7 @@ dailykos_pres_flips <- dailykos_pres_elections %>%
   mutate(flips = paste0(`2008`, '~',`2012`, '~', `2016`))
 ```
 
-Need to add state hex shape.
+Need to add state hex shape. Note that this has been reproduced.
 
 ``` r
 dailykos_shapes$cds %>%
@@ -512,7 +586,7 @@ dailykos_shapes$cds %>%
           fill = NA, 
           show.legend = F, 
           color="black", 
-          lwd=0.4) +
+          lwd=.75) +
     ggsflabel::geom_sf_text(data = dailykos_shapes$states,
                                 aes(label = STATE), size = 2.5) +
   ggthemes::scale_fill_colorblind()+
