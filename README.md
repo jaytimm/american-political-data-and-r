@@ -11,8 +11,7 @@ Lots of help from the folks at ....
 -   [4 Federal election results](#5-Federal-election-results)
 -   [5 Census data and congressional districts](#6-Census-data-and-congressional-districts)
 -   [6 Funky geometries](#7-Funky-geometries)
--   [7 Twitter](#3-Twitter)
--   [8 A work in progress](#8-A-work-in-progress)
+-   [7 A work in progress](#8-A-work-in-progress)
 
 Some additional text.
 
@@ -129,6 +128,34 @@ house_dets %>%
   #ggthemes::theme_fivethirtyeight()
 ```
 
+Per Pew Research, which has seemingly taken a leadership role in delineating generations, ... the beauty of generation naming is that it is truly a crowd-sourced effort.
+
+Generations in congress~
+
+Millenials 1981-1997 Generation X 1965 -1980 Baby Boomers 1946-1964 Silent 1928-1945 Greatest &lt; 1928
+
+Generation Jones 1955-1964
+
+``` r
+house_dets %>%
+  mutate (yob = as.numeric(gsub('-.*$', '', date_of_birth))) %>%
+  mutate (gen = case_when (yob < 1998 & yob > 1980 ~ '4- Millenial',
+                           yob < 1981 & yob > 1964 ~ '3- Gen X',
+                           yob < 1965 & yob > 1954 ~ '2b - Gen Jones',
+                           yob < 1955 & yob > 1945 ~ '2a - Boomer-proper',
+                           yob < 1946 & yob > 1927 ~ '1 - Silent')) %>%
+  group_by(gen) %>%
+  summarize(n=n()) %>%
+  ggplot(aes(x=gen, 
+             y=n, 
+             fill=gen)) + 
+  geom_col(show.legend = FALSE)+
+  ggthemes::scale_fill_stata() +
+  coord_flip()
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
+
 And perhaps a look at religion for good measure.
 
 ``` r
@@ -156,7 +183,7 @@ house_dets %>%
       labs(title = 'Religions in the 115th US House')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 ------------------------------------------------------------------------
 
@@ -244,7 +271,7 @@ us_house_districts %>%
        caption = 'Source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-15-1.png)
 
 Using the area of congressional districts (in log square meters) as a proxy for degree of urbanity. ... Plot Trump support as function of CD area.
 
@@ -259,7 +286,7 @@ us_house_districts %>%
   labs(title = "2016 Trump support vs. log(area) of congressional district")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-15-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
 ------------------------------------------------------------------------
 
@@ -289,10 +316,7 @@ race_table <- as.data.frame(cbind(code,race),
 C15002: SEX BY EDUCATIONAL ATTAINMENT FOR THE POPULATION 25 YEARS AND OVER
 
 ``` r
-#Educational attainment by gender
 search_vars <- var_list[grepl('C1500', var_list$name),]
-
-#ID Table name. For good measure.
 
 data <- tidycensus::get_acs(geography = 'congressional district',
                             variables = search_vars$name,
@@ -335,7 +359,7 @@ us_house_districts %>%
        caption = 'Source: ACS Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 Create plots of some cherry-picked district cross-sections (per Daily Kos).
 
@@ -375,7 +399,7 @@ tree %>%
       treemapify::geom_treemap(alpha=.85)+
       treemapify::geom_treemap_subgroup_border() +
 
-      treemapify::geom_treemap_text(colour = "white", 
+      treemapify::geom_treemap_text(colour = "black", 
                         place = "topleft", 
                         reflow = T,
                         size = 9)+
@@ -388,7 +412,7 @@ tree %>%
            caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-22-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
 Trump ed/race dems by binned degrees of support.
 
@@ -435,9 +459,7 @@ ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
   xlab('Level of support for 45')+ylab(NULL)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
-
-Compare to Hilary.
+![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
 ------------------------------------------------------------------------
 
@@ -502,7 +524,7 @@ dailykos_shapes$cds %>%
           fill = NA, 
           show.legend = F, 
           color="black", 
-          lwd=.6) +
+          lwd=.65) +
     ggsflabel::geom_sf_text(data = dailykos_shapes$states,
                                 aes(label = STATE), size = 2.5) +
   scale_fill_brewer(palette = 'Set1')+
@@ -515,7 +537,7 @@ dailykos_shapes$cds %>%
        caption = 'Source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-30-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
 #### Tile map of US states
 
@@ -548,140 +570,8 @@ dailykos_tile$outer %>%
         legend.position = 'bottom')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
 ------------------------------------------------------------------------
 
-### 7 Twitter
-
-A nice [set of lists](https://twitter.com/cspan/lists) provided by C-SPAN.
-
-``` r
-rtweet::lists_members(slug = 'New-Members-of-Congress', owner_user = 'cspan') %>%
-  head() %>%
-  select(name, description) %>%
-  formattable::formattable(align = c('l','l'))
-```
-
-<table class="table table-condensed">
-<thead>
-<tr>
-<th style="text-align:left;">
-name
-</th>
-<th style="text-align:left;">
-description
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-Lance Gooden
-</td>
-<td style="text-align:left;">
-Husband, father, TX State Rep and Congressman-Elect for TX's 5th Congressional District.
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Jahana Hayes for Congress
-</td>
-<td style="text-align:left;">
-Congresswoman-Elect CT 5th Congressional District
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Bryan Steil
-</td>
-<td style="text-align:left;">
-Problem Solver. Badger. Manufacturing. Running for Congress. \#TeamSteil
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Joe Morelle
-</td>
-<td style="text-align:left;">
-\#NY25 Democratic candidate. Husband, father, believer in the promise of a future that is as strong, resilient & bold as the people who call Monroe County home.
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-John Joyce
-</td>
-<td style="text-align:left;">
-Father, husband, granddad, doctor, advocate, PSU alum. Congressman-elect in \#PA13. Fighting everyday for central Pennsylvania. \#TeamJoyce
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Kelly Armstrong
-</td>
-<td style="text-align:left;">
-Lifelong North Dakotan. Proud husband and dad. Republican candidate for the U.S. House of Representatives.
-
-Real Conservative. Real results.
-</td>
-</tr>
-</tbody>
-</table>
-#### Gather some tweets.
-
-``` r
-ocasio_tweets <- rtweet::get_timeline('Ocasio2018', n = 500) %>%
-  rename(doc_id=status_id) %>%
-  filter(is_retweet == 'FALSE' & is_quote == 'FALSE')
-```
-
-#### Tweets as a corpus
-
-For good measure, we annotate our tweet corpus to facilitate search for lexical and grammatical patterns. I have become a fan of using `udpipe` via `clanNLP` for annotation pruposes. Below we initiate the udpipe annotator.
-
-``` r
-library(cleanNLP)
-library(corpuslingr)
-cleanNLP::cnlp_init_udpipe(model_name="english",
-                           feature_flag = FALSE,
-                           parser = "none")
-```
-
-Next we annotate our corpus, and ready the corpus for search within the `corpuslingr` paradigm.
-
-``` r
-ocasio_annotated <-
-  cleanNLP::cnlp_annotate(ocasio_tweets$text,
-                          as_strings = TRUE,
-                          doc_ids = ocasio_tweets$doc_id)$token %>%
-  corpuslingr::clr_set_corpus(doc_var='id',
-                              token_var='word',
-                              lemma_var='lemma',
-                              tag_var='pos',
-                              pos_var='upos',
-                              sentence_var='sid',
-                              meta = ocasio_tweets[, c('doc_id', 'created_at')])
-```
-
-Then we do some searching.
-
-``` r
-search_results <- ocasio_annotated %>%
-  corpuslingr::clr_search_context(search = 'HELP',
-                                  LW=25, RW = 25)%>%
-  corpuslingr::clr_context_kwic(include= c('created_at'))
-  
-DT::datatable(search_results, 
-              options = list(pageLength = nrow(search_results), 
-                             dom = 't'),
-              class = 'cell-border stripe', 
-              rownames = FALSE,
-              width="100%", 
-              escape=FALSE)
-```
-
-![](README_files/figure-markdown_github/unnamed-chunk-38-1.png)
-
-------------------------------------------------------------------------
-
-### 8 A work in progress
+### 7 A work in progress
