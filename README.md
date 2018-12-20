@@ -133,8 +133,8 @@ house_dets %>%
 And perhaps a look at religion for good measure.
 
 ``` r
-cols <- RColorBrewer::brewer.pal(8, 'Set1')
-cols = colorRampPalette(cols)(31)
+cols <- RColorBrewer::brewer.pal(4, 'Set1')
+cols <- colorRampPalette(cols)(31)
 
 house_dets %>%
   group_by(religion) %>%
@@ -268,8 +268,6 @@ us_house_districts %>%
 
 Race, education & census data (for good measure):
 
-    ## To install your API key for use in future sessions, run this function with `install = TRUE`.
-
 Census race/ethnicity per US Census classifications.
 
 ``` r
@@ -317,7 +315,6 @@ data <- tidycensus::get_acs(geography = 'congressional district',
 White men without college degree. As percentage of total population over 25. ie, as a percentage of the electorate. Also -- map zoomed into some interesting sub0location. NEED to re-project.
 
 ``` r
-#Non-continental US
 us_house_districts %>% 
   filter(!gsub('..$' ,'', GEOID) %in% nonx) %>%
   left_join(data %>% 
@@ -328,7 +325,7 @@ us_house_districts %>%
   ggplot() + 
   geom_sf(aes(fill = per)) + #, color = 'darkgray'
   
-  scale_fill_distiller(palette='PRGn')+
+  scale_fill_distiller(palette = "RdGy",direction=-1)+
   
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
@@ -390,8 +387,7 @@ tree %>%
             #plot.title = element_text(size=12),
             legend.title=element_blank()) + 
       labs(title = "Educational attainment by race for population over 25",
-           subtitle = 'American Community Survey, 5-Year estimates, 2013-17',
-           caption = 'Source: ACS Table C15002')
+           caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-22-1.png)
@@ -506,16 +502,18 @@ dailykos_shapes$cds %>%
     geom_sf(data=dailykos_shapes$states, 
           fill = NA, 
           show.legend = F, 
-          color="darkgray", 
-          lwd=.75) +
+          color="black", 
+          lwd=.6) +
     ggsflabel::geom_sf_text(data = dailykos_shapes$states,
                                 aes(label = STATE), size = 2.5) +
-  ggthemes::scale_fill_colorblind()+
+  scale_fill_brewer(palette = 'Set1')+
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
-        legend.position = 'bottom')
+        legend.position = 'right') +
+  labs(title = "Presidential election results - 2008, 2012 & 2016",
+       caption = 'Source: Daily Kos')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-30-1.png)
