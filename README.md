@@ -115,13 +115,12 @@ house_dets <- jsonlite::fromJSON(url('https://raw.githubusercontent.com/CivilSer
 So, a quick demo.
 
 ``` r
-library(lubridate)
 house_dets %>%
   mutate (years = 
             lubridate::year(as.Date(Sys.Date())) -
             lubridate::year(as.Date(date_of_birth))) %>%
   ggplot (aes(years)) +
-  geom_histogram(bins=20, fill = 'cornflowerblue') +
+  geom_histogram(bins=20, fill = 'steelblue') +
   labs(title = 'Age distributions in the 115th US House')
 ```
 
@@ -132,6 +131,33 @@ house_dets %>%
 ```
 
 And perhaps a look at religion for good measure.
+
+``` r
+cols <- RColorBrewer::brewer.pal(4, 'Set1')
+cols = colorRampPalette(cols)(31)
+
+house_dets %>%
+  group_by(religion) %>%
+  summarize(n = n()) %>%
+  na.omit() %>%
+    ggplot(aes(area = n,
+               fill = religion,
+               label = religion,
+               subgroup = religion)) +
+      treemapify::geom_treemap(alpha=.85) +
+      treemapify::geom_treemap_subgroup_border() +
+      treemapify::geom_treemap_text(colour = "white", 
+                        place = "topleft", 
+                        reflow = T,
+                        size = 11)+
+      scale_fill_manual(values = cols) +
+      theme(legend.position = "none",
+            #plot.title = element_text(size=12),
+            legend.title=element_blank()) +
+      labs(title = 'Religions in the 115th US House')
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 ------------------------------------------------------------------------
 
@@ -219,9 +245,9 @@ us_house_districts %>%
        caption = 'Source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
-Plot Trump support as function of CD area.
+Using the area of congressional districts (in log square meters) as a proxy for degree of urbanity. ... Plot Trump support as function of CD area.
 
 ``` r
 us_house_districts %>%
@@ -234,7 +260,7 @@ us_house_districts %>%
   labs(title = "2016 Trump support vs. log(area) of congressional district")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-15-1.png)
 
 ------------------------------------------------------------------------
 
@@ -313,7 +339,7 @@ us_house_districts %>%
        caption = 'Source: ACS Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 Create plots of some cherry-picked district cross-sections (per Daily Kos).
 
@@ -368,7 +394,7 @@ tree %>%
            caption = 'Source: ACS Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
 Trump ed/race dems by binned degrees of support.
 
@@ -409,12 +435,12 @@ ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
   ggthemes::scale_fill_economist()+
   scale_x_continuous(breaks = 1:10, labels = 1:10) + 
   theme(legend.position = "bottom")+
-  labs(title = "Average educational attainment by level of support for 45",
+  labs(title = "Educational attainment profiles by level of support for 45",
        subtitle = '2016 Presidential Election')+
   xlab('Level of support for 45')+ylab(NULL)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-24-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
 Compare to Hilary.
 
@@ -480,7 +506,7 @@ dailykos_shapes$cds %>%
     geom_sf(data=dailykos_shapes$states, 
           fill = NA, 
           show.legend = F, 
-          color="black", 
+          color="darkgray", 
           lwd=.75) +
     ggsflabel::geom_sf_text(data = dailykos_shapes$states,
                                 aes(label = STATE), size = 2.5) +
@@ -492,7 +518,7 @@ dailykos_shapes$cds %>%
         legend.position = 'bottom')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
 #### Tile map of US states
 
@@ -525,7 +551,7 @@ dailykos_tile$outer %>%
         legend.position = 'bottom')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-31-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 ------------------------------------------------------------------------
 
@@ -657,7 +683,7 @@ DT::datatable(search_results,
               escape=FALSE)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-38-1.png)
 
 ------------------------------------------------------------------------
 
