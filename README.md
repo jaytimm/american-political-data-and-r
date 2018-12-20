@@ -49,8 +49,8 @@ rvoteview_house_50 %>%
   summarize(n = n()) %>%
   mutate(n = n/sum(n)) %>%
   ggplot(aes(x=congress, y=n, fill = party_name)) +
-  geom_area(alpha = 0.65, color = 'gray') +
-  ggthemes::scale_fill_fivethirtyeight()+
+  geom_area(alpha = 0.75, color = 'gray') +
+  ggthemes::scale_fill_stata()+
   geom_hline(yintercept = 0.5, color = 'white', linetype = 2) +
   theme(legend.position = "bottom")+
   labs(title = "House Composition over the last 50 congresses")
@@ -133,7 +133,7 @@ house_dets %>%
 And perhaps a look at religion for good measure.
 
 ``` r
-cols <- RColorBrewer::brewer.pal(4, 'Set1')
+cols <- RColorBrewer::brewer.pal(8, 'Set1')
 cols = colorRampPalette(cols)(31)
 
 house_dets %>%
