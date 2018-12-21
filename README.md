@@ -21,96 +21,18 @@ library(tidyverse)
 
 ------------------------------------------------------------------------
 
-### 1 Political ideologies and congressional composition
+### 1 Lawmaker biographies
 
-***So what do you want to do this weekend?***
-
-> We shall see then wont we & back up off me then.
-
-Senate/House details by congress. Perhaps add 'divergent' visual over time.
-
-``` r
-#sen115 <- Rvoteview:: member_search(chamber= 'Senate', congress = 115)
-
-rvoteview_house_50 <- lapply(c(66:115), function (x)
-                    Rvoteview::member_search (
-                      chamber = 'House', 
-                      congress = x)) %>% 
-  bind_rows()
-```
-
-A bit of a viz. Note that these percentages are not erfect, as non-major political parties are not included (which comprise a very small overall peracentage).
-
-``` r
-rvoteview_house_50 %>%
-  filter(party_name %in% c('Democratic Party', 'Republican Party')) %>%
-  group_by(congress, party_name) %>%
-  summarize(n = n()) %>%
-  mutate(n = n/sum(n)) %>%
-  ggplot(aes(x=congress, y=n, fill = party_name)) +
-  geom_area(alpha = 0.85, color = 'gray') +
-  ggthemes::scale_fill_stata()+
-  geom_hline(yintercept = 0.5, color = 'white', linetype = 2) +
-  theme(legend.position = "bottom")+
-  labs(title = "House Composition over the last 50 congresses")
-```
-
-![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
-
-``` r
-rvoteview_house_50 %>%
-  filter(congress > 89) %>%
-    ggplot(aes(x=nominate.dim1, y=as.factor(congress), fill = congress)) +
-    ggridges::geom_density_ridges(rel_min_height = 0.01) +
-    geom_vline(xintercept = 0, color = 'black', linetype = 2) +
-    theme(legend.position = "none") + 
-    ylab("")+
-    labs(title = "Political ideologies in US Houses 90 to 115")
-```
-
-![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
-
-An alternative approach. --- Voteview data with NOKKEN & POOLE scores.
-
-(that change per congress). Scores via `Rvoteview` only DW\_Nominate, which reflect an aggregate score based on lawmaker's entire voting history (eben if they switch houses, which is weird).
-
-Perhaps add some visualizations. A la divisiveness.
-
-``` r
-sen115 <- read.csv(url("https://voteview.com/static/data/out/members/HSall_members.csv"),
-  stringsAsFactors = FALSE) %>%
-  mutate(bioname = gsub(',.*$', '', bioname)) %>%
-  filter(chamber == 'Senate' & congress == 115)
-```
-
-------------------------------------------------------------------------
-
-### 2 Lawmaker biographies
-
-Mention the `bioguide` which helps cross.
-
-CivilServiceUSA
+[CivilServiceUSA](https://github.com/CivilServiceUSA) provides a lovely collection ... A full description of information available for each congressional member is available [her](https://github.com/CivilServiceUSA/us-house#data-set).
 
 ``` r
 library(jsonlite)
-sen_url <- 'https://raw.githubusercontent.com/CivilServiceUSA/us-senate/master/us-senate/data/us-senate.json'
+senate_dets <- jsonlite::fromJSON(url('https://raw.githubusercontent.com/CivilServiceUSA/us-senate/master/us-senate/data/us-senate.json'))
 
-senate_dets <-  jsonlite::fromJSON(url(sen_url)) %>%
-  mutate(twitter_handle = ifelse(twitter_handle == 'SenJeffFlake', 'JeffFlake', twitter_handle)) %>%
-  mutate (twitter_handle = tolower(twitter_handle)) %>%
-  rename (bioguide_id = bioguide) %>%
-  left_join(sen115 %>% 
-              filter(congress == 115) %>%
-              select(bioguide_id, party_code, nominate_dim1)) %>%
-  mutate(party = ifelse(party == 'independent', 'democrat', party))
+house_dets <- jsonlite::fromJSON(url('https://raw.githubusercontent.com/CivilServiceUSA/us-house/master/us-house/data/us-house.json'))
 ```
 
-``` r
-#We don't run this.
-house_dets <- jsonlite::fromJSON(url('https://raw.githubusercontent.com/CivilServiceUSA/us-house/master/us-house/data/us-house.json')) 
-```
-
-So, a quick demo.
+#### 1.1 Age & generations
 
 ``` r
 house_dets %>%
@@ -122,23 +44,23 @@ house_dets %>%
   labs(title = 'Age distributions in the 115th US House')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
 ``` r
   #ggthemes::theme_fivethirtyeight()
 ```
 
-Per Pew Research, which has seemingly taken a leadership role in delineating generations, ... the beauty of generation naming is that it is truly a crowd-sourced effort.
+Per [Pew Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/), which has seemingly taken a leadership role in delineating generations, ... the beauty of generation naming is that it is truly a crowd-sourced effort.
 
 Generations in congress~
 
 -   Millenials 1981-1997
 -   Generation X 1965 -1980
 -   Baby Boomers 1946-1964
-    -   Boomers-proper 1946-1954
-    -   Generation Jones 1955-1964
 -   Silent 1928-1945
 -   Greatest &lt; 1928
+
+I take some liberties here with this classfication, as I have issues with the duration of the Boomer generation. Namely: (a) Boomers-proper 1946-1954 & (b) Generation Jones 1955-1964.
 
 ``` r
 house_dets %>%
@@ -161,7 +83,9 @@ house_dets %>%
   labs(title = '115th US House composition by generation')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
+
+#### 1.2 Religion
 
 And perhaps a look at religion for good measure.
 
@@ -190,7 +114,71 @@ house_dets %>%
       labs(title = 'Religions in the 115th US House')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
+
+------------------------------------------------------------------------
+
+### 2 Political ideologies and congressional composition
+
+``` r
+#sen115 <- Rvoteview:: member_search(chamber= 'Senate', congress = 115)
+
+rvoteview_house_50 <- lapply(c(66:115), function (x)
+                    Rvoteview::member_search (
+                      chamber = 'House', 
+                      congress = x)) %>% 
+  bind_rows()
+```
+
+#### 2.1 Congressional composition
+
+A bit of a viz. Note that these percentages are not erfect, as non-major political parties are not included (which comprise a very small overall peracentage).
+
+``` r
+rvoteview_house_50 %>%
+  filter(party_name %in% c('Democratic Party', 'Republican Party')) %>%
+  group_by(congress, party_name) %>%
+  summarize(n = n()) %>%
+  mutate(n = n/sum(n)) %>%
+  ggplot(aes(x=congress, y=n, fill = party_name)) +
+  geom_area(alpha = 0.85, color = 'gray') +
+  ggthemes::scale_fill_stata()+
+  geom_hline(yintercept = 0.5, color = 'white', linetype = 2) +
+  theme(legend.position = "bottom")+
+  labs(title = "House Composition over the last 50 congresses")
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
+
+#### 2.2 Political ideologies historically
+
+``` r
+rvoteview_house_50 %>%
+  filter(congress > 89) %>%
+    ggplot(aes(x=nominate.dim1, y=as.factor(congress), fill = congress)) +
+    ggridges::geom_density_ridges(rel_min_height = 0.01) +
+    geom_vline(xintercept = 0, color = 'black', linetype = 2) +
+    theme(legend.position = "none") + 
+    ylab("")+
+    labs(title = "Political ideologies in US Houses 90 to 115")
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
+
+#### 2.3 NOKKEN & POOLE scores
+
+An alternative approach. --- Voteview data with
+
+(that change per congress). Scores via `Rvoteview` only DW\_Nominate, which reflect an aggregate score based on lawmaker's entire voting history (eben if they switch houses, which is weird).
+
+Mention the `bioguide` which helps cross.
+
+``` r
+sen115 <- read.csv(url("https://voteview.com/static/data/out/members/HSall_members.csv"),
+  stringsAsFactors = FALSE) %>%
+  mutate(bioname = gsub(',.*$', '', bioname)) %>%
+  filter(chamber == 'Senate' & congress == 115)
+```
 
 ------------------------------------------------------------------------
 
@@ -220,6 +208,8 @@ us_house_districts <- sf::st_transform(us_house_districts, laea)
 Not fantastic structure-wise. Some lawmaker bio details (Name, First elected, Birth Year, Gender, RAce/ethnicity, Religion, LGBT). House sheet: 2016/2012/2008 presidential election results by congressional district; along with 2016/2014 house congressional results; No 2018 results.
 
 Also includes some socio-dems by district, but this is likely more easily addressed using `tidycensus`.
+
+#### 4.1 Restructuring election data
 
 ``` r
 url <- 'https://docs.google.com/spreadsheets/d/1oRl7vxEJUUDWJCyrjo62cELJD2ONIVl-D9TSUKiK9jk/edit#gid=1178631925'
@@ -255,6 +245,8 @@ dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]',
   left_join(data.frame(us_house_districts) %>% select (-geometry))
 ```
 
+#### 4.2 2016 Presidential Election results
+
 Need to do something here. Perhaps a bit of a map.
 
 ``` r
@@ -278,7 +270,9 @@ us_house_districts %>%
        caption = 'Source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-15-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-14-1.png)
+
+#### 4.3 Rural & urban voting
 
 Using the area of congressional districts (in log square meters) as a proxy for degree of urbanity. ... Plot Trump support as function of CD area.
 
@@ -293,13 +287,15 @@ us_house_districts %>%
   labs(title = "2016 Trump support vs. log(area) of congressional district")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-15-1.png)
 
 ------------------------------------------------------------------------
 
 ### 5 Census data and congressional districts
 
-Race, education & census data (for good measure):
+Using `tidycensus` ... Investigating educational attainment by race.
+
+#### 5.1 Acquire census data
 
 Census race/ethnicity per US Census classifications.
 
@@ -342,6 +338,8 @@ data <- tidycensus::get_acs(geography = 'congressional district',
   select(GEOID, label, gender, race, estimate:summary_moe)
 ```
 
+#### 5.2 White males without college degrees
+
 White men without college degree. As percentage of total population over 25. ie, as a percentage of the electorate. Also -- map zoomed into some interesting sub0location. NEED to re-project.
 
 ``` r
@@ -366,7 +364,9 @@ us_house_districts %>%
        caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-20-1.png)
+
+#### 5.3 Educational attainment profiles by CD
 
 Create plots of some cherry-picked district cross-sections (per Daily Kos).
 
@@ -420,7 +420,9 @@ tree %>%
            caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-22-1.png)
+
+#### 5.4 Trump support by educartional attainment
 
 Trump ed/race dems by binned degrees of support.
 
@@ -467,7 +469,7 @@ ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
   xlab('Level of support for 45')+ylab(NULL)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
 ------------------------------------------------------------------------
 
@@ -475,7 +477,7 @@ ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
 
 The Daily Kos has a cache of fun shapefiles.
 
-#### Hexmap of Congressional districs
+#### 6.1 Hexmap of Congressional districs
 
 ``` r
 url <- 'https://drive.google.com/uc?authuser=0&id=1E_P0r1Uv438fZsvKsvidIR02Nb5Ju9zf&export=download/HexCDv12.zip'
@@ -545,9 +547,9 @@ dailykos_shapes$cds %>%
        caption = 'Source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-31-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
-#### Tile map of US states
+#### 6.2 Tile map of US states
 
 ``` r
 outer_url <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJdGF4ZWRTQmVyV2s&export=download/TileOutv10.zip'
@@ -578,7 +580,7 @@ dailykos_tile$outer %>%
         legend.position = 'bottom')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 ------------------------------------------------------------------------
 
