@@ -13,7 +13,7 @@ Lots of help from the folks at ....
 -   [6 Alternative geometries](#7-Funky-geometries)
 -   [7 A work in progress](#8-A-work-in-progress)
 
-Some additional text.
+Some additional text. A bit of a layman's guide to working with federal election data using R.
 
 ``` r
 library(tidyverse)
@@ -23,7 +23,7 @@ library(tidyverse)
 
 ### 1 Lawmaker biographies
 
-[CivilServiceUSA](https://github.com/CivilServiceUSA) provides a lovely collection ... A full description of information available for each congressional member is available [her](https://github.com/CivilServiceUSA/us-house#data-set).
+> [CivilServiceUSA](https://github.com/CivilServiceUSA) provides a lovely collection ... A full description of information available for each congressional member is available [here](https://github.com/CivilServiceUSA/us-house#data-set).
 
 ``` r
 library(jsonlite)
@@ -46,7 +46,7 @@ house_dets %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
-Per [Pew Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/), which has seemingly taken a leadership role in delineating generations, ... the beauty of generation naming is that it is truly a crowd-sourced effort.
+> Per [Pew Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/), which has seemingly taken a leadership role in delineating generations, ... the beauty of generation naming is that it is truly a crowd-sourced effort.
 
 Generations in congress~
 
@@ -67,8 +67,9 @@ gens115 <- house_dets %>%
                            yob < 1955 & yob > 1945 ~ '2a - Boomer-proper',
                            yob < 1946 & yob > 1927 ~ '1 - Silent'))
 gens115 %>%
-  group_by(gen) %>%
+  group_by(gen,party) %>%
   summarize(n=n()) %>%
+  group_by(party) %>%
   mutate(rank = row_number())%>%
   ggplot(aes(x=reorder(gen, -rank), 
              y=n, 
@@ -76,26 +77,12 @@ gens115 %>%
   geom_col(show.legend = FALSE, alpha = 0.85)+
   ggthemes::scale_fill_stata() +
   xlab(NULL) + ylab(NULL) +
+  facet_wrap(~party) +
   coord_flip() +
   labs(title = '115th US House composition by generation')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
-
-Lastly, a quick crosstab.
-
-``` r
-table(gens115$gen, gens115$party) %>%
-  knitr::kable()
-```
-
-|                    |  democrat|  republican|
-|--------------------|---------:|-----------:|
-| 1 - Silent         |        31|          11|
-| 2a - Boomer-proper |        70|          58|
-| 2b - Gen Jones     |        48|          94|
-| 3- Gen X           |        44|          74|
-| 4- Millenial       |         1|           4|
 
 #### 1.2 Religion
 
@@ -126,7 +113,7 @@ house_dets %>%
       labs(title = 'Religions in the 115th US House')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
 So, some simple examples of what can be with
 
@@ -134,7 +121,7 @@ So, some simple examples of what can be with
 
 ### 2 Political ideologies and congressional composition
 
-[VoteView](https://voteview.com/)
+> [VoteView](https://voteview.com/)
 
 ``` r
 #sen115 <- Rvoteview:: member_search(chamber= 'Senate', congress = 115)
@@ -164,7 +151,7 @@ rvoteview_house_50 %>%
   labs(title = "House Composition over the last 50 congresses")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 #### 2.2 Political ideologies historically
 
@@ -180,7 +167,7 @@ rvoteview_house_50 %>%
          source = 'VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 #### 2.3 NOKKEN & POOLE scores
 
@@ -287,7 +274,7 @@ us_house_districts %>%
        caption = 'Source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-15-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
 #### 4.3 Rural & urban voting
 
@@ -304,7 +291,7 @@ us_house_districts %>%
   labs(title = "2016 Trump support vs. log(area) of congressional district")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-15-1.png)
 
 ------------------------------------------------------------------------
 
@@ -381,7 +368,7 @@ us_house_districts %>%
        caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 #### 5.3 Educational attainment profiles by CD
 
@@ -437,7 +424,7 @@ tree %>%
            caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
 #### 5.4 Trump support by educartional attainment
 
@@ -486,7 +473,7 @@ ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
   xlab('Level of support for 45')+ylab(NULL)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
 ------------------------------------------------------------------------
 
@@ -572,7 +559,7 @@ dailykos_shapes$cds %>%
        caption = 'Source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-31-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
 #### 6.3 Tile map of US states
 
@@ -606,7 +593,7 @@ dailykos_tile$outer %>%
         legend.position = 'bottom')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 ------------------------------------------------------------------------
 
