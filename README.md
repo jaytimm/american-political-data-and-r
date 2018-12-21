@@ -41,7 +41,8 @@ house_dets %>%
             lubridate::year(as.Date(date_of_birth))) %>%
   ggplot (aes(years)) +
   geom_histogram(bins=20, fill = 'steelblue', alpha = .85) +
-  labs(title = 'Age distributions in the 115th US House')
+  labs(title = 'Age distributions in the 115th US House',
+       caption = 'Source: CivilServiceUSA')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
@@ -79,7 +80,8 @@ gens115 %>%
   xlab(NULL) + ylab(NULL) +
   facet_wrap(~party) +
   coord_flip() +
-  labs(title = '115th US House composition by generation')
+  labs(title = '115th US House composition by generation',
+       caption = 'Source: CivilServiceUSA')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
@@ -110,7 +112,8 @@ house_dets %>%
       theme(legend.position = "none",
             #plot.title = element_text(size=12),
             legend.title=element_blank()) +
-      labs(title = 'Religions in the 115th US House')
+      labs(title = 'Religions in the 115th US House',
+           caption = 'Source: CivilServiceUSA')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
@@ -148,7 +151,8 @@ rvoteview_house_50 %>%
   ggthemes::scale_fill_stata()+
   geom_hline(yintercept = 0.5, color = 'white', linetype = 2) +
   theme(legend.position = "bottom")+
-  labs(title = "House Composition over the last 50 congresses")
+  labs(title = "House Composition over the last 50 congresses",
+       source = 'VoteView')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
@@ -208,7 +212,7 @@ us_house_districts <- sf::st_transform(us_house_districts, laea)
 
 ### 4 Federal election results
 
-[Daily Kos data sets](https://www.dailykos.com/stories/2018/2/21/1742660/-The-ultimate-Daily-Kos-Elections-guide-to-all-of-our-data-sets)
+> [Daily Kos data sets](https://www.dailykos.com/stories/2018/2/21/1742660/-The-ultimate-Daily-Kos-Elections-guide-to-all-of-our-data-sets)
 
 Not fantastic structure-wise. Some lawmaker bio details (Name, First elected, Birth Year, Gender, RAce/ethnicity, Religion, LGBT). House sheet: 2016/2012/2008 presidential election results by congressional district; along with 2016/2014 house congressional results; No 2018 results.
 
@@ -288,7 +292,8 @@ us_house_districts %>%
   ggplot(aes(percent, log(area))) +
   geom_point(color = 'steelblue') +
   geom_smooth(method="loess", se=T, color = 'darkgrey')+
-  labs(title = "2016 Trump support vs. log(area) of congressional district")
+  labs(title = "2016 Trump support vs. log(area) of congressional district",
+       caption = 'Source: Daily Kos')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-15-1.png)
@@ -297,7 +302,7 @@ us_house_districts %>%
 
 ### 5 Census data and congressional districts
 
-Using `tidycensus` ... Investigating educational attainment by race.
+> Using `tidycensus` ... Investigating educational attainment by race.
 
 #### 5.1 Acquire census data
 
@@ -479,7 +484,7 @@ ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
 
 ### 6 Alternative political geometries
 
-The Daily Kos has a cache of fun shapefiles. The Daily Vos makes these shapefiles availble via Google Drive. Links are provided below.
+> The Daily Kos has a cache of fun shapefiles. The Daily Vos makes these shapefiles availble via Google Drive. Links are provided below.
 
 ``` r
 #Hex map
