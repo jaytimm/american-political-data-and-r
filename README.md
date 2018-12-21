@@ -257,9 +257,9 @@ us_house_districts %>%
               spread(candidate, percent) %>%
               mutate(dif = Trump-Clinton)) %>%
   ggplot() + 
-  geom_sf(aes(fill = dif)) + #, color = 'darkgray'
-  
-  scale_fill_distiller(palette='RdBu')+
+  geom_sf(aes(fill = dif)) +
+  scale_fill_gradient2(low = "#378dbf", mid = "white",
+  high = "#d4334c", midpoint = 0) +
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.title.y=element_blank(),
