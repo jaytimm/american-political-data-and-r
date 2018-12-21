@@ -5,8 +5,8 @@ A collection of political data resources. Many of the data collated here should 
 
 Lots of help from the folks at ....
 
--   [1 Political Ideologies](#1-political-ideologies-and-congressional-composition)
--   [2 Lawmaker biographies](#2-Lawmaker-biographies)
+-   [1 Lawmaker biographies](#1-Lawmaker-biographies)
+-   [2 Political Ideologies](#2-political-ideologies-and-congressional-composition)
 -   [3 Political geometries](#4-political-geometries)
 -   [4 Federal election results](#5-Federal-election-results)
 -   [5 Census data and congressional districts](#6-Census-data-and-congressional-districts)
