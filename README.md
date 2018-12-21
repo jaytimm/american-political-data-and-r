@@ -59,13 +59,14 @@ Generations in congress~
 I take some liberties here with this classfication, as I have issues with the duration of the Boomer generation. Namely: (a) Boomers-proper 1946-1954 & (b) Generation Jones 1955-1964.
 
 ``` r
-house_dets %>%
+gens115 <- house_dets %>%
   mutate (yob = as.numeric(gsub('-.*$', '', date_of_birth))) %>%
   mutate (gen = case_when (yob < 1998 & yob > 1980 ~ '4- Millenial',
                            yob < 1981 & yob > 1964 ~ '3- Gen X',
                            yob < 1965 & yob > 1954 ~ '2b - Gen Jones',
                            yob < 1955 & yob > 1945 ~ '2a - Boomer-proper',
-                           yob < 1946 & yob > 1927 ~ '1 - Silent')) %>%
+                           yob < 1946 & yob > 1927 ~ '1 - Silent'))
+gens115 %>%
   group_by(gen) %>%
   summarize(n=n()) %>%
   mutate(rank = row_number())%>%
@@ -80,6 +81,21 @@ house_dets %>%
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
+
+Lastly, a quick crosstab.
+
+``` r
+table(gens115$gen, gens115$party) %>%
+  knitr::kable()
+```
+
+|                    |  democrat|  republican|
+|--------------------|---------:|-----------:|
+| 1 - Silent         |        31|          11|
+| 2a - Boomer-proper |        70|          58|
+| 2b - Gen Jones     |        48|          94|
+| 3- Gen X           |        44|          74|
+| 4- Millenial       |         1|           4|
 
 #### 1.2 Religion
 
@@ -110,11 +126,15 @@ house_dets %>%
       labs(title = 'Religions in the 115th US House')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-6-1.png)
+
+So, some simple examples of what can be with
 
 ------------------------------------------------------------------------
 
 ### 2 Political ideologies and congressional composition
+
+[VoteView](https://voteview.com/)
 
 ``` r
 #sen115 <- Rvoteview:: member_search(chamber= 'Senate', congress = 115)
@@ -144,7 +164,7 @@ rvoteview_house_50 %>%
   labs(title = "House Composition over the last 50 congresses")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 #### 2.2 Political ideologies historically
 
@@ -160,7 +180,7 @@ rvoteview_house_50 %>%
          source = 'VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 #### 2.3 NOKKEN & POOLE scores
 
@@ -171,15 +191,16 @@ An alternative approach. --- Voteview data with
 Mention the `bioguide` which helps cross.
 
 ``` r
-sen115 <- read.csv(url("https://voteview.com/static/data/out/members/HSall_members.csv"),
+house115 <- read.csv(url("https://voteview.com/static/data/out/members/HSall_members.csv"),
   stringsAsFactors = FALSE) %>%
-  mutate(bioname = gsub(',.*$', '', bioname)) %>%
-  filter(chamber == 'Senate' & congress == 115)
+  filter(chamber == 'House' & congress == 115)
 ```
 
 ------------------------------------------------------------------------
 
 ### 3 Political geometries
+
+> The `tigris` package provides a super convenient interface ... for loading US shapefiles ...
 
 ``` r
 nonx <- c('78', '69', '66', '72', '60', '15', '02')
@@ -266,7 +287,7 @@ us_house_districts %>%
        caption = 'Source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-15-1.png)
 
 #### 4.3 Rural & urban voting
 
@@ -283,7 +304,7 @@ us_house_districts %>%
   labs(title = "2016 Trump support vs. log(area) of congressional district")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-15-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
 ------------------------------------------------------------------------
 
@@ -360,7 +381,7 @@ us_house_districts %>%
        caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 #### 5.3 Educational attainment profiles by CD
 
@@ -416,7 +437,7 @@ tree %>%
            caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-22-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
 #### 5.4 Trump support by educartional attainment
 
@@ -465,17 +486,26 @@ ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
   xlab('Level of support for 45')+ylab(NULL)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
 ------------------------------------------------------------------------
 
-### 6 Alternative geometries
+### 6 Alternative political geometries
 
-The Daily Kos has a cache of fun shapefiles.
+The Daily Kos has a cache of fun shapefiles. The Daily Vos makes these shapefiles availble via Google Drive. Links are provided below.
 
-#### 6.1 A simple function
+``` r
+#Hex map
+dailyvos_hex_cd <- 'https://drive.google.com/uc?authuser=0&id=1E_P0r1Uv438fZsvKsvidIR02Nb5Ju9zf&export=download/HexCDv12.zip'
+dailyvos_hex_st <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJVWxYZGtxMGhrMEE&export=download/HexSTv11.zip'
+#Tile map
+dailyvos_tile_outer <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJdGF4ZWRTQmVyV2s&export=download/TileOutv10.zip'
+dailyvos_tile_inner <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJR1c0SzNyWlAtZjA&export=download/TileInv10.zip'
+```
 
-Download & load shapefile as an `sf` object -- as process.
+#### 6.1 A simple function for shapefile extraction
+
+We first build a simple function that ... Download & load shapefile as an `sf` object -- as process.
 
 ``` r
 get_url_shape <- function (url) {
@@ -493,20 +523,17 @@ get_url_shape <- function (url) {
 
 #### 6.2 Hexmap of Congressional districs
 
-``` r
-url <- 'https://drive.google.com/uc?authuser=0&id=1E_P0r1Uv438fZsvKsvidIR02Nb5Ju9zf&export=download/HexCDv12.zip'
-
-url2 <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJVWxYZGtxMGhrMEE&export=download/HexSTv11.zip'
-```
-
 Apply function.
 
 ``` r
-dailykos_shapes <- lapply (c(url, url2), get_url_shape)
+dailykos_shapes <- lapply (c(dailyvos_hex_cd, dailyvos_hex_st), 
+                           get_url_shape)
 names(dailykos_shapes) <- c('cds', 'states')
 #State hex shapefile is slightly broken.
 dailykos_shapes$states <- lwgeom::st_make_valid(dailykos_shapes$states)
 ```
+
+Here, we consider Presidential voting ...
 
 ``` r
 dailykos_pres_flips <- dailykos_pres_elections %>%
@@ -520,7 +547,7 @@ dailykos_pres_flips <- dailykos_pres_elections %>%
   mutate(flips = paste0(`2008`, '~',`2012`, '~', `2016`))
 ```
 
-Need to add state hex shape. Note that this has been reproduced.
+Note that this has been reproduced.
 
 ``` r
 dailykos_shapes$cds %>%
@@ -545,18 +572,19 @@ dailykos_shapes$cds %>%
        caption = 'Source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-30-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
 #### 6.3 Tile map of US states
 
+Extract shapefiles from ...
+
 ``` r
-outer_url <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJdGF4ZWRTQmVyV2s&export=download/TileOutv10.zip'
-
-inner_url <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJR1c0SzNyWlAtZjA&export=download/TileInv10.zip'
-
-dailykos_tile <- lapply (c(inner_url, outer_url), get_url_shape)
+dailykos_tile <- lapply (c(dailyvos_tile_inner, dailyvos_tile_outer),
+                         get_url_shape)
 names(dailykos_tile) <- c('inner', 'outer')
 ```
+
+Plot.
 
 ``` r
 dailykos_tile$outer %>%
@@ -578,7 +606,7 @@ dailykos_tile$outer %>%
         legend.position = 'bottom')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
 ------------------------------------------------------------------------
 
