@@ -132,9 +132,13 @@ Per Pew Research, which has seemingly taken a leadership role in delineating gen
 
 Generations in congress~
 
-Millenials 1981-1997 Generation X 1965 -1980 Baby Boomers 1946-1964 Silent 1928-1945 Greatest &lt; 1928
-
-Generation Jones 1955-1964
+-   Millenials 1981-1997
+-   Generation X 1965 -1980
+-   Baby Boomers 1946-1964
+    -   Boomers-proper 1946-1954
+    -   Generation Jones 1955-1964
+-   Silent 1928-1945
+-   Greatest &lt; 1928
 
 ``` r
 house_dets %>%
@@ -151,7 +155,8 @@ house_dets %>%
              fill=gen)) + 
   geom_col(show.legend = FALSE)+
   ggthemes::scale_fill_stata() +
-  coord_flip()
+  coord_flip() +
+  labs(title = '115th US House by generation')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
@@ -278,7 +283,7 @@ Using the area of congressional districts (in log square meters) as a proxy for 
 ``` r
 us_house_districts %>%
   left_join(dailykos_pres_elections %>%
-              filter(year == '2016' & candidate == 'Trump')) %>%
+              filter(candidate == 'Trump')) %>%
   mutate(area = as.numeric(gsub(' m^2]', '', sf::st_area(.)))) %>%
   ggplot(aes(percent, log(area))) +
   geom_point(color = 'steelblue') +
@@ -399,7 +404,7 @@ tree %>%
       treemapify::geom_treemap(alpha=.85)+
       treemapify::geom_treemap_subgroup_border() +
 
-      treemapify::geom_treemap_text(colour = "black", 
+      treemapify::geom_treemap_text(colour = "white", 
                         place = "topleft", 
                         reflow = T,
                         size = 9)+
