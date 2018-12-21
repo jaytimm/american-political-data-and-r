@@ -40,25 +40,21 @@ house_dets %>%
             lubridate::year(as.Date(Sys.Date())) -
             lubridate::year(as.Date(date_of_birth))) %>%
   ggplot (aes(years)) +
-  geom_histogram(bins=20, fill = 'steelblue') +
+  geom_histogram(bins=20, fill = 'steelblue', alpha = .85) +
   labs(title = 'Age distributions in the 115th US House')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
-``` r
-  #ggthemes::theme_fivethirtyeight()
-```
-
 Per [Pew Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/), which has seemingly taken a leadership role in delineating generations, ... the beauty of generation naming is that it is truly a crowd-sourced effort.
 
 Generations in congress~
 
--   Millenials 1981-1997
--   Generation X 1965 -1980
--   Baby Boomers 1946-1964
--   Silent 1928-1945
--   Greatest &lt; 1928
+-   Millenials: 1981-1997
+-   Generation X: 1965 -1980
+-   Baby Boomers: 1946-1964
+-   Silent: 1928-1945
+-   Greatest: &lt; 1928
 
 I take some liberties here with this classfication, as I have issues with the duration of the Boomer generation. Namely: (a) Boomers-proper 1946-1954 & (b) Generation Jones 1955-1964.
 
@@ -160,7 +156,8 @@ rvoteview_house_50 %>%
     geom_vline(xintercept = 0, color = 'black', linetype = 2) +
     theme(legend.position = "none") + 
     ylab("")+
-    labs(title = "Political ideologies in US Houses 90 to 115")
+    labs(title = "Political ideologies in US Houses 90 to 115",
+         source = 'VoteView')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
@@ -245,7 +242,7 @@ dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]',
   left_join(data.frame(us_house_districts) %>% select (-geometry))
 ```
 
-#### 4.2 2016 Presidential Election results
+#### 4.2 Presidential Election results - 2016
 
 Need to do something here. Perhaps a bit of a map.
 
@@ -258,8 +255,7 @@ us_house_districts %>%
               mutate(dif = Trump-Clinton)) %>%
   ggplot() + 
   geom_sf(aes(fill = dif)) +
-  scale_fill_gradient2(low = "#378dbf", mid = "white",
-  high = "#d4334c", midpoint = 0) +
+  scale_fill_distiller(palette = "RdBu",direction=-1)+
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.title.y=element_blank(),
@@ -353,7 +349,7 @@ us_house_districts %>%
   ggplot() + 
   geom_sf(aes(fill = per)) + #, color = 'darkgray'
   
-  scale_fill_distiller(palette = "RdGy",direction=-1)+
+  scale_fill_distiller(palette = "BrBG",direction=1)+
   
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
@@ -477,13 +473,7 @@ ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
 
 The Daily Kos has a cache of fun shapefiles.
 
-#### 6.1 Hexmap of Congressional districs
-
-``` r
-url <- 'https://drive.google.com/uc?authuser=0&id=1E_P0r1Uv438fZsvKsvidIR02Nb5Ju9zf&export=download/HexCDv12.zip'
-
-url2 <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJVWxYZGtxMGhrMEE&export=download/HexSTv11.zip'
-```
+#### 6.1 A simple function
 
 Download & load shapefile as an `sf` object -- as process.
 
@@ -499,6 +489,14 @@ get_url_shape <- function (url) {
                    quiet = TRUE) 
   unlink(temp) 
   x}
+```
+
+#### 6.2 Hexmap of Congressional districs
+
+``` r
+url <- 'https://drive.google.com/uc?authuser=0&id=1E_P0r1Uv438fZsvKsvidIR02Nb5Ju9zf&export=download/HexCDv12.zip'
+
+url2 <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJVWxYZGtxMGhrMEE&export=download/HexSTv11.zip'
 ```
 
 Apply function.
@@ -549,7 +547,7 @@ dailykos_shapes$cds %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
-#### 6.2 Tile map of US states
+#### 6.3 Tile map of US states
 
 ``` r
 outer_url <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJdGF4ZWRTQmVyV2s&export=download/TileOutv10.zip'
@@ -585,3 +583,5 @@ dailykos_tile$outer %>%
 ------------------------------------------------------------------------
 
 ### 7 A work in progress
+
+Indeed, a work in progress. But hopefully a nice round-up of useful open source resources for invewstigating & visualizing federal election results. I would love to here about additional/alternative open source resources!
