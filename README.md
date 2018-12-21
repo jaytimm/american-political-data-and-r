@@ -10,7 +10,7 @@ Lots of help from the folks at ....
 -   [3 Political geometries](#4-political-geometries)
 -   [4 Federal election results](#5-Federal-election-results)
 -   [5 Census data and congressional districts](#6-Census-data-and-congressional-districts)
--   [6 Funky geometries](#7-Funky-geometries)
+-   [6 Alternative geometries](#7-Funky-geometries)
 -   [7 A work in progress](#8-A-work-in-progress)
 
 Some additional text.
@@ -48,7 +48,7 @@ rvoteview_house_50 %>%
   summarize(n = n()) %>%
   mutate(n = n/sum(n)) %>%
   ggplot(aes(x=congress, y=n, fill = party_name)) +
-  geom_area(alpha = 0.75, color = 'gray') +
+  geom_area(alpha = 0.85, color = 'gray') +
   ggthemes::scale_fill_stata()+
   geom_hline(yintercept = 0.5, color = 'white', linetype = 2) +
   theme(legend.position = "bottom")+
@@ -150,13 +150,15 @@ house_dets %>%
                            yob < 1946 & yob > 1927 ~ '1 - Silent')) %>%
   group_by(gen) %>%
   summarize(n=n()) %>%
-  ggplot(aes(x=gen, 
+  mutate(rank = row_number())%>%
+  ggplot(aes(x=reorder(gen, -rank), 
              y=n, 
              fill=gen)) + 
-  geom_col(show.legend = FALSE)+
+  geom_col(show.legend = FALSE, alpha = 0.85)+
   ggthemes::scale_fill_stata() +
+  xlab(NULL) + ylab(NULL) +
   coord_flip() +
-  labs(title = '115th US House by composition generation')
+  labs(title = '115th US House composition by generation')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
@@ -360,8 +362,8 @@ us_house_districts %>%
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
         legend.position = 'bottom') +
-  labs(title = "% no degree White males by congressional district",
-       caption = 'Source: ACS Table C15002')
+  labs(title = "Percentage of White males w/o a college degree by congressional district",
+       caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-21-1.png)
@@ -414,6 +416,7 @@ tree %>%
       theme(legend.position = "bottom",
             legend.title=element_blank()) + 
       labs(title = "Educational attainment by race for population over 25",
+           subtitle = 'A random sample of congressional districts',
            caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
@@ -468,7 +471,7 @@ ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
 
 ------------------------------------------------------------------------
 
-### 6 Funky geometries
+### 6 Alternative geometries
 
 The Daily Kos has a cache of fun shapefiles.
 
