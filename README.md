@@ -156,7 +156,7 @@ house_dets %>%
   geom_col(show.legend = FALSE)+
   ggthemes::scale_fill_stata() +
   coord_flip() +
-  labs(title = '115th US House by generation')
+  labs(title = '115th US House by composition generation')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
