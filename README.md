@@ -5,7 +5,7 @@ A collection of political data resources. Many of the data collated here should 
 
 Lots of help from the folks at ....
 
--   [1 Lawmaker biographies](#1-Lawmaker-biographies)
+-   [1 Lawmaker details](#1-Lawmaker-details)
 -   [2 Political Ideologies](#2-political-ideologies-and-congressional-composition)
 -   [3 Political geometries](#4-political-geometries)
 -   [4 Federal election results](#5-Federal-election-results)
@@ -13,7 +13,7 @@ Lots of help from the folks at ....
 -   [6 Alternative geometries](#7-Funky-geometries)
 -   [7 A work in progress](#8-A-work-in-progress)
 
-Some additional text. A bit of a layman's guide to working with federal election data using R.
+Some additional text. A bit of a layman's guide to working with federal election data using R. I am posting this on Git Hub (as opposed to my website/blog) as I hope to develop this as a resource.
 
 ``` r
 library(tidyverse)
@@ -21,18 +21,18 @@ library(tidyverse)
 
 ------------------------------------------------------------------------
 
-### 1 Lawmaker biographies
+### 1 Lawmaker details
 
-> [CivilServiceUSA](https://github.com/CivilServiceUSA) provides a lovely collection ... A full description of information available for each congressional member is available [here](https://github.com/CivilServiceUSA/us-house#data-set).
+> [CivilServiceUSA](https://github.com/CivilServiceUSA) provides a wonderful collection of details about each lawmaker in the 115th Congress, including age, race, religion, biographical details, and social media info. A full roll call of information available for each lawmaker is available [here](https://github.com/CivilServiceUSA/us-house#data-set). Presumably other resources exist for accessing this type of information, but this particular resource is super rich/convenient. Tables can be downloaded directly from their Git Hub site. I prefer the json format.
 
 ``` r
-library(jsonlite)
 senate_dets <- jsonlite::fromJSON(url('https://raw.githubusercontent.com/CivilServiceUSA/us-senate/master/us-senate/data/us-senate.json'))
-
 house_dets <- jsonlite::fromJSON(url('https://raw.githubusercontent.com/CivilServiceUSA/us-house/master/us-house/data/us-house.json'))
 ```
 
-#### 1.1 Age & generations
+Here, we consider some different perspectives on the composition of the 115th House utilizing these data.
+
+#### 1.1 Age & generational demographics of the 115th House
 
 ``` r
 house_dets %>%
@@ -41,13 +41,13 @@ house_dets %>%
             lubridate::year(as.Date(date_of_birth))) %>%
   ggplot (aes(years)) +
   geom_histogram(bins=20, fill = 'steelblue', alpha = .85) +
-  labs(title = 'Age distributions in the 115th US House',
-       caption = 'Source: CivilServiceUSA')
+  labs(title = '115th House composition by age',
+       caption = 'Source: Data via CivilServiceUSA')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
-> Per [Pew Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/), which has seemingly taken a leadership role in delineating generations, ... the beauty of generation naming is that it is truly a crowd-sourced effort.
+> Pew Research has seemingly taken a leadership role in formally [delineating generations](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/), which have always been hazy, sources of contention, and good clean American fun. ... the beauty of generation naming is that it is truly a crowd-sourced effort.
 
 Generations in congress~
 
@@ -81,7 +81,7 @@ gens115 %>%
   facet_wrap(~party) +
   coord_flip() +
   labs(title = '115th US House composition by generation',
-       caption = 'Source: CivilServiceUSA')
+       caption = 'Source: Based on data made availble by CivilServiceUSA')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
@@ -112,19 +112,19 @@ house_dets %>%
       theme(legend.position = "none",
             #plot.title = element_text(size=12),
             legend.title=element_blank()) +
-      labs(title = 'Religions in the 115th US House',
+      labs(title = '115th House composition by religion',
            caption = 'Source: CivilServiceUSA')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
-So, some simple examples of what can be with
+So, some simple examples of what can be with .... And here's hoping they continue their project into the new (116th) Congress.
 
 ------------------------------------------------------------------------
 
 ### 2 Political ideologies and congressional composition
 
-> [VoteView](https://voteview.com/)
+> The [VoteView](https://voteview.com/) project has been the standard for ... I oddly enough became hip to their methods via linguisti
 
 ``` r
 #sen115 <- Rvoteview:: member_search(chamber= 'Senate', congress = 115)
@@ -152,7 +152,7 @@ rvoteview_house_50 %>%
   geom_hline(yintercept = 0.5, color = 'white', linetype = 2) +
   theme(legend.position = "bottom")+
   labs(title = "House Composition over the last 50 congresses",
-       source = 'VoteView')
+       caption = 'VoteView')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
@@ -168,7 +168,7 @@ rvoteview_house_50 %>%
     theme(legend.position = "none") + 
     ylab("")+
     labs(title = "Political ideologies in US Houses 90 to 115",
-         source = 'VoteView')
+         caption = 'VoteView')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
@@ -484,7 +484,7 @@ ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
 
 ### 6 Alternative political geometries
 
-> The Daily Kos has a cache of fun shapefiles. The Daily Vos makes these shapefiles availble via Google Drive. Links are provided below.
+> The Daily Kos makes available of set of shapefiles meant to represent congressional districts and states as .... The Daily Vos makes these shapefiles availble via Google Drive. Links are provided below.
 
 ``` r
 #Hex map
@@ -571,26 +571,35 @@ dailykos_shapes$cds %>%
 Extract shapefiles from ...
 
 ``` r
-dailykos_tile <- lapply (c(dailyvos_tile_inner, dailyvos_tile_outer),
+dailykos_tile <- lapply (c(dailyvos_tile_inner,
+                           dailyvos_tile_outer),
                          get_url_shape)
 names(dailykos_tile) <- c('inner', 'outer')
 ```
 
-Plot.
+Senators by state by part.
 
 ``` r
-dailykos_tile$outer %>%
+sens <- senate_dets %>%
+  arrange (state_code, party) %>%
+  group_by(state_code) %>%
+  mutate(layer = row_number())%>%
+  rename(State = state_code)
+```
+
+Plot. To address the consistency issue. Group by aplhabetical order -- such that if D-R, then D placed in inner. Independents?
+
+``` r
+dailykos_tile$outer %>% 
+  left_join(sens %>% filter (layer == 1)) %>%
   ggplot() + 
-  geom_sf(aes(fill = 'red'),
+  geom_sf(aes(fill = party),
            color = 'black', alpha = .85) + 
-    geom_sf(data=dailykos_tile$inner, 
-          fill = NA, 
-          show.legend = F, 
-          color="black", 
-          lwd=0.4) +
-    ggsflabel::geom_sf_text(data = dailykos_tile$inner,
-                                aes(label = State), size = 2.5) +
-  #ggthemes::scale_fill_colorblind()+
+  geom_sf(data = dailykos_tile$inner %>%
+            left_join(sens %>% filter (layer == 2)), 
+          aes(fill = party)) +
+  ggsflabel::geom_sf_text(data = dailykos_tile$inner,
+                                 aes(label = State), size = 2.5) +
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.title.y=element_blank(),
@@ -598,7 +607,7 @@ dailykos_tile$outer %>%
         legend.position = 'bottom')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
 ------------------------------------------------------------------------
 
