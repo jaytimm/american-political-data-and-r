@@ -256,8 +256,6 @@ dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]',
 
 #### 4.2 Presidential Election results - 2016
 
-Need to do something here. Perhaps a bit of a map.
-
 ``` r
 us_house_districts %>%
   filter(!gsub('..$' ,'', GEOID) %in% nonx) %>%
@@ -275,7 +273,7 @@ us_house_districts %>%
         legend.position = 'bottom') +
   labs(title = "Trump support - Clinton support",
        subtitle = '2016 Presidential Elections',
-       caption = 'Source: Daily Kos')
+       caption = 'Data source: Daily Kos')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-14-1.png)
@@ -536,7 +534,9 @@ dailykos_pres_flips <- dailykos_pres_elections %>%
   select(-percent, -dups) %>%
   spread(year, candidate) %>%
   na.omit()%>%
-  mutate(flips = paste0(`2008`, '~',`2012`, '~', `2016`))
+  mutate(flips = paste0(`2008`, '~',`2012`, '~', `2016`)) %>%
+  group_by(flips) %>%
+  mutate(sum = n())
 ```
 
 Note that this has been reproduced.
@@ -545,7 +545,7 @@ Note that this has been reproduced.
 dailykos_shapes$cds %>%
   inner_join(dailykos_pres_flips)%>%
   ggplot() + 
-  geom_sf(aes(fill = flips),
+  geom_sf(aes(fill = reorder(flips, -sum)),
            color = 'white', alpha = .85) + 
     geom_sf(data=dailykos_shapes$states, 
           fill = NA, 
@@ -554,14 +554,15 @@ dailykos_shapes$cds %>%
           lwd=.65) +
     ggsflabel::geom_sf_text(data = dailykos_shapes$states,
                                 aes(label = STATE), size = 2.5) +
-  scale_fill_brewer(palette = 'Set1')+
+  ggthemes::scale_fill_stata()+
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
-        legend.position = 'right') +
+        legend.title=element_blank(),
+        legend.position = 'bottom') +
   labs(title = "Presidential election results - 2008, 2012 & 2016",
-       caption = 'Source: Daily Kos')
+       caption = 'Data source: Daily Kos')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-30-1.png)
@@ -606,13 +607,10 @@ dailykos_tile$outer %>%
                                  aes(label = State), size = 2.5,
                           color = 'white') +
   ggthemes::scale_fill_stata()+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        legend.position = 'bottom') +
-  labs(title = "115th US Senate by state & Party",
-       caption = 'Data source: Daily Kos & VoteView')
+  ggthemes::theme_map() +
+  theme(legend.position = 'bottom') +
+  labs(title = "115th US Senate Composition by State & Party",
+       caption = 'Data sources: Daily Kos & VoteView')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
