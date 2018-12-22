@@ -654,7 +654,7 @@ dailykos_tile$outer %>%
 
 ------------------------------------------------------------------------
 
-<iframe id="serviceFrameSend" src="../index.html" width="1000" height="1000"  frameborder="0">
+<iframe src=file:///C:/Users/jason/Google Drive/GitHub/fed_election_analysis_w_R/index.html width="40" height="80" >
 ### 7 A work in progress
 
 Indeed, a work in progress. But hopefully a nice round-up of useful open source resources for invewstigating & visualizing federal election results. I would love to here about additional/alternative open source resources!
