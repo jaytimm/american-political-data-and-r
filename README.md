@@ -546,14 +546,15 @@ dailykos_shapes$cds %>%
   inner_join(dailykos_pres_flips)%>%
   ggplot() + 
   geom_sf(aes(fill = reorder(flips, -sum)),
-           color = 'white', alpha = .85) + 
+           color = 'gray', alpha = .85) + 
     geom_sf(data=dailykos_shapes$states, 
           fill = NA, 
           show.legend = F, 
           color="black", 
-          lwd=.65) +
+          lwd=.7) +
     ggsflabel::geom_sf_text(data = dailykos_shapes$states,
-                                aes(label = STATE), size = 2.5) +
+                                aes(label = STATE), size = 2.5,
+                            color='white') +
   ggthemes::scale_fill_stata()+
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
@@ -607,8 +608,12 @@ dailykos_tile$outer %>%
                                  aes(label = State), size = 2.5,
                           color = 'white') +
   ggthemes::scale_fill_stata()+
-  ggthemes::theme_map() +
-  theme(legend.position = 'bottom') +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        legend.title=element_blank(),
+        legend.position = 'bottom') +
   labs(title = "115th US Senate Composition by State & Party",
        caption = 'Data sources: Daily Kos & VoteView')
 ```
