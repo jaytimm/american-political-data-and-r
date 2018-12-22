@@ -654,7 +654,63 @@ dailykos_tile$outer %>%
 
 ------------------------------------------------------------------------
 
-<iframe src=file:///C:/Users/jason/Google Drive/GitHub/fed_election_analysis_w_R/index.html width="40" height="80" >
+``` r
+library(plotly)
+```
+
+    ## Warning: package 'plotly' was built under R version 3.4.4
+
+    ## 
+    ## Attaching package: 'plotly'
+
+    ## The following object is masked from 'package:ggplot2':
+    ## 
+    ##     last_plot
+
+    ## The following object is masked from 'package:stats':
+    ## 
+    ##     filter
+
+    ## The following object is masked from 'package:graphics':
+    ## 
+    ##     layout
+
+``` r
+plot_ly(
+    type = "sankey",
+    orientation = "h",
+
+    node = list(
+      label = c("McCain '08", "Obama '08", "Romney '12", "Obama '12", "Trump '16", "Clinton '16"),
+      color = c("red", "blue", "red", "blue", "red", "blue"),
+      pad = 15,
+      thickness = 20,
+      line = list(
+        color = "black",
+        width = 0.5
+      )
+    ),
+
+    link = list(
+      source = c(0,0,1,1,3,3,2,2),
+      target = c(3,2,3,2,5,4,5,4),
+      value =  c(1,191,209,31,189,21,15,207)
+    )
+  ) %>% 
+  layout(
+    title = "Presidential support by counts of Congressional Districts",
+    font = list(
+      size = 10
+    )
+)
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
+
+``` r
+#htmlwidgets::saveWidget(as_widget(p), "index.html")
+```
+
 ### 7 A work in progress
 
 Indeed, a work in progress. But hopefully a nice round-up of useful open source resources for invewstigating & visualizing federal election results. I would love to here about additional/alternative open source resources!
