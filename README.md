@@ -676,13 +676,14 @@ library(plotly)
     ##     layout
 
 ``` r
+r<- '#9e5055'; b <- '#395f81'
 plot_ly(
     type = "sankey",
     orientation = "h",
 
     node = list(
       label = c("McCain '08", "Obama '08", "Romney '12", "Obama '12", "Trump '16", "Clinton '16"),
-      color = c("red", "blue", "red", "blue", "red", "blue"),
+      color = c(r, b, r, b, r, b),
       pad = 15,
       thickness = 20,
       line = list(
@@ -698,7 +699,7 @@ plot_ly(
     )
   ) %>% 
   layout(
-    title = "Presidential support by counts of Congressional Districts",
+    title = "Presidential support by Congressional District count",
     font = list(
       size = 10
     )
@@ -706,10 +707,6 @@ plot_ly(
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
-
-``` r
-#htmlwidgets::saveWidget(as_widget(p), "index.html")
-```
 
 ### 7 A work in progress
 
