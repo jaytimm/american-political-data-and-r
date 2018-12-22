@@ -26,8 +26,8 @@ library(tidyverse)
 > [CivilServiceUSA](https://github.com/CivilServiceUSA) provides a wonderful collection of details about each lawmaker in the 115th Congress, including age, race, religion, biographical details, and social media info. A full roll call of information available for each lawmaker is available [here](https://github.com/CivilServiceUSA/us-house#data-set). Presumably other resources exist for accessing this type of information, but this particular resource is super rich/convenient. Tables can be downloaded directly from their Git Hub site. I prefer the json format.
 
 ``` r
-senate_dets <- jsonlite::fromJSON(url('https://raw.githubusercontent.com/CivilServiceUSA/us-senate/master/us-senate/data/us-senate.json'))
-house_dets <- jsonlite::fromJSON(url('https://raw.githubusercontent.com/CivilServiceUSA/us-house/master/us-house/data/us-house.json'))
+csusa_senate_dets <- jsonlite::fromJSON(url('https://raw.githubusercontent.com/CivilServiceUSA/us-senate/master/us-senate/data/us-senate.json'))
+csusa_house_dets <- jsonlite::fromJSON(url('https://raw.githubusercontent.com/CivilServiceUSA/us-house/master/us-house/data/us-house.json'))
 ```
 
 Here, we consider some different perspectives on the composition of the 115th House utilizing these data.
@@ -35,14 +35,14 @@ Here, we consider some different perspectives on the composition of the 115th Ho
 #### 1.1 Age & generational demographics of the 115th House
 
 ``` r
-house_dets %>%
+csusa_house_dets %>%
   mutate (years = 
             lubridate::year(as.Date(Sys.Date())) -
             lubridate::year(as.Date(date_of_birth))) %>%
   ggplot (aes(years)) +
   geom_histogram(bins=20, fill = 'steelblue', alpha = .85) +
   labs(title = '115th House composition by age',
-       caption = 'Source: Data via CivilServiceUSA')
+       caption = 'Data source: CivilServiceUSA')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
@@ -60,7 +60,7 @@ Generations in congress~
 I take some liberties here with this classfication, as I have issues with the duration of the Boomer generation. Namely: (a) Boomers-proper 1946-1954 & (b) Generation Jones 1955-1964.
 
 ``` r
-gens115 <- house_dets %>%
+gens115 <- csusa_house_dets %>%
   mutate (yob = as.numeric(gsub('-.*$', '', date_of_birth))) %>%
   mutate (gen = case_when (yob < 1998 & yob > 1980 ~ '4- Millenial',
                            yob < 1981 & yob > 1964 ~ '3- Gen X',
@@ -81,7 +81,7 @@ gens115 %>%
   facet_wrap(~party) +
   coord_flip() +
   labs(title = '115th US House composition by generation',
-       caption = 'Source: Based on data made availble by CivilServiceUSA')
+       caption = 'Data source: CivilServiceUSA')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
@@ -94,7 +94,7 @@ And perhaps a look at religion for good measure.
 cols <- RColorBrewer::brewer.pal(4, 'Set1')
 cols <- colorRampPalette(cols)(31)
 
-house_dets %>%
+csusa_house_dets %>%
   group_by(religion) %>%
   summarize(n = n()) %>%
   na.omit() %>%
@@ -182,7 +182,7 @@ An alternative approach. --- Voteview data with
 Mention the `bioguide` which helps cross.
 
 ``` r
-house115 <- read.csv(url("https://voteview.com/static/data/out/members/HSall_members.csv"),
+voteview_house115 <- read.csv(url("https://voteview.com/static/data/out/members/HSall_members.csv"),
   stringsAsFactors = FALSE) %>%
   filter(chamber == 'House' & congress == 115)
 ```
@@ -330,7 +330,7 @@ C15002: SEX BY EDUCATIONAL ATTAINMENT FOR THE POPULATION 25 YEARS AND OVER
 ``` r
 search_vars <- var_list[grepl('C1500', var_list$name),]
 
-data <- tidycensus::get_acs(geography = 'congressional district',
+tidycens_data <- tidycensus::get_acs(geography = 'congressional district',
                             variables = search_vars$name,
                             summary_var = 'B15002_001',
                             year = 2017,
@@ -354,7 +354,7 @@ White men without college degree. As percentage of total population over 25. ie,
 ``` r
 us_house_districts %>% 
   filter(!gsub('..$' ,'', GEOID) %in% nonx) %>%
-  left_join(data %>% 
+  left_join(tidycens_data %>% 
               filter(label != 'Bachelor\'s degree or higher' &
                      gender == 'Male' & 
                      race == 'WHITE ALONE, NOT HISPANIC OR LATINO')) %>%
@@ -382,7 +382,7 @@ Create plots of some cherry-picked district cross-sections (per Daily Kos).
 Definitions: WHITE ALONE means/equals all the whites, hispanic or otherwise. OR, WHITE ALONE, HISPANIC + WHITE ALONE, NOT HISPANIC.
 
 ``` r
-tree <- data %>%
+tree <- tidycens_data %>%
   left_join(data.frame(us_house_districts) %>% select(GEOID, STUSPS, CD115FP)) %>%
   mutate (race = gsub(', | ', '_', race)) %>%
   select(-moe:-summary_moe) %>%
@@ -431,7 +431,7 @@ tree %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
-#### 5.4 Trump support by educartional attainment
+#### 5.4 Trump support by educational attainment
 
 Trump ed/race dems by binned degrees of support.
 
@@ -580,31 +580,39 @@ names(dailykos_tile) <- c('inner', 'outer')
 Senators by state by part.
 
 ``` r
-sens <- senate_dets %>%
+sens <- csusa_senate_dets %>%
+  mutate(party = factor(party, levels =c('democrat', 
+                                         'republican', 
+                                         'independent'))) %>%
   arrange (state_code, party) %>%
   group_by(state_code) %>%
   mutate(layer = row_number())%>%
-  rename(State = state_code)
+  rename(State = state_code) %>%
+  select(State, party, layer)
 ```
 
 Plot. To address the consistency issue. Group by aplhabetical order -- such that if D-R, then D placed in inner. Independents?
 
 ``` r
 dailykos_tile$outer %>% 
-  left_join(sens %>% filter (layer == 1)) %>%
+  left_join(sens %>% filter (layer == 2)) %>%
   ggplot() + 
   geom_sf(aes(fill = party),
            color = 'black', alpha = .85) + 
   geom_sf(data = dailykos_tile$inner %>%
-            left_join(sens %>% filter (layer == 2)), 
+            left_join(sens %>% filter (layer == 1)), 
           aes(fill = party)) +
   ggsflabel::geom_sf_text(data = dailykos_tile$inner,
-                                 aes(label = State), size = 2.5) +
+                                 aes(label = State), size = 2.5,
+                          color = 'white') +
+  ggthemes::scale_fill_stata()+
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
-        legend.position = 'bottom')
+        legend.position = 'bottom') +
+  labs(title = "115th US Senate by state & Party",
+       caption = 'Data source: Daily Kos & VoteView')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
