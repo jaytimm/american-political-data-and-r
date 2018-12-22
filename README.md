@@ -358,7 +358,7 @@ us_house_districts %>%
                      race == 'WHITE ALONE, NOT HISPANIC OR LATINO')) %>%
   mutate(per = estimate / summary_est) %>%
   ggplot() + 
-  geom_sf(aes(fill = per)) + #, color = 'darkgray'
+  geom_sf(aes(fill = per)) + 
   
   scale_fill_distiller(palette = "BrBG",direction=1)+
   
@@ -467,7 +467,6 @@ ed_45 %>%
   
 ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
   geom_area(alpha = 0.75, color = 'gray') +
-  #ggthemes::scale_fill_economist()+
   scale_fill_brewer(palette = 'Paired') +
   scale_x_continuous(breaks = 1:10, labels = 1:10) + 
   theme(legend.position = "bottom")+
@@ -536,8 +535,36 @@ dailykos_pres_flips <- dailykos_pres_elections %>%
   na.omit()%>%
   mutate(flips = paste0(`2008`, '~',`2012`, '~', `2016`)) %>%
   group_by(flips) %>%
-  mutate(sum = n())
+  mutate(sum = n()) %>%
+  ungroup()
 ```
+
+``` r
+dailykos_pres_flips %>%
+  mutate(f08_12 = paste0(`2008`,'_', `2012`),
+         f12_16 = paste0(`2012`,'_', `2016`))%>%
+  select(District, f08_12, f12_16) %>%
+  gather(elect, flip, -District) %>%
+  group_by(elect, flip) %>%
+  summarize(value=n()) %>%
+  separate(flip, c('source', 'target'), spep = '_') %>%
+  separate(elect, c('e1', 'e2'), spep = '_') %>%
+  mutate(source = paste0(source, '_', gsub('f','', e1)),
+         target = paste0(target, '_', e2)) %>%
+  select(-e1, -e2)
+```
+
+    ## # A tibble: 8 x 3
+    ##   source    target     value
+    ##   <chr>     <chr>      <int>
+    ## 1 McCain_08 Obama_12       1
+    ## 2 McCain_08 Romney_12    191
+    ## 3 Obama_08  Obama_12     209
+    ## 4 Obama_08  Romney_12     31
+    ## 5 Obama_12  Clinton_16   189
+    ## 6 Obama_12  Trump_16      21
+    ## 7 Romney_12 Clinton_16    15
+    ## 8 Romney_12 Trump_16     207
 
 Note that this has been reproduced.
 
@@ -546,15 +573,18 @@ dailykos_shapes$cds %>%
   inner_join(dailykos_pres_flips)%>%
   ggplot() + 
   geom_sf(aes(fill = reorder(flips, -sum)),
-           color = 'gray', alpha = .85) + 
-    geom_sf(data=dailykos_shapes$states, 
+          color = 'gray', 
+          alpha = .85) + 
+  geom_sf(data=dailykos_shapes$states, 
           fill = NA, 
           show.legend = F, 
           color="black", 
           lwd=.7) +
-    ggsflabel::geom_sf_text(data = dailykos_shapes$states,
-                                aes(label = STATE), size = 2.5,
-                            color='white') +
+  ggsflabel::geom_sf_text(data = dailykos_shapes$states,
+                          aes(label = STATE), 
+                          size = 2.75,
+                          color='white',
+                          face='bold') +
   ggthemes::scale_fill_stata()+
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
@@ -566,7 +596,7 @@ dailykos_shapes$cds %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-30-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
 #### 6.3 Tile map of US states
 
@@ -600,12 +630,14 @@ dailykos_tile$outer %>%
   left_join(sens %>% filter (layer == 2)) %>%
   ggplot() + 
   geom_sf(aes(fill = party),
-           color = 'black', alpha = .85) + 
+          color = 'black', 
+          alpha = .85) + 
   geom_sf(data = dailykos_tile$inner %>%
             left_join(sens %>% filter (layer == 1)), 
           aes(fill = party)) +
   ggsflabel::geom_sf_text(data = dailykos_tile$inner,
-                                 aes(label = State), size = 2.5,
+                          aes(label = State), 
+                          size = 2.5,
                           color = 'white') +
   ggthemes::scale_fill_stata()+
   theme(axis.title.x=element_blank(),
@@ -618,10 +650,11 @@ dailykos_tile$outer %>%
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 ------------------------------------------------------------------------
 
+<iframe id="serviceFrameSend" src="../index.html" width="1000" height="1000"  frameborder="0">
 ### 7 A work in progress
 
 Indeed, a work in progress. But hopefully a nice round-up of useful open source resources for invewstigating & visualizing federal election results. I would love to here about additional/alternative open source resources!
