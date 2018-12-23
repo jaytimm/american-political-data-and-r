@@ -49,13 +49,7 @@ csusa_house_dets %>%
 
 > Pew Research has seemingly taken a leadership role in formally [delineating generations](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/), which have always been hazy, sources of contention, and good clean American fun. ... the beauty of generation naming is that it is truly a crowd-sourced effort.
 
-Generations in congress~
-
--   Millenials: 1981-1997
--   Generation X: 1965 -1980
--   Baby Boomers: 1946-1964
--   Silent: 1928-1945
--   Greatest: &lt; 1928
+> Generations in congress~ \* Millenials: 1981-1997 \* Generation X: 1965 -1980 \* Baby Boomers: 1946-1964 \* Silent: 1928-1945 \* Greatest: &lt; 1928
 
 I take some liberties here with this classfication, as I have issues with the duration of the Boomer generation. Namely: (a) Boomers-proper 1946-1954 & (b) Generation Jones 1955-1964.
 
@@ -133,7 +127,8 @@ rvoteview_house_50 <- lapply(c(66:115), function (x)
                     Rvoteview::member_search (
                       chamber = 'House', 
                       congress = x)) %>% 
-  bind_rows()
+  bind_rows() %>%
+  mutate(name = paste0 (gsub(', .*$', '', bioname), ' ', cqlabel))
 ```
 
 #### 2.1 Congressional composition
@@ -157,7 +152,53 @@ rvoteview_house_50 %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
-#### 2.2 Political ideologies historically
+#### 2.2 Political ideologies
+
+> Ideological extremes in the 111th US Congress.
+
+``` r
+extremes <- rvoteview_house_50 %>%
+  filter(congress == 111) %>%
+  select(name, nominate.dim1, nominate.dim2) %>%
+  gather (key =dim, value = estimate,
+          nominate.dim1:nominate.dim2) %>%
+  group_by(dim) %>%
+  filter(estimate == max((estimate)) | 
+           estimate == min((estimate)))
+```
+
+Plot.
+
+``` r
+rvoteview_house_50 %>%
+  filter (congress == 111) %>%
+  ggplot(aes(x=nominate.dim1, 
+             y=nominate.dim2, 
+             label = name
+             )) +
+          annotate("path",
+               x=cos(seq(0,2*pi,length.out=300)),
+               y=sin(seq(0,2*pi,length.out=300)),
+               color='gray',
+               size = .25) +
+  geom_point(aes(color = as.factor(party_code)), 
+             size= 2, 
+             shape= 17) +
+  ggrepel::geom_text_repel(
+    data  = filter(rvoteview_house_50, 
+                   congress==111,
+                   name %in% extremes$name),
+    nudge_y =  -0.025,
+    direction = "y",
+    hjust = 0) +
+  ggthemes::scale_color_stata() +
+  theme(legend.position = 'none') +
+  labs(title="DW-Nominate ideology scores for the 111th US House")
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
+
+#### 2.3 Political ideologies historically
 
 ``` r
 rvoteview_house_50 %>%
@@ -171,9 +212,9 @@ rvoteview_house_50 %>%
          caption = 'VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
-#### 2.3 NOKKEN & POOLE scores
+#### 2.4 NOKKEN & POOLE scores
 
 An alternative approach. --- Voteview data with
 
@@ -276,7 +317,7 @@ us_house_districts %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
 #### 4.3 Rural & urban voting
 
@@ -294,7 +335,7 @@ us_house_districts %>%
        caption = 'Source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-15-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 ------------------------------------------------------------------------
 
@@ -371,7 +412,7 @@ us_house_districts %>%
        caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
 #### 5.3 Educational attainment profiles by CD
 
@@ -427,7 +468,7 @@ tree %>%
            caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-22-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
 #### 5.4 Trump support by educational attainment
 
@@ -475,7 +516,7 @@ ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
   xlab('Level of support for 45')+ylab(NULL)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 ------------------------------------------------------------------------
 
@@ -562,7 +603,7 @@ dailykos_tile$outer %>%
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-30-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 #### 6.3 Hexmap of Congressional districs
 
@@ -623,7 +664,7 @@ dailykos_shapes$cds %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
 #### 6.4 Another perspective
 
@@ -635,119 +676,25 @@ dailykos_pres_flips %>%
   gather(elect, flip, -District) %>%
   group_by(elect, flip) %>%
   summarize(value=n()) %>%
-  separate(flip, c('source', 'target'), spep = '_') %>%
-  separate(elect, c('e1', 'e2'), spep = '_') %>%
-  mutate(source = paste0(source, '_', gsub('f','', e1)),
-         target = paste0(target, '_', e2)) %>%
+  separate(flip, c('source', 'target'), sep = '_') %>%
+  separate(elect, c('e1', 'e2'), sep = '_') %>%
+  mutate(source = paste0(source, ' ', gsub('f','', e1)),
+         target = paste0(target, '', e2)) %>%
   select(-e1, -e2) %>%
-  formattable::formattable()
+  knitr::kable()
 ```
 
-<table class="table table-condensed">
-<thead>
-<tr>
-<th style="text-align:right;">
-source
-</th>
-<th style="text-align:right;">
-target
-</th>
-<th style="text-align:right;">
-value
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-McCain\_08
-</td>
-<td style="text-align:right;">
-Obama\_12
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-McCain\_08
-</td>
-<td style="text-align:right;">
-Romney\_12
-</td>
-<td style="text-align:right;">
-191
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-Obama\_08
-</td>
-<td style="text-align:right;">
-Obama\_12
-</td>
-<td style="text-align:right;">
-209
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-Obama\_08
-</td>
-<td style="text-align:right;">
-Romney\_12
-</td>
-<td style="text-align:right;">
-31
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-Obama\_12
-</td>
-<td style="text-align:right;">
-Clinton\_16
-</td>
-<td style="text-align:right;">
-189
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-Obama\_12
-</td>
-<td style="text-align:right;">
-Trump\_16
-</td>
-<td style="text-align:right;">
-21
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-Romney\_12
-</td>
-<td style="text-align:right;">
-Clinton\_16
-</td>
-<td style="text-align:right;">
-15
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-Romney\_12
-</td>
-<td style="text-align:right;">
-Trump\_16
-</td>
-<td style="text-align:right;">
-207
-</td>
-</tr>
-</tbody>
-</table>
+| source    | target    |  value|
+|:----------|:----------|------:|
+| McCain 08 | Obama12   |      1|
+| McCain 08 | Romney12  |    191|
+| Obama 08  | Obama12   |    209|
+| Obama 08  | Romney12  |     31|
+| Obama 12  | Clinton16 |    189|
+| Obama 12  | Trump16   |     21|
+| Romney 12 | Clinton16 |     15|
+| Romney 12 | Trump16   |    207|
+
 A sankey diagram. Clearly a bit jazzier as an html widget proper.
 
 ``` r
@@ -757,7 +704,8 @@ plot_ly(
     type = "sankey",
     orientation = "h",
     node = list(
-      label = c("McCain '08", "Obama '08", "Romney '12", "Obama '12", "Trump '16", "Clinton '16"),
+      label = c("McCain '08", "Obama '08", "Romney '12", 
+                "Obama '12", "Trump '16", "Clinton '16"),
       color = c(r, b, r, b, r, b),
       pad = 15,
       thickness = 20,
@@ -774,7 +722,7 @@ plot_ly(
       size = 10))
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
 
 ------------------------------------------------------------------------
 

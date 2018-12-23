@@ -1,0 +1,38 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+
+```{r message=FALSE, warning=FALSE}
+library(plotly)
+
+plot_ly(
+    type = "sankey",
+    orientation = "h",
+
+    node = list(
+      label = c("McCain '08", "Obama '08", "Romney '12", "Obama '12", "Trump '16", "Clinton '16"),
+      color = c("red", "blue", "red", "blue", "red", "blue"),
+      pad = 15,
+      thickness = 20,
+      line = list(
+        color = "black",
+        width = 0.5
+      )
+    ),
+
+    link = list(
+      source = c(0,0,1,1,3,3,2,2),
+      target = c(3,2,3,2,5,4,5,4),
+      value =  c(1,191,209,31,189,21,15,207)
+    )
+  ) %>% 
+  layout(
+    title = "Presidential support by counts of Congressional Districts",
+    font = list(
+      size = 10
+    )
+)
+```
+
