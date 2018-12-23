@@ -198,7 +198,7 @@ rvoteview_house_50 %>%
                    name %in% extremes$name),
     nudge_y =  -0.025,
     direction = "y",
-    hjust = 0) +
+    hjust = 0, size = 2.5) +
   ggthemes::scale_color_stata() +
   theme(legend.position = 'none') +
   labs(title="DW-Nominate ideology scores for the 111th US House")
