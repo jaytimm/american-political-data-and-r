@@ -510,95 +510,7 @@ get_url_shape <- function (url) {
   x}
 ```
 
-#### 6.2 Hexmap of Congressional districs
-
-Apply function.
-
-``` r
-dailykos_shapes <- lapply (c(dailyvos_hex_cd, dailyvos_hex_st), 
-                           get_url_shape)
-names(dailykos_shapes) <- c('cds', 'states')
-#State hex shapefile is slightly broken.
-dailykos_shapes$states <- lwgeom::st_make_valid(dailykos_shapes$states)
-```
-
-Here, we consider Presidential voting ...
-
-``` r
-dailykos_pres_flips <- dailykos_pres_elections %>%
-  group_by(District, year) %>%
-  filter(percent == max(percent))%>%
-  mutate(dups = n()) %>%
-  filter(dups != 2) %>% #Kill ties --> n = 3
-  select(-percent, -dups) %>%
-  spread(year, candidate) %>%
-  na.omit()%>%
-  mutate(flips = paste0(`2008`, '~',`2012`, '~', `2016`)) %>%
-  group_by(flips) %>%
-  mutate(sum = n()) %>%
-  ungroup()
-```
-
-``` r
-dailykos_pres_flips %>%
-  mutate(f08_12 = paste0(`2008`,'_', `2012`),
-         f12_16 = paste0(`2012`,'_', `2016`))%>%
-  select(District, f08_12, f12_16) %>%
-  gather(elect, flip, -District) %>%
-  group_by(elect, flip) %>%
-  summarize(value=n()) %>%
-  separate(flip, c('source', 'target'), spep = '_') %>%
-  separate(elect, c('e1', 'e2'), spep = '_') %>%
-  mutate(source = paste0(source, '_', gsub('f','', e1)),
-         target = paste0(target, '_', e2)) %>%
-  select(-e1, -e2)
-```
-
-    ## # A tibble: 8 x 3
-    ##   source    target     value
-    ##   <chr>     <chr>      <int>
-    ## 1 McCain_08 Obama_12       1
-    ## 2 McCain_08 Romney_12    191
-    ## 3 Obama_08  Obama_12     209
-    ## 4 Obama_08  Romney_12     31
-    ## 5 Obama_12  Clinton_16   189
-    ## 6 Obama_12  Trump_16      21
-    ## 7 Romney_12 Clinton_16    15
-    ## 8 Romney_12 Trump_16     207
-
-Note that this has been reproduced.
-
-``` r
-dailykos_shapes$cds %>%
-  inner_join(dailykos_pres_flips)%>%
-  ggplot() + 
-  geom_sf(aes(fill = reorder(flips, -sum)),
-          color = 'gray', 
-          alpha = .85) + 
-  geom_sf(data=dailykos_shapes$states, 
-          fill = NA, 
-          show.legend = F, 
-          color="black", 
-          lwd=.7) +
-  ggsflabel::geom_sf_text(data = dailykos_shapes$states,
-                          aes(label = STATE), 
-                          size = 2.75,
-                          color='white',
-                          face='bold') +
-  ggthemes::scale_fill_stata()+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        legend.title=element_blank(),
-        legend.position = 'bottom') +
-  labs(title = "Presidential election results - 2008, 2012 & 2016",
-       caption = 'Data source: Daily Kos')
-```
-
-![](README_files/figure-markdown_github/unnamed-chunk-31-1.png)
-
-#### 6.3 Tile map of US states
+#### 6.2 Tile map of US states
 
 Extract shapefiles from ...
 
@@ -650,37 +562,200 @@ dailykos_tile$outer %>%
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
-------------------------------------------------------------------------
+#### 6.3 Hexmap of Congressional districs
+
+Apply function.
+
+``` r
+dailykos_shapes <- lapply (c(dailyvos_hex_cd, dailyvos_hex_st), 
+                           get_url_shape)
+names(dailykos_shapes) <- c('cds', 'states')
+#State hex shapefile is slightly broken.
+dailykos_shapes$states <- lwgeom::st_make_valid(dailykos_shapes$states)
+```
+
+Here, we consider Presidential voting ...
+
+``` r
+dailykos_pres_flips <- dailykos_pres_elections %>%
+  group_by(District, year) %>%
+  filter(percent == max(percent))%>%
+  mutate(dups = n()) %>%
+  filter(dups != 2) %>% #Kill ties --> n = 3
+  select(-percent, -dups) %>%
+  spread(year, candidate) %>%
+  na.omit()%>%
+  mutate(flips = paste0(`2008`, '~',`2012`, '~', `2016`)) %>%
+  group_by(flips) %>%
+  mutate(sum = n()) %>%
+  ungroup()
+```
+
+Note that this has been reproduced.
+
+``` r
+dailykos_shapes$cds %>%
+  inner_join(dailykos_pres_flips)%>%
+  ggplot() + 
+  geom_sf(aes(fill = reorder(flips, -sum)),
+          color = 'gray', 
+          alpha = .85) + 
+  geom_sf(data=dailykos_shapes$states, 
+          fill = NA, 
+          show.legend = F, 
+          color="black", 
+          lwd=.7) +
+  ggsflabel::geom_sf_text(data = dailykos_shapes$states,
+                          aes(label = STATE), 
+                          size = 2.75,
+                          color='white',
+                          face='bold') +
+  ggthemes::scale_fill_stata()+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        legend.title=element_blank(),
+        legend.position = 'bottom') +
+  labs(title = "Presidential election results - 2008, 2012 & 2016",
+       caption = 'Data source: Daily Kos')
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
+
+#### 6.4 Another perspective
+
+``` r
+dailykos_pres_flips %>%
+  mutate(f08_12 = paste0(`2008`,'_', `2012`),
+         f12_16 = paste0(`2012`,'_', `2016`))%>%
+  select(District, f08_12, f12_16) %>%
+  gather(elect, flip, -District) %>%
+  group_by(elect, flip) %>%
+  summarize(value=n()) %>%
+  separate(flip, c('source', 'target'), spep = '_') %>%
+  separate(elect, c('e1', 'e2'), spep = '_') %>%
+  mutate(source = paste0(source, '_', gsub('f','', e1)),
+         target = paste0(target, '_', e2)) %>%
+  select(-e1, -e2) %>%
+  formattable::formattable()
+```
+
+<table class="table table-condensed">
+<thead>
+<tr>
+<th style="text-align:right;">
+source
+</th>
+<th style="text-align:right;">
+target
+</th>
+<th style="text-align:right;">
+value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+McCain\_08
+</td>
+<td style="text-align:right;">
+Obama\_12
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+McCain\_08
+</td>
+<td style="text-align:right;">
+Romney\_12
+</td>
+<td style="text-align:right;">
+191
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Obama\_08
+</td>
+<td style="text-align:right;">
+Obama\_12
+</td>
+<td style="text-align:right;">
+209
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Obama\_08
+</td>
+<td style="text-align:right;">
+Romney\_12
+</td>
+<td style="text-align:right;">
+31
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Obama\_12
+</td>
+<td style="text-align:right;">
+Clinton\_16
+</td>
+<td style="text-align:right;">
+189
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Obama\_12
+</td>
+<td style="text-align:right;">
+Trump\_16
+</td>
+<td style="text-align:right;">
+21
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Romney\_12
+</td>
+<td style="text-align:right;">
+Clinton\_16
+</td>
+<td style="text-align:right;">
+15
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+Romney\_12
+</td>
+<td style="text-align:right;">
+Trump\_16
+</td>
+<td style="text-align:right;">
+207
+</td>
+</tr>
+</tbody>
+</table>
+A sankey diagram. Clearly a bit jazzier as an html widget proper.
 
 ``` r
 library(plotly)
-```
-
-    ## Warning: package 'plotly' was built under R version 3.4.4
-
-    ## 
-    ## Attaching package: 'plotly'
-
-    ## The following object is masked from 'package:ggplot2':
-    ## 
-    ##     last_plot
-
-    ## The following object is masked from 'package:stats':
-    ## 
-    ##     filter
-
-    ## The following object is masked from 'package:graphics':
-    ## 
-    ##     layout
-
-``` r
 r<- '#9e5055'; b <- '#395f81'
 plot_ly(
     type = "sankey",
     orientation = "h",
-
     node = list(
       label = c("McCain '08", "Obama '08", "Romney '12", "Obama '12", "Trump '16", "Clinton '16"),
       color = c(r, b, r, b, r, b),
@@ -688,25 +763,20 @@ plot_ly(
       thickness = 20,
       line = list(
         color = "black",
-        width = 0.5
-      )
-    ),
-
+        width = 0.5)),
     link = list(
       source = c(0,0,1,1,3,3,2,2),
       target = c(3,2,3,2,5,4,5,4),
-      value =  c(1,191,209,31,189,21,15,207)
-    )
-  ) %>% 
+      value =  c(1,191,209,31,189,21,15,207))) %>% 
   layout(
     title = "Presidential support by Congressional District count",
     font = list(
-      size = 10
-    )
-)
+      size = 10))
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
+
+------------------------------------------------------------------------
 
 ### 7 A work in progress
 
