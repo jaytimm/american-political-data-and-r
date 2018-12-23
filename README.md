@@ -1,6 +1,8 @@
 Federal election data & R: some resources & methods
 ---------------------------------------------------
 
+Federal elections returns, ... a brief layman's guide to quantitative political perspectives & methods using R.
+
 A collection of political data resources. Many of the data collated here should be more easily & publicly accessible. It is not clear why they are not.
 
 Lots of help from the folks at ....
@@ -14,6 +16,8 @@ Lots of help from the folks at ....
 -   [7 A work in progress](#8-A-work-in-progress)
 
 Some additional text. A bit of a layman's guide to working with federal election data using R. I am posting this on Git Hub (as opposed to my website/blog) as I hope to develop this as a resource.
+
+A guide to accessing some open source resources for ... as well as integrating these resources for
 
 ``` r
 library(tidyverse)
@@ -163,10 +167,10 @@ rvoteview_house_50 %>%
 ``` r
 extremes <- rvoteview_house_50 %>%
   filter(congress == 111) %>%
-  select(name, nominate.dim1, nominate.dim2) %>%
+  select(name, party_name, nominate.dim1, nominate.dim2) %>%
   gather (key =dim, value = estimate,
           nominate.dim1:nominate.dim2) %>%
-  group_by(dim) %>%
+  group_by(party_name,dim) %>%
   filter(estimate == max((estimate)) | 
            estimate == min((estimate)))
 ```
@@ -627,16 +631,48 @@ Here, we consider Presidential voting ...
 dailykos_pres_flips <- dailykos_pres_elections %>%
   group_by(District, year) %>%
   filter(percent == max(percent))%>%
+  
   mutate(dups = n()) %>%
   filter(dups != 2) %>% #Kill ties --> n = 3
-  select(-percent, -dups) %>%
-  spread(year, candidate) %>%
-  na.omit()%>%
-  mutate(flips = paste0(`2008`, '~',`2012`, '~', `2016`)) %>%
+  
+  select(-percent, -dups) %>% #
+  arrange(District) %>%
+  spread(year, candidate) 
+
+#Some hand edits to address percentage "ties" 
+dailykos_pres_flips$`2012`[dailykos_pres_flips$District == 'Florida 7th'] <- 'Obama' 
+dailykos_pres_flips$`2008`[dailykos_pres_flips$District == 'Ohio 10th'] <- 'Obama' 
+dailykos_pres_flips$`2008`[dailykos_pres_flips$District == 'New York 22nd'] <- 'McCain'
+```
+
+Some hand edits to address ties.
+
+``` r
+dailykos_pres_flips <- dailykos_pres_flips %>%
+  mutate(flips = paste0(`2008`, '-',`2012`, '-', `2016`)) %>%
   group_by(flips) %>%
   mutate(sum = n()) %>%
   ungroup()
 ```
+
+Summary
+
+``` r
+dailykos_pres_flips %>%
+  group_by(flips) %>%
+  summarize(n = n()) %>%
+  arrange(desc(n)) %>%
+  ggplot(aes(x=reorder(flips, n), 
+             y=n, 
+             fill=reorder(flips, -n))) + 
+  geom_col(show.legend = FALSE, alpha = 0.85)+
+  ggthemes::scale_fill_stata() +
+  xlab(NULL) + ylab(NULL) +
+  coord_flip() +
+  labs(caption = 'Data source: Daily Kos')
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-36-1.png)
 
 Note that this has been reproduced.
 
@@ -668,7 +704,7 @@ dailykos_shapes$cds %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
 
 #### 6.4 Another perspective
 
@@ -691,13 +727,13 @@ dailykos_pres_flips %>%
 | source    | target     |  value|
 |:----------|:-----------|------:|
 | McCain 08 | Obama 12   |      1|
-| McCain 08 | Romney 12  |    191|
-| Obama 08  | Obama 12   |    209|
-| Obama 08  | Romney 12  |     31|
-| Obama 12  | Clinton 16 |    189|
+| McCain 08 | Romney 12  |    192|
+| Obama 08  | Obama 12   |    210|
+| Obama 08  | Romney 12  |     32|
+| Obama 12  | Clinton 16 |    190|
 | Obama 12  | Trump 16   |     21|
 | Romney 12 | Clinton 16 |     15|
-| Romney 12 | Trump 16   |    207|
+| Romney 12 | Trump 16   |    209|
 
 A sankey diagram. Clearly a bit jazzier as an html widget proper.
 
@@ -713,20 +749,19 @@ plot_ly(
       color = c(r, b, r, b, r, b),
       pad = 15,
       thickness = 20,
-      line = list(
-        color = "black",
-        width = 0.5)),
+      line = list(color = "black", width = 0.5)),
+    
     link = list(
       source = c(0,0,1,1,3,3,2,2),
       target = c(3,2,3,2,5,4,5,4),
-      value =  c(1,191,209,31,189,21,15,207))) %>% 
-  layout(
-    title = "Presidential support by Congressional District count",
-    font = list(
-      size = 10))
+      value =  c(1,192,210,32,189,21,15,207))) %>% 
+  
+    layout(
+      title = "Presidential support by Congressional District count",
+      font = list(size = 10))
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 ------------------------------------------------------------------------
 
