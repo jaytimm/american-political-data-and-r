@@ -47,9 +47,13 @@ csusa_house_dets %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
-> Pew Research has seemingly taken a leadership role in formally [delineating generations](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/), which have always been hazy, sources of contention, and good clean American fun. ... the beauty of generation naming is that it is truly a crowd-sourced effort.
+> Pew Research has seemingly taken a leadership role in formally [delineating generations](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/), which have always been hazy, sources of contention, and good clean American fun.
 
-> Generations in congress~ \* Millenials: 1981-1997 \* Generation X: 1965 -1980 \* Baby Boomers: 1946-1964 \* Silent: 1928-1945 \* Greatest: &lt; 1928
+-   Millenials: 1981-1997
+-   Generation X: 1965 -1980
+-   Baby Boomers: 1946-1964
+-   Silent: 1928-1945
+-   Greatest: &lt; 1928
 
 I take some liberties here with this classfication, as I have issues with the duration of the Boomer generation. Namely: (a) Boomers-proper 1946-1954 & (b) Generation Jones 1955-1964.
 
@@ -107,7 +111,7 @@ csusa_house_dets %>%
             #plot.title = element_text(size=12),
             legend.title=element_blank()) +
       labs(title = '115th House composition by religion',
-           caption = 'Source: CivilServiceUSA')
+           caption = 'Data source: CivilServiceUSA')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
@@ -147,7 +151,7 @@ rvoteview_house_50 %>%
   geom_hline(yintercept = 0.5, color = 'white', linetype = 2) +
   theme(legend.position = "bottom")+
   labs(title = "House Composition over the last 50 congresses",
-       caption = 'VoteView')
+       caption = 'Data source: VoteView')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
@@ -679,21 +683,21 @@ dailykos_pres_flips %>%
   separate(flip, c('source', 'target'), sep = '_') %>%
   separate(elect, c('e1', 'e2'), sep = '_') %>%
   mutate(source = paste0(source, ' ', gsub('f','', e1)),
-         target = paste0(target, '', e2)) %>%
+         target = paste0(target, ' ', e2)) %>%
   select(-e1, -e2) %>%
   knitr::kable()
 ```
 
-| source    | target    |  value|
-|:----------|:----------|------:|
-| McCain 08 | Obama12   |      1|
-| McCain 08 | Romney12  |    191|
-| Obama 08  | Obama12   |    209|
-| Obama 08  | Romney12  |     31|
-| Obama 12  | Clinton16 |    189|
-| Obama 12  | Trump16   |     21|
-| Romney 12 | Clinton16 |     15|
-| Romney 12 | Trump16   |    207|
+| source    | target     |  value|
+|:----------|:-----------|------:|
+| McCain 08 | Obama 12   |      1|
+| McCain 08 | Romney 12  |    191|
+| Obama 08  | Obama 12   |    209|
+| Obama 08  | Romney 12  |     31|
+| Obama 12  | Clinton 16 |    189|
+| Obama 12  | Trump 16   |     21|
+| Romney 12 | Clinton 16 |     15|
+| Romney 12 | Trump 16   |    207|
 
 A sankey diagram. Clearly a bit jazzier as an html widget proper.
 
