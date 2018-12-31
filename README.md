@@ -1,5 +1,5 @@
-Federal election data & R: some resources & methods
----------------------------------------------------
+American political data & R: some open source resources & methods
+-----------------------------------------------------------------
 
 Federal elections returns, ... a brief layman's guide to quantitative political perspectives & methods using R.
 
@@ -78,6 +78,7 @@ gens115 %>%
              y=n, 
              fill=gen)) + 
   geom_col(show.legend = FALSE, alpha = 0.85)+
+  geom_text(aes(label = n), size = 3)+
   ggthemes::scale_fill_stata() +
   xlab(NULL) + ylab(NULL) +
   facet_wrap(~party) +
@@ -93,7 +94,7 @@ gens115 %>%
 And perhaps a look at religion for good measure.
 
 ``` r
-cols <- RColorBrewer::brewer.pal(4, 'Set1')
+cols <- RColorBrewer::brewer.pal(4, 'Set1') 
 cols <- colorRampPalette(cols)(31)
 
 csusa_house_dets %>%
@@ -129,8 +130,6 @@ So, some simple examples of what can be with .... And here's hoping they continu
 > The [VoteView](https://voteview.com/) project has been the standard for ... I oddly enough became hip to their methods via linguisti
 
 ``` r
-#sen115 <- Rvoteview:: member_search(chamber= 'Senate', congress = 115)
-
 rvoteview_house_50 <- lapply(c(66:115), function (x)
                     Rvoteview::member_search (
                       chamber = 'House', 
@@ -153,7 +152,13 @@ rvoteview_house_50 %>%
   geom_area(alpha = 0.85, color = 'gray') +
   ggthemes::scale_fill_stata()+
   geom_hline(yintercept = 0.5, color = 'white', linetype = 2) +
-  theme(legend.position = "bottom")+
+  annotate("text", x = 70, y = .9, label = "Democrat", 
+           color = 'white',
+           size = 5) +
+  annotate("text", x = 70, y = .1, label = "Republican", 
+           color = 'white',
+           size = 5) +
+  theme(legend.position = "none")+
   labs(title = "House Composition over the last 50 congresses",
        caption = 'Data source: VoteView')
 ```
@@ -201,7 +206,8 @@ rvoteview_house_50 %>%
     hjust = 0, size = 2.5) +
   ggthemes::scale_color_stata() +
   theme(legend.position = 'none') +
-  labs(title="DW-Nominate ideology scores for the 111th US House")
+  labs(title="DW-Nominate ideology scores for the 111th US House",
+       caption = 'Data source: VoteView')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
@@ -216,8 +222,8 @@ rvoteview_house_50 %>%
     geom_vline(xintercept = 0, color = 'black', linetype = 2) +
     theme(legend.position = "none") + 
     ylab("")+
-    labs(title = "Political ideologies in US Houses 90 to 115",
-         caption = 'VoteView')
+    labs(title = "Probability distributions of political ideology scores in US Houses 90 to 115",
+         caption = 'Data source: VoteView')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-10-1.png)
@@ -311,17 +317,16 @@ us_house_districts %>%
   left_join(dailykos_pres_elections %>% 
               filter(year == '2016') %>%
               spread(candidate, percent) %>%
-              mutate(dif = Trump-Clinton)) %>%
+              mutate(Margin = Trump-Clinton)) %>%
   ggplot() + 
-  geom_sf(aes(fill = dif)) +
+  geom_sf(aes(fill = Margin)) +
   scale_fill_distiller(palette = "RdBu",direction=-1)+
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
         legend.position = 'bottom') +
-  labs(title = "Trump support - Clinton support",
-       subtitle = '2016 Presidential Elections',
+  labs(title = "Trump popular vote margins by congressional district",
        caption = 'Data source: Daily Kos')
 ```
 
@@ -333,14 +338,16 @@ Using the area of congressional districts (in log square meters) as a proxy for 
 
 ``` r
 us_house_districts %>%
-  left_join(dailykos_pres_elections %>%
-              filter(candidate == 'Trump')) %>%
+  left_join(dailykos_pres_elections %>% 
+              filter(year == '2016') %>%
+              spread(candidate, percent) %>%
+              mutate(Margin = Trump-Clinton)) %>%
   mutate(area = as.numeric(gsub(' m^2]', '', sf::st_area(.)))) %>%
-  ggplot(aes(percent, log(area))) +
+  ggplot(aes(Margin, log(area))) +
   geom_point(color = 'steelblue') +
   geom_smooth(method="loess", se=T, color = 'darkgrey')+
-  labs(title = "2016 Trump support vs. log(area) of congressional district",
-       caption = 'Source: Daily Kos')
+  labs(title = "Trump vote margins vs. log(area) of congressional district",
+       caption = 'Data source: Daily Kos')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
@@ -394,29 +401,32 @@ tidycens_data <- tidycensus::get_acs(geography = 'congressional district',
   select(GEOID, label, gender, race, estimate:summary_moe)
 ```
 
-#### 5.2 White males without college degrees
+#### 5.2 The White working class
 
-White men without college degree. As percentage of total population over 25. ie, as a percentage of the electorate. Also -- map zoomed into some interesting sub0location. NEED to re-project.
+White men without college degree. As percentage of total population over 25. ie, as a percentage of the electorate.
 
 ``` r
 us_house_districts %>% 
   filter(!gsub('..$' ,'', GEOID) %in% nonx) %>%
   left_join(tidycens_data %>% 
               filter(label != 'Bachelor\'s degree or higher' &
-                     gender == 'Male' & 
-                     race == 'WHITE ALONE, NOT HISPANIC OR LATINO')) %>%
+                     #gender == 'Male' & 
+                     race == 'WHITE ALONE, NOT HISPANIC OR LATINO')%>%
+              group_by(GEOID) %>%
+              summarize(estimate = sum(estimate), 
+                        summary_est = mean(summary_est))) %>%
   mutate(per = estimate / summary_est) %>%
   ggplot() + 
   geom_sf(aes(fill = per)) + 
   
-  scale_fill_distiller(palette = "BrBG",direction=1)+
+  scale_fill_distiller(palette = "BrBG", direction=1)+
   
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
         legend.position = 'bottom') +
-  labs(title = "Percentage of White males w/o a college degree by congressional district",
+  labs(title = "White working class (%) by congressional district",
        caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
@@ -446,9 +456,7 @@ tree <- tidycens_data %>%
   ungroup()
 ```
 
-Non-College White share. WE should check how this is calculated. Or at least define how we define it.
-
-Also: WE need to cross GEOID to actual state/congressional districts for some reference.
+thoughts.
 
 ``` r
 samp_n <- sample(unique(tree$GEOID), 12)
@@ -573,15 +581,16 @@ names(dailykos_tile) <- c('inner', 'outer')
 Senators by state by part.
 
 ``` r
-sens <- csusa_senate_dets %>%
-  mutate(party = factor(party, levels =c('democrat', 
-                                         'republican', 
-                                         'independent'))) %>%
-  arrange (state_code, party) %>%
-  group_by(state_code) %>%
+sens <- rvoteview_senate_50 %>%
+  mutate(party_name = factor(party_name, levels =c('Democratic Party', 
+                                         'Republican Party', 
+                                         'Independent'))) %>%
+  filter(congress %in% c(85, 91, 97, 103, 109, 115)) %>%
+  arrange (state_abbrev, party_name) %>%
+  group_by(congress, state_abbrev) %>%
   mutate(layer = row_number())%>%
-  rename(State = state_code) %>%
-  select(State, party, layer)
+  rename(State = state_abbrev) %>%
+  select(congress, State, party_name, layer)
 ```
 
 Plot. To address the consistency issue. Group by aplhabetical order -- such that if D-R, then D placed in inner. Independents?
@@ -590,12 +599,12 @@ Plot. To address the consistency issue. Group by aplhabetical order -- such that
 dailykos_tile$outer %>% 
   left_join(sens %>% filter (layer == 2)) %>%
   ggplot() + 
-  geom_sf(aes(fill = party),
+  geom_sf(aes(fill = party_name),
           color = 'black', 
           alpha = .85) + 
   geom_sf(data = dailykos_tile$inner %>%
             left_join(sens %>% filter (layer == 1)), 
-          aes(fill = party)) +
+          aes(fill = party_name)) +
   ggsflabel::geom_sf_text(data = dailykos_tile$inner,
                           aes(label = State), 
                           size = 2.5,
@@ -607,11 +616,12 @@ dailykos_tile$outer %>%
         axis.text.y=element_blank(),
         legend.title=element_blank(),
         legend.position = 'bottom') +
-  labs(title = "115th US Senate Composition by State & Party",
+  facet_wrap(~congress) +
+  labs(title = "US Senate Composition by Congress, State & Party",
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
 #### 6.3 Hexmap of Congressional districs
 
@@ -666,13 +676,15 @@ dailykos_pres_flips %>%
              y=n, 
              fill=reorder(flips, -n))) + 
   geom_col(show.legend = FALSE, alpha = 0.85)+
+  geom_text(aes(label = n), size = 3)+
   ggthemes::scale_fill_stata() +
   xlab(NULL) + ylab(NULL) +
   coord_flip() +
-  labs(caption = 'Data source: Daily Kos')
+  labs(title = 'Presidential winner lineages - 2008-16',
+       caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-36-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
 
 Note that this has been reproduced.
 
@@ -700,11 +712,11 @@ dailykos_shapes$cds %>%
         axis.text.y=element_blank(),
         legend.title=element_blank(),
         legend.position = 'bottom') +
-  labs(title = "Presidential election results - 2008, 2012 & 2016",
+  labs(title = "Presidential election results by CD - 2008, 2012 & 2016",
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-38-1.png)
 
 #### 6.4 Another perspective
 
@@ -761,7 +773,7 @@ plot_ly(
       font = list(size = 10))
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-40-1.png)
 
 ------------------------------------------------------------------------
 
