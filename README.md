@@ -152,10 +152,10 @@ rvoteview_house_50 %>%
   geom_area(alpha = 0.85, color = 'gray') +
   ggthemes::scale_fill_stata()+
   geom_hline(yintercept = 0.5, color = 'white', linetype = 2) +
-  annotate("text", x = 73, y = .9, label = "Democrat", 
+  annotate("text", x = 73, y = .9, label = "Democrats", 
            color = 'white',
            size = 4) +
-  annotate("text", x = 73, y = .1, label = "Republican", 
+  annotate("text", x = 73, y = .1, label = "Republicans", 
            color = 'white',
            size = 4) +
   theme(legend.position = "none")+
@@ -309,6 +309,24 @@ dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]',
   left_join(data.frame(us_house_districts) %>% select (-geometry))
 ```
 
+Our new data.
+
+``` r
+dailykos_pres_elections %>%
+  select(District, GEOID, year, candidate, percent) %>%
+  head() %>%
+  knitr::kable()
+```
+
+| District    | GEOID | year | candidate |  percent|
+|:------------|:------|:-----|:----------|--------:|
+| Alabama 1st | 0101  | 2016 | Clinton   |     34.1|
+| Alabama 2nd | 0102  | 2016 | Clinton   |     33.0|
+| Alabama 3rd | 0103  | 2016 | Clinton   |     32.3|
+| Alabama 4th | 0104  | 2016 | Clinton   |     17.4|
+| Alabama 5th | 0105  | 2016 | Clinton   |     31.3|
+| Alabama 6th | 0106  | 2016 | Clinton   |     26.1|
+
 #### 4.2 Presidential Election results - 2016
 
 ``` r
@@ -326,11 +344,11 @@ us_house_districts %>%
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
         legend.position = 'bottom') +
-  labs(title = "Trump popular vote margins by congressional district",
+  labs(title = "Trump vote margins by congressional district",
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 #### 4.3 Rural & urban voting
 
@@ -350,7 +368,7 @@ us_house_districts %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 ------------------------------------------------------------------------
 
@@ -430,7 +448,7 @@ us_house_districts %>%
        caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-22-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
 #### 5.3 Educational attainment profiles by CD
 
@@ -484,7 +502,7 @@ tree %>%
            caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-24-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
 #### 5.4 Trump support by educational attainment
 
@@ -532,7 +550,7 @@ ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
   xlab('Level of support for 45')+ylab(NULL)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-28-1.png)
 
 ------------------------------------------------------------------------
 
@@ -617,11 +635,11 @@ dailykos_tile$outer %>%
         legend.title=element_blank(),
         legend.position = 'bottom') +
   facet_wrap(~congress) +
-  labs(title = "US Senate Composition by Congress, State & Party",
+  labs(title = "US Senate Composition by Congress, State & Party: Snapshots",
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 #### 6.3 Hexmap of Congressional districs
 
@@ -684,7 +702,7 @@ dailykos_pres_flips %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-38-1.png)
 
 Note that this has been reproduced.
 
@@ -712,11 +730,11 @@ dailykos_shapes$cds %>%
         axis.text.y=element_blank(),
         legend.title=element_blank(),
         legend.position = 'bottom') +
-  labs(title = "Presidential election results by CD - 2008, 2012 & 2016",
+  labs(title = "Presidential election results by district - 2008, 2012 & 2016",
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-38-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 #### 6.4 Another perspective
 
@@ -773,7 +791,7 @@ plot_ly(
       font = list(size = 10))
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-40-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-41-1.png)
 
 ------------------------------------------------------------------------
 
