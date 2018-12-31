@@ -152,12 +152,12 @@ rvoteview_house_50 %>%
   geom_area(alpha = 0.85, color = 'gray') +
   ggthemes::scale_fill_stata()+
   geom_hline(yintercept = 0.5, color = 'white', linetype = 2) +
-  annotate("text", x = 70, y = .9, label = "Democrat", 
+  annotate("text", x = 73, y = .9, label = "Democrat", 
            color = 'white',
-           size = 5) +
-  annotate("text", x = 70, y = .1, label = "Republican", 
+           size = 4) +
+  annotate("text", x = 73, y = .1, label = "Republican", 
            color = 'white',
-           size = 5) +
+           size = 4) +
   theme(legend.position = "none")+
   labs(title = "House Composition over the last 50 congresses",
        caption = 'Data source: VoteView')
@@ -607,7 +607,7 @@ dailykos_tile$outer %>%
           aes(fill = party_name)) +
   ggsflabel::geom_sf_text(data = dailykos_tile$inner,
                           aes(label = State), 
-                          size = 2.5,
+                          size = 1.75,
                           color = 'white') +
   ggthemes::scale_fill_stata()+
   theme(axis.title.x=element_blank(),
