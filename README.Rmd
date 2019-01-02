@@ -1,38 +1,51 @@
-American political data & R: some open source resources & methods
------------------------------------------------------------------
+---
+output:
+  md_document:
+    variant: markdown_github
+    toc: FALSE
+---
+
+##American political data & R: some open source resources & methods
 
 A layman's guide to accessing, integrating, and exploring US political data from a heterogenous collection of open government resources, including presidential election returns (2008-2016 by congressional district), lawmaker biographies & political ideologies, and congressional district demographics.
 
 Data presented here have been collated from [The Daily Kos](), [CivilServiceUSA](), and the R packages [tidycensus]() & [Rvoteview]().
 
--   [1 Lawmaker details](#1-Lawmaker-details)
--   [2 Political Ideologies](#2-political-ideologies-and-congressional-composition)
--   [3 Political geometries](#4-political-geometries)
--   [4 Federal election results](#5-Federal-election-results)
--   [5 Census data and congressional districts](#6-Census-data-and-congressional-districts)
--   [6 Alternative geometries](#7-Funky-geometries)
--   [7 A work in progress](#8-A-work-in-progress)
 
-Hopefully a useful open source framework for investigating past & future election results and congresses using R. All work presented here can be reproduced in its entirety. A developing resource.
+- [1 Lawmaker details](#1-Lawmaker-details)
+- [2 Political Ideologies](#2-political-ideologies-and-congressional-composition)
+- [3 Political geometries](#4-political-geometries)
+- [4 Federal election results](#5-Federal-election-results)
+- [5 Census data and congressional districts](#6-Census-data-and-congressional-districts)
+- [6 Alternative geometries](#7-Funky-geometries)
+- [7 A work in progress](#8-A-work-in-progress)
 
-``` r
+
+Hopefully a useful open source framework for investigating past & future election results and congresses using R.  All work presented here can be reproduced in its entirety. A developing resource.
+
+
+```{r message=FALSE, warning=FALSE}
 library(tidyverse)
 ```
 
-------------------------------------------------------------------------
+
+---
 
 ### 1 Lawmaker details
 
-> [CivilServiceUSA](https://github.com/CivilServiceUSA) provides a wonderful collection of details about each lawmaker in the 115th Congress, including age, race, religion, biographical details, and social media info. A full roll call of information available for each lawmaker is available [here](https://github.com/CivilServiceUSA/us-house#data-set). Here, we consider some different perspectives on the composition of the 115th House utilizing these data.
+> [CivilServiceUSA](https://github.com/CivilServiceUSA) provides a wonderful collection of details about each lawmaker in the 115th Congress, including age, race, religion, biographical details, and social media info.  A full roll call of information available for each lawmaker is available [here](https://github.com/CivilServiceUSA/us-house#data-set). Here, we consider some different perspectives on the composition of the 115th House utilizing these data.
 
-``` r
+
+```{r message=FALSE, warning=FALSE}
 csusa_senate_dets <- jsonlite::fromJSON(url('https://raw.githubusercontent.com/CivilServiceUSA/us-senate/master/us-senate/data/us-senate.json'))
 csusa_house_dets <- jsonlite::fromJSON(url('https://raw.githubusercontent.com/CivilServiceUSA/us-house/master/us-house/data/us-house.json'))
 ```
 
+
+
 #### 1.1 Age & generational demographics of the 115th House
 
-``` r
+```{r fig.height=4.5, message=FALSE, warning=FALSE}
 csusa_house_dets %>%
   mutate (years = 
             lubridate::year(as.Date(Sys.Date())) -
@@ -43,19 +56,20 @@ csusa_house_dets %>%
        caption = 'Data source: CivilServiceUSA')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
-> [Pew Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/) uses the following set of birth-year ranges to delineate generations.
+> [Pew Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/) uses the following set of birth-year ranges to delineate generations.  
 
--   Millenials: 1981-1997
--   Generation X: 1965 -1980
--   Baby Boomers: 1946-1964
--   Silent: 1928-1945
--   Greatest: &lt; 1928
+* Millenials: 1981-1997
+* Generation X: 1965 -1980
+* Baby Boomers: 1946-1964
+* Silent: 1928-1945
+* Greatest: < 1928
 
-> For good measure, we provide a more detailed classification of Boomers --- lumping folks born post-WWII with those born in the ~sixties is a problem for me. So, (a) Boomers-proper 1946-1954 & (b) [Generation Jones](https://en.wikipedia.org/wiki/Generation_Jones) 1955-1964.
 
-``` r
+> For good measure, we provide a more detailed classification of Boomers --- lumping folks born post-WWII with those born in the ~sixties is a problem for me. So, (a) Boomers-proper 1946-1954 & (b) [Generation Jones](https://en.wikipedia.org/wiki/Generation_Jones) 1955-1964. 
+
+
+```{r fig.height=3}
 gens115 <- csusa_house_dets %>%
   mutate (yob = as.numeric(gsub('-.*$', '', date_of_birth))) %>%
   mutate (gen = case_when (yob < 1998 & yob > 1980 ~ '4- Millenial',
@@ -81,11 +95,12 @@ gens115 %>%
        caption = 'Data source: CivilServiceUSA')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
+
+
 
 #### 1.2 Faith & the 115th House
 
-``` r
+```{r fig.height=5}
 cols <- RColorBrewer::brewer.pal(4, 'Set1') 
 cols <- colorRampPalette(cols)(31)
 
@@ -111,15 +126,15 @@ csusa_house_dets %>%
            caption = 'Data source: CivilServiceUSA')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
-------------------------------------------------------------------------
+---
 
 ### 2 Political ideologies and congressional composition
 
-> The [VoteView](https://voteview.com/) project provides roll call-based political ideology scores for all lawmakers in the history of the US Congress. Data can be used to investigate congressional composition by party affiliation over time, the aggregate political ideologies of both houses over time, and the ideologies of individual lawmakers. Plus a host of other roll call-based analyses.
+> The [VoteView](https://voteview.com/) project provides roll call-based political ideology scores for all lawmakers in the history of the US Congress.  Data can be used to investigate congressional composition by party affiliation over time, the aggregate political ideologies of both houses over time, and the ideologies of individual lawmakers. Plus a host of other roll call-based analyses.
 
-``` r
+
+```{r message=FALSE, warning=FALSE}
 rvoteview_house_50 <- lapply(c(66:115), function (x)
                     Rvoteview::member_search (
                       chamber = 'House', 
@@ -128,9 +143,12 @@ rvoteview_house_50 <- lapply(c(66:115), function (x)
   mutate(name = paste0 (gsub(', .*$', '', bioname), ' ', cqlabel))
 ```
 
+
+
 #### 2.1 Congressional composition
 
-``` r
+
+```{r fig.height=5.5, message=FALSE, warning=FALSE}
 rvoteview_house_50 %>%
   filter(party_name %in% c('Democratic Party', 'Republican Party')) %>%
   group_by(congress, party_name) %>%
@@ -151,13 +169,12 @@ rvoteview_house_50 %>%
        caption = 'Data source: VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 #### 2.2 Lawmaker political ideologies
 
 > A brief description of methods.
 
-``` r
+```{r}
 extremes <- rvoteview_house_50 %>%
   filter(congress == 111) %>%
   select(name, party_name, nominate.dim1, nominate.dim2) %>%
@@ -168,9 +185,10 @@ extremes <- rvoteview_house_50 %>%
            estimate == min((estimate)))
 ```
 
-> The 111th House took office in 2009; members were elected in a Presidential election year with Obama & McCain on the top of the ticket. Below we plot members of the 111th House in two-dimensional political space. Ideoligically extreme members are labelled.
 
-``` r
+> The 111th House took office in 2009; members were elected in a Presidential election year with Obama & McCain on the top of the ticket.  Below we plot members of the 111th House in two-dimensional political space.  Ideoligically extreme members are labelled.
+
+```{r fig.height=5, message=FALSE, warning=FALSE}
 rvoteview_house_50 %>%
   filter (congress == 111) %>%
   ggplot(aes(x=nominate.dim1, 
@@ -198,11 +216,12 @@ rvoteview_house_50 %>%
        caption = 'Data source: VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
+
+
 
 #### 2.3 Political ideologies historically
 
-``` r
+```{r fig.height=6, message=FALSE, warning=FALSE}
 rvoteview_house_50 %>%
   filter(congress > 89) %>%
     ggplot(aes(x=nominate.dim1, y=as.factor(congress), fill = congress)) +
@@ -214,11 +233,11 @@ rvoteview_house_50 %>%
          caption = 'Data source: VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-10-1.png)
+
 
 Another perspective.
 
-``` r
+```{r fig.height=5.5}
 rvoteview_house_50 %>%
   filter(!is.na(nominate.dim1) & 
            party_name %in% c('Democratic Party','Republican Party')) %>%
@@ -236,29 +255,34 @@ rvoteview_house_50 %>%
   labs(title="Median ideologies for major parties: Houses 66 to 115") 
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-11-1.png)
+
+
 
 #### 2.4 NOKKEN & POOLE scores
 
-An alternative approach. --- Voteview data with
+An alternative approach. --- Voteview data with 
 
-(that change per congress). Scores via `Rvoteview` only DW\_Nominate, which reflect an aggregate score based on lawmaker's entire voting history (eben if they switch houses, which is weird).
+(that change per congress).  Scores via `Rvoteview` only DW_Nominate, which reflect an aggregate score based on lawmaker's entire voting history (eben if they switch houses, which is weird).
 
 Mention the `bioguide` which helps cross.
 
-``` r
+
+```{r message=FALSE, warning=FALSE}
 voteview_house115 <- read.csv(url("https://voteview.com/static/data/out/members/HSall_members.csv"),
   stringsAsFactors = FALSE) %>%
   filter(chamber == 'House' & congress == 115)
 ```
 
-------------------------------------------------------------------------
+
+---
+
 
 ### 3 Political geometries
 
 > The `tigris` package provides a super convenient interface ... for loading US shapefiles ...
 
-``` r
+
+```{r message=FALSE, warning=FALSE}
 nonx <- c('78', '69', '66', '72', '60', '15', '02')
 
 library(tigris); options(tigris_use_cache = TRUE, tigris_class = "sf")
@@ -273,27 +297,33 @@ laea <- sf::st_crs("+proj=laea +lat_0=30 +lon_0=-95") # Lambert equal area
 us_house_districts <- sf::st_transform(us_house_districts, laea)
 ```
 
-------------------------------------------------------------------------
+  
+---
 
 ### 4 Federal election results
 
 > [Daily Kos data sets](https://www.dailykos.com/stories/2018/2/21/1742660/-The-ultimate-Daily-Kos-Elections-guide-to-all-of-our-data-sets)
 
-Not fantastic structure-wise. Some lawmaker bio details (Name, First elected, Birth Year, Gender, RAce/ethnicity, Religion, LGBT). House sheet: 2016/2012/2008 presidential election results by congressional district; along with 2016/2014 house congressional results; No 2018 results.
 
-Also includes some socio-dems by district, but this is likely more easily addressed using `tidycensus`.
+Not fantastic structure-wise.  Some lawmaker bio details (Name, First elected, Birth Year, Gender, RAce/ethnicity, Religion, LGBT).  House sheet: 2016/2012/2008 presidential election results by congressional district; along with 2016/2014 house congressional results; No 2018 results.
+
+Also includes some socio-dems by district, but this is likely more easily addressed using `tidycensus`.  
+
+
 
 #### 4.1 Restructuring election data
 
-``` r
+```{r message=FALSE, warning=FALSE}
 url <- 'https://docs.google.com/spreadsheets/d/1oRl7vxEJUUDWJCyrjo62cELJD2ONIVl-D9TSUKiK9jk/edit#gid=1178631925'
 
 house <- gsheet::gsheet2tbl(url) 
 ```
 
-Data are super dirty. A simple cleaning procedure that will scale (for the most part) to other data sources at the Daily Kos. With a simple focus on ... :
 
-``` r
+
+Data are super dirty.  A simple cleaning procedure that will scale (for the most part) to other data sources at the Daily Kos.  With a simple focus on ... :
+
+```{r message=FALSE, warning=FALSE}
 fix <- as.data.frame(cbind(colnames(house), as.character(house[1,])), 
   string_as_factor = FALSE) %>%
   mutate(V1 = gsub('^X', NA, V1)) %>%
@@ -306,9 +336,10 @@ house <- house %>% slice(3:nrow(.))
 keeps <- house[,!grepl('Pronun|ACS|Census|Survey', colnames(house))]
 ```
 
+
 Here we filter to data to the last three Presidential elections.
 
-``` r
+```{r message=FALSE, warning=FALSE}
 dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]', colnames(house), value=T))] %>%
   gather (key = election, value = percent, `2016_President_Clinton`:`2008_President_McCain`) %>%
   mutate(election = gsub('President_', '', election),
@@ -319,27 +350,23 @@ dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]',
   left_join(data.frame(us_house_districts) %>% select (-geometry))
 ```
 
+
+
 Our new data.
 
-``` r
+```{r}
 dailykos_pres_elections %>%
   select(District, GEOID, year, candidate, percent) %>%
   head() %>%
   knitr::kable()
 ```
 
-| District    | GEOID | year | candidate |  percent|
-|:------------|:------|:-----|:----------|--------:|
-| Alabama 1st | 0101  | 2016 | Clinton   |     34.1|
-| Alabama 2nd | 0102  | 2016 | Clinton   |     33.0|
-| Alabama 3rd | 0103  | 2016 | Clinton   |     32.3|
-| Alabama 4th | 0104  | 2016 | Clinton   |     17.4|
-| Alabama 5th | 0105  | 2016 | Clinton   |     31.3|
-| Alabama 6th | 0106  | 2016 | Clinton   |     26.1|
+
 
 #### 4.2 Presidential Election results - 2016
 
-``` r
+
+```{r fig.height=6, message=FALSE, warning=FALSE}
 us_house_districts %>%
   filter(!gsub('..$' ,'', GEOID) %in% nonx) %>%
   left_join(dailykos_pres_elections %>% 
@@ -358,13 +385,12 @@ us_house_districts %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 #### 4.3 Rural & urban voting
 
 Using the area of congressional districts (in log square meters) as a proxy for degree of urbanity. ... Plot Trump support as function of CD area.
 
-``` r
+```{r fig.height=5, message=FALSE, warning=FALSE}
 us_house_districts %>%
   left_join(dailykos_pres_elections %>% 
               filter(year == '2016') %>%
@@ -378,19 +404,31 @@ us_house_districts %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
-------------------------------------------------------------------------
+---
 
 ### 5 Census data and congressional districts
 
-> Using `tidycensus` ... Investigating educational attainment by race.
+> Using `tidycensus` ... Investigating educational attainment by race. 
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(tidycensus)
+var_list <- load_variables(2017, "acs5")
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+census_api_key("b508704c99f3ae9bc5b5e7c41e3dd77e59d52722")
+```
+
+
 
 #### 5.1 Acquire census data
 
 Census race/ethnicity per US Census classifications.
 
-``` r
+```{r message=FALSE, warning=FALSE}
 code <- c('A', 'B', 'C', 'D', 'E',
           'F', 'G', 'H', 'I')
           
@@ -407,9 +445,13 @@ race_table <- as.data.frame(cbind(code,race),
                             stringsAsFactors=FALSE)
 ```
 
+
+
+
+
 C15002: SEX BY EDUCATIONAL ATTAINMENT FOR THE POPULATION 25 YEARS AND OVER
 
-``` r
+```{r message=FALSE, warning=FALSE}
 search_vars <- var_list[grepl('C1500', var_list$name),]
 
 tidycens_data <- tidycensus::get_acs(geography = 'congressional district',
@@ -429,11 +471,13 @@ tidycens_data <- tidycensus::get_acs(geography = 'congressional district',
   select(GEOID, label, gender, race, estimate:summary_moe)
 ```
 
+
+
 #### 5.2 The White working class
 
-White men without college degree. As percentage of total population over 25. ie, as a percentage of the electorate.
+White men without college degree.  As percentage of total population over 25. ie, as a percentage of the electorate.  
 
-``` r
+```{r fig.height=6, message=FALSE, warning=FALSE}
 us_house_districts %>% 
   filter(!gsub('..$' ,'', GEOID) %in% nonx) %>%
   left_join(tidycens_data %>% 
@@ -458,15 +502,14 @@ us_house_districts %>%
        caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
 #### 5.3 Educational attainment profiles by CD
 
-Create plots of some cherry-picked district cross-sections (per Daily Kos).
+Create plots of some cherry-picked district cross-sections (per Daily Kos). 
 
-Definitions: WHITE ALONE means/equals all the whites, hispanic or otherwise. OR, WHITE ALONE, HISPANIC + WHITE ALONE, NOT HISPANIC.
+Definitions: WHITE ALONE means/equals all the whites, hispanic or otherwise.  OR, WHITE ALONE, HISPANIC + WHITE ALONE, NOT HISPANIC.
 
-``` r
+```{r message=FALSE, warning=FALSE}
 tree <- tidycens_data %>%
   left_join(data.frame(us_house_districts) %>% select(GEOID, STUSPS, CD115FP)) %>%
   mutate (race = gsub(', | ', '_', race)) %>%
@@ -484,9 +527,10 @@ tree <- tidycens_data %>%
   ungroup()
 ```
 
+
 thoughts.
 
-``` r
+```{r fig.height=6, message=FALSE, warning=FALSE}
 samp_n <- sample(unique(tree$GEOID), 12)
 
 tree %>%
@@ -512,13 +556,13 @@ tree %>%
            caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
+
 
 #### 5.4 Trump support by educational attainment
 
 Trump ed/race dems by binned degrees of support.
 
-``` r
+```{r fig.height=7, message=FALSE, warning=FALSE}
 ed_45 <- dailykos_pres_elections %>%
   filter(candidate == 'Trump') %>%
   group_by(candidate) %>%
@@ -526,21 +570,18 @@ ed_45 <- dailykos_pres_elections %>%
          rank_cut = dense_rank(cut)) 
 ```
 
+
+
 A summary of congressional districts:
 
-``` r
+```{r}
 table(ed_45$cut)
 ```
 
-    ## 
-    ##  [4.9,21.4] (21.4,30.5] (30.5,36.6] (36.6,43.1] (43.1,48.7] (48.7,53.1] 
-    ##          44          46          42          42          45          42 
-    ## (53.1,56.2] (56.2,60.9] (60.9,65.6] (65.6,80.4] 
-    ##          44          44          42          44
 
-Describe plot. The average educational attainment profile for each level (ie, bin) of support for 45.
+Describe plot.  The average educational attainment profile for each level (ie, bin) of support for 45.
 
-``` r
+```{r fig.height=6, message=FALSE, warning=FALSE}
 ed_45 %>%
   left_join(tree) %>%
   mutate(type = paste0(race_cat, ' ', ed_cat)) %>%
@@ -560,15 +601,16 @@ ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
   xlab('Level of support for 45')+ylab(NULL)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-29-1.png)
 
-------------------------------------------------------------------------
+
+---
 
 ### 6 Alternative political geometries
 
-> The Daily Kos makes available of set of shapefiles meant to represent congressional districts and states as .... The Daily Vos makes these shapefiles availble via Google Drive. Links are provided below.
+> The Daily Kos makes available of set of shapefiles meant to represent congressional districts and states as ....  The Daily Vos makes these shapefiles availble via Google Drive.  Links are provided below.
 
-``` r
+
+```{r}
 #Hex map
 dailyvos_hex_cd <- 'https://drive.google.com/uc?authuser=0&id=1E_P0r1Uv438fZsvKsvidIR02Nb5Ju9zf&export=download/HexCDv12.zip'
 dailyvos_hex_st <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJVWxYZGtxMGhrMEE&export=download/HexSTv11.zip'
@@ -577,11 +619,13 @@ dailyvos_tile_outer <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJd
 dailyvos_tile_inner <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJR1c0SzNyWlAtZjA&export=download/TileInv10.zip'
 ```
 
+
+
 #### 6.1 A simple function for shapefile extraction
 
 We first build a simple function that ... Download & load shapefile as an `sf` object -- as process.
 
-``` r
+```{r message=FALSE, warning=FALSE}
 get_url_shape <- function (url) {
   temp <- tempdir()
   zip_name <- paste0(temp, '\\', basename(url))
@@ -595,20 +639,32 @@ get_url_shape <- function (url) {
   x}
 ```
 
+
 #### 6.2 Tile map of US states
 
 Extract shapefiles from ...
 
-``` r
+```{r}
 dailykos_tile <- lapply (c(dailyvos_tile_inner,
                            dailyvos_tile_outer),
                          get_url_shape)
 names(dailykos_tile) <- c('inner', 'outer')
 ```
 
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+rvoteview_senate_50 <- lapply(c(66:115), function (x)
+                    Rvoteview::member_search (
+                      chamber = 'Senate', 
+                      congress = x)) %>% 
+  bind_rows() 
+```
+
+
+
 Senators by state by part.
 
-``` r
+```{r}
 sens <- rvoteview_senate_50 %>%
   mutate(party_name = factor(party_name, levels =c('Democratic Party', 
                                          'Republican Party', 
@@ -621,9 +677,11 @@ sens <- rvoteview_senate_50 %>%
   select(congress, State, party_name, layer)
 ```
 
-Plot. To address the consistency issue. Group by aplhabetical order -- such that if D-R, then D placed in inner. Independents?
 
-``` r
+
+Plot.  To address the consistency issue.  Group by aplhabetical order -- such that if D-R, then D placed in inner.  Independents?
+
+```{r fig.height=6, message=FALSE, warning=FALSE}
 dailykos_tile$outer %>% 
   left_join(sens %>% filter (layer == 2)) %>%
   ggplot() + 
@@ -649,13 +707,13 @@ dailykos_tile$outer %>%
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
+
 
 #### 6.3 Hexmap of Congressional districs
 
 Apply function.
 
-``` r
+```{r message=FALSE, warning=FALSE}
 dailykos_shapes <- lapply (c(dailyvos_hex_cd, dailyvos_hex_st), 
                            get_url_shape)
 names(dailykos_shapes) <- c('cds', 'states')
@@ -663,9 +721,10 @@ names(dailykos_shapes) <- c('cds', 'states')
 dailykos_shapes$states <- lwgeom::st_make_valid(dailykos_shapes$states)
 ```
 
-Here, we consider Presidential voting ...
 
-``` r
+Here, we consider Presidential voting ...  
+
+```{r}
 dailykos_pres_flips <- dailykos_pres_elections %>%
   group_by(District, year) %>%
   filter(percent == max(percent))%>%
@@ -683,9 +742,10 @@ dailykos_pres_flips$`2008`[dailykos_pres_flips$District == 'Ohio 10th'] <- 'Obam
 dailykos_pres_flips$`2008`[dailykos_pres_flips$District == 'New York 22nd'] <- 'McCain'
 ```
 
-Some hand edits to address ties.
 
-``` r
+
+Some hand edits to address ties.
+```{r}
 dailykos_pres_flips <- dailykos_pres_flips %>%
   mutate(flips = paste0(`2008`, '-',`2012`, '-', `2016`)) %>%
   group_by(flips) %>%
@@ -693,9 +753,9 @@ dailykos_pres_flips <- dailykos_pres_flips %>%
   ungroup()
 ```
 
-Summary
 
-``` r
+Summary
+```{r fig.height=3.5, message=FALSE, warning=FALSE}
 dailykos_pres_flips %>%
   group_by(flips) %>%
   summarize(n = n()) %>%
@@ -712,11 +772,10 @@ dailykos_pres_flips %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 Note that this has been reproduced.
 
-``` r
+```{r fig.height=6, message=FALSE, warning=FALSE}
 dailykos_shapes$cds %>%
   inner_join(dailykos_pres_flips)%>%
   ggplot() + 
@@ -744,11 +803,12 @@ dailykos_shapes$cds %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-40-1.png)
+
+
 
 #### 6.4 Another perspective
 
-``` r
+```{r}
 dailykos_pres_flips %>%
   mutate(f08_12 = paste0(`2008`,'_', `2012`),
          f12_16 = paste0(`2012`,'_', `2016`))%>%
@@ -764,20 +824,11 @@ dailykos_pres_flips %>%
   knitr::kable()
 ```
 
-| source    | target     |  value|
-|:----------|:-----------|------:|
-| McCain 08 | Obama 12   |      1|
-| McCain 08 | Romney 12  |    192|
-| Obama 08  | Obama 12   |    210|
-| Obama 08  | Romney 12  |     32|
-| Obama 12  | Clinton 16 |    190|
-| Obama 12  | Trump 16   |     21|
-| Romney 12 | Clinton 16 |     15|
-| Romney 12 | Trump 16   |    209|
 
-A sankey diagram. Clearly a bit jazzier as an html widget proper.
 
-``` r
+A sankey diagram.  Clearly a bit jazzier as an html widget proper.
+
+```{r message=FALSE, warning=FALSE}
 library(plotly)
 r<- '#9e5055'; b <- '#395f81'
 plot_ly(
@@ -801,10 +852,12 @@ plot_ly(
       font = list(size = 10))
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-42-1.png)
 
-------------------------------------------------------------------------
+---
+
 
 ### 7 A work in progress
 
-Indeed, a work in progress. But hopefully a nice round-up of useful open source resources for invewstigating & visualizing federal election results. I would love to here about additional/alternative open source resources!
+
+Indeed, a work in progress.  But hopefully a nice round-up of useful open source resources for invewstigating & visualizing federal election results.  I would love to here about additional/alternative open source resources! 
+
