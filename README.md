@@ -266,9 +266,7 @@ us_house_districts <- sf::st_transform(us_house_districts, laea)
 
 > [Daily Kos data sets](https://www.dailykos.com/stories/2018/2/21/1742660/-The-ultimate-Daily-Kos-Elections-guide-to-all-of-our-data-sets)
 
-Not fantastic structure-wise. Some lawmaker bio details (Name, First elected, Birth Year, Gender, RAce/ethnicity, Religion, LGBT). House sheet: 2016/2012/2008 presidential election results by congressional district; along with 2016/2014 house congressional results; No 2018 results.
-
-Also includes some socio-dems by district, but this is likely more easily addressed using `tidycensus`.
+Some lawmaker bio details (Name, First elected, Birth Year, Gender, RAce/ethnicity, Religion, LGBT). House sheet: 2016/2012/2008 presidential election results by congressional district; along with 2016/2014 house congressional results; No 2018 results.
 
 #### 4.1 Restructuring election data
 
@@ -357,11 +355,14 @@ us_house_districts %>%
               filter(year == '2016') %>%
               spread(candidate, percent) %>%
               mutate(Margin = Trump-Clinton)) %>%
-  mutate(area = as.numeric(gsub(' m^2]', '', sf::st_area(.)))) %>%
-  ggplot(aes(Margin, log(area))) +
-  geom_point(color = 'steelblue') +
-  geom_smooth(method="loess", se=T, color = 'darkgrey')+
-  geom_vline(xintercept = 0, color = 'black', linetype = 2) +
+  mutate(area = as.numeric(gsub(' m^2]', '', sf::st_area(.))),
+         party = ifelse(Margin > 0, 'Trump', 'Clinton')) %>%
+  ggplot(aes(y=Margin, x=log(area), color = party)) +
+  geom_point(alpha = .65) +
+  ggthemes::scale_color_stata()+
+  geom_smooth(method="lm", se=T, color = 'darkgrey', linetype = 3)+
+  geom_hline(yintercept = 0, color = 'darkgrey') +
+  theme(legend.position = "none")+
   labs(title = "Trump vote margins vs. log(area) of congressional district",
        caption = 'Data source: Daily Kos')
 ```
@@ -393,7 +394,7 @@ race_table <- as.data.frame(cbind(code,race),
                             stringsAsFactors=FALSE)
 ```
 
-> Table C15002: *SEX BY EDUCATIONAL ATTAINMENT FOR THE POPULATION 25 YEARS AND OVER*. Data disaggregated by race & ethncity can be accessed via suffixes A-I. The table above crosses suffix to subgroup classification.
+> Table C15002: *Sex by educational attainment for the population 25 years and over*. Data disaggregated by race & ethncity can be accessed via suffixes A-I. The table above crosses suffix to subgroup classification.
 
 ``` r
 search_vars <- var_list[grepl('C1500', var_list$name),]
@@ -510,51 +511,25 @@ tree %>%
 
 #### 5.4 Trump support by educational attainment
 
-Trump ed/race dems by binned degrees of support.
+> Thoughts.
 
 ``` r
-ed_45 <- dailykos_pres_elections %>%
-  filter(candidate == 'Trump') %>%
-  group_by(candidate) %>%
-  mutate(cut = cut_number(percent, n =10),
-         rank_cut = dense_rank(cut)) 
-```
-
-A summary of congressional districts:
-
-``` r
-table(ed_45$cut)
-```
-
-    ## 
-    ##  [4.9,21.4] (21.4,30.5] (30.5,36.6] (36.6,43.1] (43.1,48.7] (48.7,53.1] 
-    ##          44          46          42          42          45          42 
-    ## (53.1,56.2] (56.2,60.9] (60.9,65.6] (65.6,80.4] 
-    ##          44          44          42          44
-
-Describe plot. The average educational attainment profile for each level (ie, bin) of support for 45.
-
-``` r
-ed_45 %>%
-  left_join(tree) %>%
-  mutate(type = paste0(race_cat, ' ', ed_cat)) %>%
-  select(type, rank_cut, cut, estimate) %>%
-  group_by(type, cut, rank_cut) %>%
-  summarize(estimate = sum(estimate)) %>%
-  group_by(cut)%>%
-  mutate(new_per = estimate/sum(estimate)) %>%
+dailykos_pres_elections %>%
+  filter(candidate %in% c('McCain', 'Romney', 'Trump')) %>% 
+  left_join(tree %>% filter(race_cat == 'White' & 
+                              ed_cat == 'Non-College')) %>%
   
-ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
-  geom_area(alpha = 0.75, color = 'gray') +
-  scale_fill_brewer(palette = 'Paired') +
-  scale_x_continuous(breaks = 1:10, labels = 1:10) + 
+ggplot(aes(x=per, y=percent, fill = candidate, color = candidate)) +
+  geom_point(alpha = .75) +
+  ggthemes::scale_fill_stata()+
+  ggthemes::scale_color_stata()+
+  geom_smooth(method="lm", se=T, color = 'darkgrey', linetype = 3)+
   theme(legend.position = "bottom")+
-  labs(title = "Educational attainment profiles by level of support for 45",
-       subtitle = '2016 Presidential Election')+
-  xlab('Level of support for 45')+ylab(NULL)
+  labs(title = "Proportion White working class vs. presidential vote margin by district",
+       caption = 'Data source: Daily Kos & American Community Survey')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-28-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
 ------------------------------------------------------------------------
 
@@ -643,7 +618,7 @@ dailykos_tile$outer %>%
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 #### 6.3 Hexmap of Congressional districs
 
@@ -706,7 +681,7 @@ dailykos_pres_flips %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-38-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-36-1.png)
 
 Note that this has been reproduced.
 
@@ -738,7 +713,7 @@ dailykos_shapes$cds %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
 
 #### 6.4 Another perspective
 
@@ -795,7 +770,7 @@ plot_ly(
       font = list(size = 10))
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-41-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 ------------------------------------------------------------------------
 
