@@ -1,11 +1,9 @@
 American political data & R: some open source resources & methods
 -----------------------------------------------------------------
 
-Federal elections returns, ... a brief layman's guide to quantitative political perspectives & methods using R.
+A layman's guide to accessing, integrating, and exploring US political data from a heterogenous collection of open government resources, including presidential election returns (2008-2016 by congressional district), lawmaker biographies & political ideologies, and congressional district demographics.
 
-A collection of political data resources. Many of the data collated here should be more easily & publicly accessible. It is not clear why they are not.
-
-Lots of help from the folks at ....
+Data presented here have been collated from [The Daily Kos](), [CivilServiceUSA](), and the R packages [tidycensus]() & [Rvoteview]().
 
 -   [1 Lawmaker details](#1-Lawmaker-details)
 -   [2 Political Ideologies](#2-political-ideologies-and-congressional-composition)
@@ -15,9 +13,7 @@ Lots of help from the folks at ....
 -   [6 Alternative geometries](#7-Funky-geometries)
 -   [7 A work in progress](#8-A-work-in-progress)
 
-Some additional text. A bit of a layman's guide to working with federal election data using R. I am posting this on Git Hub (as opposed to my website/blog) as I hope to develop this as a resource.
-
-A guide to accessing some open source resources for ... as well as integrating these resources for
+Hopefully a useful open source framework for investigating past & future election returns and congresses using R. All work presented here can be reproduced in its entirety. A developing resource.
 
 ``` r
 library(tidyverse)
