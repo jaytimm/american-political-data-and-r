@@ -269,7 +269,7 @@ url <- 'https://docs.google.com/spreadsheets/d/1oRl7vxEJUUDWJCyrjo62cELJD2ONIVl-
 house <- gsheet::gsheet2tbl(url) 
 ```
 
-Data are super dirty. A simple cleaning procedure that will scale (for the most part) to other data sources at the Daily Kos. With a simple focus on ... :
+> A simple cleaning procedure that should (roughly) scale to other data sources at the Daily Kos.
 
 ``` r
 fix <- as.data.frame(cbind(colnames(house), as.character(house[1,])), 
@@ -297,7 +297,7 @@ dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]',
   left_join(data.frame(us_house_districts) %>% select (-geometry))
 ```
 
-Our new data.
+> Our new data structure.
 
 ``` r
 dailykos_pres_elections %>%
@@ -516,7 +516,7 @@ ggplot(data = by_pres, aes(x=Per_White_Working,
   geom_smooth(method="lm", se=T, color = 'black', size = .75)+
   theme(legend.position = "bottom")+
   labs(title = "Proportion White working class vs. % Republican support",
-       subtitle = 'Presidential elctions',
+       subtitle = 'Presidential elections: 2008, 2012 & 2016',
        caption = 'Data source: Daily Kos & American Community Survey')
 ```
 
