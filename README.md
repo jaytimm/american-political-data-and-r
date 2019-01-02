@@ -7,13 +7,13 @@ Data presented here have been collated from [The Daily Kos](), [CivilServiceUSA]
 
 -   [1 Lawmaker details](#1-Lawmaker-details)
 -   [2 Political Ideologies](#2-political-ideologies-and-congressional-composition)
--   [3 Political geometries](#4-political-geometries)
--   [4 Federal election results](#5-Federal-election-results)
--   [5 Census data and congressional districts](#6-Census-data-and-congressional-districts)
--   [6 Alternative geometries](#7-Funky-geometries)
--   [7 A work in progress](#8-A-work-in-progress)
+-   [3 Political geometries](#3-political-geometries)
+-   [4 Federal election results](#4-Federal-election-results)
+-   [5 Census data and congressional districts](#5-Census-data-and-congressional-districts)
+-   [6 Alternative geometries](#6-Alternative-geometries)
+-   [7 Summary](#7-Summary)
 
-Hopefully a useful open source framework for investigating past & future election results and congresses using R. All work presented here can be reproduced in its entirety. A developing resource.
+Hopefully a useful open source & transparent framework for investigating past & future election results and congresses using R. All work presented here can be reproduced in its entirety. A developing resource.
 
 ``` r
 library(tidyverse)
@@ -200,21 +200,7 @@ rvoteview_house_50 %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
-#### 2.3 Political ideologies historically
-
-``` r
-rvoteview_house_50 %>%
-  filter(congress > 89) %>%
-    ggplot(aes(x=nominate.dim1, y=as.factor(congress), fill = congress)) +
-    ggridges::geom_density_ridges(rel_min_height = 0.01) +
-    geom_vline(xintercept = 0, color = 'black', linetype = 2) +
-    theme(legend.position = "none") + 
-    ylab("")+
-    labs(title = "Probability distributions of political ideology scores in US Houses 90 to 115",
-         caption = 'Data source: VoteView')
-```
-
-![](README_files/figure-markdown_github/unnamed-chunk-10-1.png)
+#### 2.3 Political ideologies historically: a party-based overview
 
 > Another perspective. A slightly modified version of [this](https://voteview.com/parties/all) VoteView interactive visualization.
 
@@ -237,7 +223,7 @@ rvoteview_house_50 %>%
        caption = 'Data source: VoteView') 
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-11-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 #### 2.4 NOKKEN & POOLE scores
 
@@ -359,7 +345,7 @@ us_house_districts %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 #### 4.3 Rural & urban voting
 
@@ -375,21 +361,20 @@ us_house_districts %>%
   ggplot(aes(Margin, log(area))) +
   geom_point(color = 'steelblue') +
   geom_smooth(method="loess", se=T, color = 'darkgrey')+
+  geom_vline(xintercept = 0, color = 'black', linetype = 2) +
   labs(title = "Trump vote margins vs. log(area) of congressional district",
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 ------------------------------------------------------------------------
 
 ### 5 Census data and congressional districts
 
-> Using `tidycensus` ... Investigating educational attainment by race.
+> The US Census/American Community Survey (ACS) make counts/estimates available by congressional district. The R package `tidycensus` provides access to census APIs. Here we gather educational attainment data.
 
-#### 5.1 Acquire census data
-
-Census race/ethnicity per US Census classifications.
+#### 5.1 Educational attainment by race/ethnicity
 
 ``` r
 code <- c('A', 'B', 'C', 'D', 'E',
@@ -408,7 +393,7 @@ race_table <- as.data.frame(cbind(code,race),
                             stringsAsFactors=FALSE)
 ```
 
-C15002: SEX BY EDUCATIONAL ATTAINMENT FOR THE POPULATION 25 YEARS AND OVER
+> Table C15002: *SEX BY EDUCATIONAL ATTAINMENT FOR THE POPULATION 25 YEARS AND OVER*. Data disaggregated by race & ethncity can be accessed via suffixes A-I. The table above crosses suffix to subgroup classification.
 
 ``` r
 search_vars <- var_list[grepl('C1500', var_list$name),]
@@ -432,13 +417,17 @@ tidycens_data <- tidycensus::get_acs(geography = 'congressional district',
 
 #### 5.2 The White working class
 
-> Some definitions. Pundits & news outlets that present data ...
+> In the Trump era, educational divides in voting behavior have received a great deal of attention. In particular, pundits & news outlets have focused on a segment of the population they have dubbed the "White working class." Here we unpack this term, and provide a simple census-based formalization that is often lacking when numbers are cited.
+
+**Some definitions:**
 
 -   White: People who identify racially as White and ethnically as non-Hispanic. Hispanics that identify as White are not included in this count. Race & ethnicity are treated as distinct per the US Census/ACS.
 
 -   College-educated: People who have received a Bachelor's degree or higher. Importantly, this does not include people who have received an Associate's degree. Generally, this count is constrained to the population 25 years & older.
 
 -   White working class: People 25 years & older who identify as White, non-Hispanic who have *not* recieved a Bachelor's degree or higher.
+
+> Importantly, when relationships between voting behavior & educational attainment data are presented, ...
 
 ``` r
 us_house_districts %>% 
@@ -462,16 +451,14 @@ us_house_districts %>%
         axis.text.y=element_blank(),
         legend.position = 'bottom') +
   labs(title = "White working class (%) by congressional district",
-       caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
+       caption = 'Data source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-24-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
-#### 5.3 Educational attainment profiles by CD
+#### 5.3 Educational attainment profiles for congressional districts
 
-Create plots of some cherry-picked district cross-sections (per Daily Kos).
-
-Definitions: WHITE ALONE means/equals all the whites, hispanic or otherwise. OR, WHITE ALONE, HISPANIC + WHITE ALONE, NOT HISPANIC.
+> Often ... these comparisons ... not formal census categories, and require some aggregation.
 
 ``` r
 tree <- tidycens_data %>%
@@ -491,7 +478,7 @@ tree <- tidycens_data %>%
   ungroup()
 ```
 
-thoughts.
+> A random sample of congressional districts:
 
 ``` r
 samp_n <- sample(unique(tree$GEOID), 12)
@@ -519,7 +506,7 @@ tree %>%
            caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
 #### 5.4 Trump support by educational attainment
 
@@ -567,7 +554,7 @@ ggplot(aes(x=(rank_cut), y=new_per, fill = type)) +
   xlab('Level of support for 45')+ylab(NULL)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-28-1.png)
 
 ------------------------------------------------------------------------
 
@@ -656,7 +643,7 @@ dailykos_tile$outer %>%
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 #### 6.3 Hexmap of Congressional districs
 
@@ -719,7 +706,7 @@ dailykos_pres_flips %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-38-1.png)
 
 Note that this has been reproduced.
 
@@ -751,7 +738,7 @@ dailykos_shapes$cds %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-40-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 #### 6.4 Another perspective
 
@@ -808,10 +795,10 @@ plot_ly(
       font = list(size = 10))
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-42-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-41-1.png)
 
 ------------------------------------------------------------------------
 
-### 7 A work in progress
+### 7 Summary
 
-Indeed, a work in progress. But hopefully a nice round-up of useful open source resources for invewstigating & visualizing federal election results. I would love to here about additional/alternative open source resources!
+Indeed, a work in progress. But hopefully a nice round-up of useful open source resources for investigating & visualizing federal election results.
