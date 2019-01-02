@@ -384,7 +384,7 @@ us_house_districts %>%
   ggplot(aes(y=Margin, x=log(area), color = party)) +
   geom_point(alpha = .65) +
   ggthemes::scale_color_stata()+
-  geom_smooth(method="lm", se=T, color = 'darkgrey', linetype = 3)+
+  geom_smooth(method="lm", se=T, color = 'black', linetype = 3)+
   geom_hline(yintercept = 0, color = 'darkgrey') +
   theme(legend.position = "none")+
   labs(title = "Trump vote margins vs. log(area) of congressional district",
@@ -456,15 +456,9 @@ tidycens_data <- tidycensus::get_acs(geography = 'congressional district',
 
 #### 5.2 The White working class
 
-> In the Trump era, educational divides in voting behavior have received a great deal of attention.  In particular, pundits & news outlets have focused on a segment of the population they have dubbed the "White working class."  Here we unpack this term, and provide a simple census-based formalization that is often lacking when numbers are cited.
+> In the Trump era, educational divides in voting behavior have received a great deal of attention.  In particular, pundits & news outlets have focused on a segment of the population they have dubbed the "White working class."  
 
-**Some definitions:** 
-
-* White: People who identify racially as White and ethnically as non-Hispanic.  Hispanics that identify as White are not included in this count.  Race & ethnicity are treated as distinct per the US Census/ACS.   
-
-* College-educated: People who have received a Bachelor's degree or higher.  Importantly, this does not include people who have received an Associate's degree. Generally, this count is constrained to the population 25 years & older.
-
-* White working class: People 25 years & older who identify as White, non-Hispanic who have *not* recieved a Bachelor's degree or higher.
+* US Census formalization of **White working class**: People 25 years & older who identify as White & non-Hispanic who do not have a Bachelor's degree or higher.
 
 > Importantly, when relationships between voting behavior & educational attainment data are presented, ...
 
@@ -552,22 +546,35 @@ tree %>%
 
 > Thoughts.
 
-```{r fig.height=5.5, message=FALSE, warning=FALSE}
-dailykos_pres_elections %>%
+```{r fig.height=6, message=FALSE, warning=FALSE}
+by_pres <- dailykos_pres_elections %>%
   filter(candidate %in% c('McCain', 'Romney', 'Trump')) %>% 
   left_join(tree %>% filter(race_cat == 'White' & 
                               ed_cat == 'Non-College')) %>%
+  rename(Per_White_Working = per, Per_Rep_Margin = percent)
   
-ggplot(aes(x=per, y=percent, fill = candidate, color = candidate)) +
-  geom_point(alpha = .75) +
+ggplot(data = by_pres, aes(x=Per_White_Working, 
+                           y=Per_Rep_Margin, 
+                           fill = candidate, 
+                           color = candidate)) +
+  geom_point(alpha = .75, size = 1) +
   ggthemes::scale_fill_stata()+
   ggthemes::scale_color_stata()+
-  geom_smooth(method="lm", se=T, color = 'darkgrey', linetype = 3)+
+  geom_smooth(method="lm", se=T, color = 'black', linetype = 3)+
   theme(legend.position = "bottom")+
   labs(title = "Proportion White working class vs. presidential vote margin by district",
        caption = 'Data source: Daily Kos & American Community Survey')
 ```
 
+
+> So, this relationship has grown stronger in the Trump era.
+
+```{r}
+by_pres %>% 
+  group_by(candidate) %>%
+  summarize(cor(Per_White_Working, Per_Rep_Margin)) %>%
+  knitr::kable()
+```
 
 
 ---

@@ -360,7 +360,7 @@ us_house_districts %>%
   ggplot(aes(y=Margin, x=log(area), color = party)) +
   geom_point(alpha = .65) +
   ggthemes::scale_color_stata()+
-  geom_smooth(method="lm", se=T, color = 'darkgrey', linetype = 3)+
+  geom_smooth(method="lm", se=T, color = 'black', linetype = 3)+
   geom_hline(yintercept = 0, color = 'darkgrey') +
   theme(legend.position = "none")+
   labs(title = "Trump vote margins vs. log(area) of congressional district",
@@ -514,22 +514,41 @@ tree %>%
 > Thoughts.
 
 ``` r
-dailykos_pres_elections %>%
+by_pres <- dailykos_pres_elections %>%
   filter(candidate %in% c('McCain', 'Romney', 'Trump')) %>% 
   left_join(tree %>% filter(race_cat == 'White' & 
                               ed_cat == 'Non-College')) %>%
+  rename(Per_White_Working = per, Per_Rep_Margin = percent)
   
-ggplot(aes(x=per, y=percent, fill = candidate, color = candidate)) +
-  geom_point(alpha = .75) +
+ggplot(data = by_pres, aes(x=Per_White_Working, 
+                           y=Per_Rep_Margin, 
+                           fill = candidate, 
+                           color = candidate)) +
+  geom_point(alpha = .75, size = 1) +
   ggthemes::scale_fill_stata()+
   ggthemes::scale_color_stata()+
-  geom_smooth(method="lm", se=T, color = 'darkgrey', linetype = 3)+
+  geom_smooth(method="lm", se=T, color = 'black', linetype = 3)+
   theme(legend.position = "bottom")+
   labs(title = "Proportion White working class vs. presidential vote margin by district",
        caption = 'Data source: Daily Kos & American Community Survey')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
+
+> So, this relationship has grown stronger in the Trump era.
+
+``` r
+by_pres %>% 
+  group_by(candidate) %>%
+  summarize(cor(Per_White_Working, Per_Rep_Margin)) %>%
+  knitr::kable()
+```
+
+| candidate |  cor(Per\_White\_Working, Per\_Rep\_Margin)|
+|:----------|-------------------------------------------:|
+| McCain    |                                   0.6182315|
+| Romney    |                                   0.6603027|
+| Trump     |                                   0.7865170|
 
 ------------------------------------------------------------------------
 
@@ -618,7 +637,7 @@ dailykos_tile$outer %>%
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
 #### 6.3 Hexmap of Congressional districs
 
@@ -681,7 +700,7 @@ dailykos_pres_flips %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-36-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
 
 Note that this has been reproduced.
 
@@ -713,7 +732,7 @@ dailykos_shapes$cds %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-38-1.png)
 
 #### 6.4 Another perspective
 
@@ -770,7 +789,7 @@ plot_ly(
       font = list(size = 10))
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-40-1.png)
 
 ------------------------------------------------------------------------
 
