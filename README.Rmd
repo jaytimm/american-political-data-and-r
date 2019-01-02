@@ -172,7 +172,7 @@ rvoteview_house_50 %>%
 
 #### 2.2 Lawmaker political ideologies
 
-> A brief description of methods.
+> A brief description of methods. Interpreting ideology scores.
 
 ```{r}
 extremes <- rvoteview_house_50 %>%
@@ -235,7 +235,7 @@ rvoteview_house_50 %>%
 
 
 
-Another perspective.
+> Another perspective. A slightly modified version of [this](https://voteview.com/parties/all) VoteView interactive visualization.
 
 ```{r fig.height=5.5}
 rvoteview_house_50 %>%
@@ -252,7 +252,8 @@ rvoteview_house_50 %>%
   ggthemes::scale_color_stata()+
   geom_line(aes(x = year, y= xmed), color = 'darkgray',  size = 1.25) +
   theme(legend.position = 'bottom') +
-  labs(title="Median ideologies for major parties: Houses 66 to 115") 
+  labs(title="Median ideologies for major parties: Houses 66 to 115",
+       caption = 'Data source: VoteView') 
 ```
 
 
@@ -388,7 +389,7 @@ us_house_districts %>%
 
 #### 4.3 Rural & urban voting
 
-Using the area of congressional districts (in log square meters) as a proxy for degree of urbanity. ... Plot Trump support as function of CD area.
+> Using the area of congressional districts (in log square meters) as a proxy for degree of urbanity. ... Plot Trump support as function of CD area.
 
 ```{r fig.height=5, message=FALSE, warning=FALSE}
 us_house_districts %>%
@@ -475,7 +476,14 @@ tidycens_data <- tidycensus::get_acs(geography = 'congressional district',
 
 #### 5.2 The White working class
 
-White men without college degree.  As percentage of total population over 25. ie, as a percentage of the electorate.  
+> Some definitions.  Pundits & news outlets that present data ... 
+
+* White: People who identify racially as White and ethnically as non-Hispanic.  Hispanics that identify as White are not included in this count.  Race & ethnicity are treated as distinct per the US Census/ACS.   
+
+* College-educated: People who have received a Bachelor's degree or higher.  Importantly, this does not include people who have received an Associate's degree. Generally, this count is constrained to the population 25 years & older.
+
+* White working class: People 25 years & older who identify as White, non-Hispanic who have *not* recieved a Bachelor's degree or higher.
+
 
 ```{r fig.height=6, message=FALSE, warning=FALSE}
 us_house_districts %>% 
