@@ -1,7 +1,7 @@
 American political data & R: some open source resources & methods
 -----------------------------------------------------------------
 
-A layman's guide to accessing, integrating, and exploring US political data from a heterogenous collection of open government resources, including presidential election returns (2008-2016 by congressional district), lawmaker biographies & political ideologies, and congressional district demographics.
+A layman's guide to accessing, integrating, and exploring US political data from a collection of open government resources, including presidential election returns (2008-2016 by congressional district), lawmaker biographies & political ideologies, and congressional district demographics.
 
 Data presented here have been collated from [The Daily Kos](), [CivilServiceUSA](), and the R packages [tidycensus]() & [Rvoteview]().
 
@@ -26,8 +26,9 @@ library(tidyverse)
 > [CivilServiceUSA](https://github.com/CivilServiceUSA) provides a wonderful collection of details about each lawmaker in the 115th Congress, including age, race, religion, biographical details, and social media info. A full roll call of information available for each lawmaker is available [here](https://github.com/CivilServiceUSA/us-house#data-set). Here, we consider some different perspectives on the composition of the 115th House utilizing these data.
 
 ``` r
-csusa_senate_dets <- jsonlite::fromJSON(url('https://raw.githubusercontent.com/CivilServiceUSA/us-senate/master/us-senate/data/us-senate.json'))
-csusa_house_dets <- jsonlite::fromJSON(url('https://raw.githubusercontent.com/CivilServiceUSA/us-house/master/us-house/data/us-house.json'))
+git <- 'https://raw.githubusercontent.com/CivilServiceUSA/'
+csusa_house_dets <- jsonlite::fromJSON(url(paste0(git, 'us-senate/master/us-senate/data/us-senate.json')))
+csusa_house_dets <- jsonlite::fromJSON(url(paste0(git, 'us-house/master/us-house/data/us-house.json')))
 ```
 
 #### 1.1 Age & generational demographics of the 115th House
@@ -202,7 +203,7 @@ rvoteview_house_50 %>%
 
 #### 2.3 Political ideologies historically: a party-based overview
 
-> A slightly modified version of [this](https://voteview.com/parties/all) VoteView visualization illustrating the growing ideological divide between major political parties in the US.
+> A slightly modified version of [this](https://voteview.com/parties/all) VoteView visualization illustrating the growing ideological divide between major political parties in the US. The gray line reflects overall median ideology scores in the House, and (albeit indirectly) party control of the House historically.
 
 ``` r
 rvoteview_house_50 %>%
@@ -265,11 +266,10 @@ us_house_districts <- sf::st_transform(us_house_districts, laea)
 
 ``` r
 url <- 'https://docs.google.com/spreadsheets/d/1oRl7vxEJUUDWJCyrjo62cELJD2ONIVl-D9TSUKiK9jk/edit#gid=1178631925'
-
 house <- gsheet::gsheet2tbl(url) 
 ```
 
-> A simple cleaning procedure that should (roughly) scale to other data sources at the Daily Kos.
+> A simple cleaning procedure that should (more or less) scale to other data sources at the Daily Kos.
 
 ``` r
 fix <- as.data.frame(cbind(colnames(house), as.character(house[1,])), 
@@ -284,7 +284,7 @@ house <- house %>% slice(3:nrow(.))
 keeps <- house[,!grepl('Pronun|ACS|Census|Survey', colnames(house))]
 ```
 
-Here we filter to data to the last three Presidential elections.
+> Our new data structure, filtered to Presidential returns.
 
 ``` r
 dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]', colnames(house), value=T))] %>%
@@ -296,8 +296,6 @@ dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]',
   mutate(CD115FP = ifelse(CD115FP == 'AL', '00', CD115FP)) %>%
   left_join(data.frame(us_house_districts) %>% select (-geometry))
 ```
-
-> Our new data structure.
 
 | District    | GEOID | year | candidate |  percent|
 |:------------|:------|:-----|:----------|--------:|
@@ -333,7 +331,7 @@ us_house_districts %>%
 
 #### 4.3 Rural & urban voting
 
-> Using the area of congressional districts (in log square meters) as a proxy for degree of urbanity. ... Plot Trump support as function of CD area.
+> Using the area of congressional districts (in log square meters) as a proxy for the often cited urban-rural divide in American votership, the plot below illustrates the relationship between Trump margins and ~degree of urbanicity. The pattern below helps account for the very red map above despite Clinton's success in the popular vote.
 
 ``` r
 us_house_districts %>%
@@ -508,8 +506,8 @@ ggplot(data = by_pres, aes(x=Per_White_Working,
   ggthemes::scale_color_stata()+
   geom_smooth(method="lm", se=T, color = 'black', size = .5)+
   theme(legend.position = "bottom")+
-  labs(title = "Proportion White working class vs. % Republican support",
-       subtitle = 'Presidential elections: 2008, 2012 & 2016',
+  labs(title = "% White working class vs. % Republican support",
+       subtitle = 'By Presidential election',
        caption = 'Data source: Daily Kos & American Community Survey')
 ```
 
