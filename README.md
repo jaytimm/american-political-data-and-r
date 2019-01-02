@@ -129,7 +129,7 @@ rvoteview_house_50 <- lapply(c(66:115), function (x)
   mutate(name = paste0 (gsub(', .*$', '', bioname), ' ', cqlabel))
 ```
 
-#### 2.1 Congressional composition
+#### 2.1 Congressional composition by political affiliation
 
 ``` r
 rvoteview_house_50 %>%
@@ -306,7 +306,9 @@ dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]',
 | Alabama 5th | 0105  | 2016 | Clinton   |     31.3|
 | Alabama 6th | 0106  | 2016 | Clinton   |     26.1|
 
-#### 4.2 Presidential Election results - 2016
+#### 4.2 Presidential election results by distirct - 2016
+
+> **Trump vote margin** by congressional district = Trump vote share (%) - Clinton vote share (%)
 
 ``` r
 us_house_districts %>%
@@ -419,9 +421,7 @@ us_house_districts %>%
   mutate(per = estimate / summary_est) %>%
   ggplot() + 
   geom_sf(aes(fill = per)) + 
-  
   scale_fill_distiller(palette = "BrBG", direction=1)+
-  
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.title.y=element_blank(),
@@ -433,9 +433,9 @@ us_house_districts %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
-#### 5.3 Educational attainment profiles for congressional districts
+#### 5.3 Race & educational attainment profiles by district
 
-> Often ... these comparisons ... not formal census categories, and require some aggregation.
+> Profiling congressional districts in terms of race/ethncitiy & educational attainment. Categories include *White with college degree*, *White without college degree*, *Non-White with college degree*, and *Non-White without college degree*. The **Non-White** population is defined more specifically as non-White (race) & non-Hispanic (ethnicity).
 
 ``` r
 tree <- tidycens_data %>%
@@ -455,7 +455,7 @@ tree <- tidycens_data %>%
   ungroup()
 ```
 
-> A random sample of congressional districts:
+> Race & educational attainment profiles for a random sample of congressional districts:
 
 ``` r
 samp_n <- sample(unique(tree$GEOID), 12)
@@ -485,9 +485,9 @@ tree %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
-#### 5.4 Trump support by educational attainment
+#### 5.4 White working class & Republican vote shares historically
 
-> Thoughts.
+> A comparison of the relationship between the share of working class Whites and share of Republican candidate support by district for the last three presidential elections.
 
 ``` r
 by_pres <- dailykos_pres_elections %>%
@@ -532,7 +532,7 @@ by_pres %>%
 
 ### 6 Alternative political geometries
 
-> The Daily Kos makes available of set of shapefiles meant to represent congressional districts and states as .... The Daily Vos makes these shapefiles availble via Google Drive. Links are provided below.
+> The Daily Kos makes available a set of alternative geometries that represent congressional districts and states as equal-area polygons. As some of the maps presented above attest, America's larger states and congressional districts tend to overwhelm a traditional map, and collectively serve to under-represent/hide smaller, more populous urban areas.
 
 ``` r
 base <- 'https://drive.google.com/uc?authuser=0&id='
