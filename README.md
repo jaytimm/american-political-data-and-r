@@ -494,10 +494,10 @@ by_pres <- dailykos_pres_elections %>%
   filter(candidate %in% c('McCain', 'Romney', 'Trump')) %>% 
   left_join(tree %>% filter(race_cat == 'White' & 
                               ed_cat == 'Non-College')) %>%
-  rename(Per_White_Working = per, Per_Rep_Margin = percent)
+  rename(Per_White_Working = per, Per_Rep_Share = percent)
   
 ggplot(data = by_pres, aes(x=Per_White_Working, 
-                           y=Per_Rep_Margin, 
+                           y=Per_Rep_Share, 
                            fill = candidate, 
                            color = candidate, 
                            linetype = candidate)) +
@@ -506,7 +506,7 @@ ggplot(data = by_pres, aes(x=Per_White_Working,
   ggthemes::scale_color_stata()+
   geom_smooth(method="lm", se=T, color = 'black', size = .5)+
   theme(legend.position = "bottom")+
-  labs(title = "% White working class vs. % Republican support",
+  labs(title = "% White working class vs. % Republican vote share",
        subtitle = 'By Presidential election',
        caption = 'Data source: Daily Kos & American Community Survey')
 ```
@@ -518,21 +518,21 @@ ggplot(data = by_pres, aes(x=Per_White_Working,
 ``` r
 by_pres %>% 
   group_by(candidate) %>%
-  summarize(cor(Per_White_Working, Per_Rep_Margin)) %>%
+  summarize(cor_coefficient = cor(Per_White_Working, Per_Rep_Share)) %>%
   knitr::kable()
 ```
 
-| candidate |  cor(Per\_White\_Working, Per\_Rep\_Margin)|
-|:----------|-------------------------------------------:|
-| McCain    |                                   0.6182315|
-| Romney    |                                   0.6603027|
-| Trump     |                                   0.7865170|
+| candidate |  cor\_coefficient|
+|:----------|-----------------:|
+| McCain    |         0.6182315|
+| Romney    |         0.6603027|
+| Trump     |         0.7865170|
 
 ------------------------------------------------------------------------
 
 ### 6 Alternative political geometries
 
-> The Daily Kos makes available a set of alternative geometries that represent congressional districts and states as equal-area polygons. As some of the maps presented above attest, America's larger states and congressional districts tend to overwhelm a traditional map, and collectively serve to under-represent/hide smaller, more populous urban areas.
+> The Daily Kos makes available a set of alternative geometries that represent congressional districts and states as equal-area polygons. As some of the maps presented above attest, America's larger states and congressional districts tend to overwhelm a standard map, and collectively serve to under-represent/hide smaller, more populous urban areas.
 
 ``` r
 base <- 'https://drive.google.com/uc?authuser=0&id='
@@ -614,7 +614,7 @@ dailykos_tile$outer %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
-#### 6.3 Hexmap of Congressional districs: Presidential lineages
+#### 6.3 Hexmap of Congressional districs: Presidential voting lineages
 
 ``` r
 dailykos_shapes <- lapply (c(dailyvos_hex_cd, dailyvos_hex_st), 
@@ -623,6 +623,8 @@ names(dailykos_shapes) <- c('cds', 'states')
 #State hex shapefile is slightly broken.
 dailykos_shapes$states <- lwgeom::st_make_valid(dailykos_shapes$states)
 ```
+
+> A **presidential voting lineage** is defined as ... I invented this term, as it would seem the English lexicon lacks a word/conventionalized phrase to denote this particular concept.
 
 ``` r
 dailykos_pres_flips <- dailykos_pres_elections %>%
@@ -650,7 +652,7 @@ dailykos_pres_flips <- dailykos_pres_flips %>%
   ungroup()
 ```
 
-Summary
+> A summary of congressional district counts by presidential voting lineage for the 2008, 2012 & 2016 presidential elections.
 
 ``` r
 dailykos_pres_flips %>%
@@ -671,7 +673,7 @@ dailykos_pres_flips %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
 
-Note that this has been reproduced.
+> An equal-area map of congressional districts illustrating presidential voting lineages for the 2008, 20012 & 2016 presidential elections.
 
 ``` r
 dailykos_shapes$cds %>%
@@ -703,7 +705,9 @@ dailykos_shapes$cds %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-38-1.png)
 
-#### 6.4 Another perspective
+#### 6.4 Presidential voting lineages in 2-steps: A Sankey perspective
+
+> Two-step presidential lineages. (538 numbers Romney-Clinton districts at 13. Daily Kos has them at 15. ??. The latter make their data publically available.)
 
 ``` r
 dailykos_pres_flips %>%
@@ -732,7 +736,7 @@ dailykos_pres_flips %>%
 | Romney 12 | Clinton 16 |     15|
 | Romney 12 | Trump 16   |    209|
 
-A sankey diagram. Clearly a bit jazzier as an html widget proper.
+> Sankey diagramming presidential voting lineages from 2008 to 2012 and 2012 to 2016. Clearly a bit jazzier as an html widget proper.
 
 ``` r
 library(plotly)
