@@ -10,7 +10,7 @@ Data presented here have been collated from [The Daily Kos](), [CivilServiceUSA]
 -   [3 Political geometries](#3-political-geometries)
 -   [4 Federal election results](#4-Federal-election-results)
 -   [5 Census data and congressional districts](#5-Census-data-and-congressional-districts)
--   [6 Alternative geometries](#6-Alternative-geometries)
+-   [6 Equal-area political geometries](#6-Equal-area-political-geometries)
 -   [7 Summary](#7-Summary)
 
 Hopefully a useful open source & transparent framework for investigating past & future election results and congresses using R. All work presented here can be reproduced in its entirety. A developing resource.
@@ -203,7 +203,7 @@ rvoteview_house_50 %>%
 
 #### 2.3 Political ideologies historically: a party-based overview
 
-> A slightly modified version of [this](https://voteview.com/parties/all) VoteView visualization illustrating the growing ideological divide between major political parties in the US. The gray line reflects overall median ideology scores in the House, and (albeit indirectly) party control of the House historically.
+> A slightly modified version of [this](https://voteview.com/parties/all) VoteView visualization illustrating the growing ideological divide between major political parties in the US. The gray line reflects overall median ideology scores in the House, and roughly approximates party control of the House historically.
 
 ``` r
 rvoteview_house_50 %>%
@@ -479,7 +479,7 @@ tree %>%
       facet_wrap(~paste0(STUSPS, '-', CD115FP)) +
       theme(legend.position = "none",
             legend.title=element_blank()) + 
-      labs(title = "Educational attainment by race for population over 25",
+      labs(title = "Race by educational attainment profiles",
            subtitle = 'A random sample of congressional districts',
            caption = 'Source: ACS, 5-Year estimates, 2013-17, Table C15002')
 ```
@@ -531,7 +531,7 @@ by_pres %>%
 
 ------------------------------------------------------------------------
 
-### 6 Alternative political geometries
+### 6 Equal-area political geometries
 
 > The Daily Kos makes available a set of alternative geometries that represent congressional districts and states as equal-area polygons. As some of the maps presented above attest, America's larger states and congressional districts tend to overwhelm a standard map, and collectively serve to under-represent/hide smaller, more populous urban areas.
 
@@ -674,7 +674,7 @@ dailykos_pres_flips %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
 
-> An equal-area map of congressional districts illustrating presidential voting lineages for the 2008, 20012 & 2016 presidential elections.
+> An equal-area map of congressional districts illustrating voting lineages for the 2008, 20012 & 2016 presidential elections.
 
 ``` r
 dailykos_shapes$cds %>%
@@ -737,7 +737,7 @@ dailykos_pres_flips %>%
 | Romney 12 | Clinton 16 |     15|
 | Romney 12 | Trump 16   |    209|
 
-> Sankey diagramming presidential voting lineages from 2008 to 2012 and 2012 to 2016. Clearly a bit jazzier as an html widget proper.
+> **Sankey diagramming** presidential voting lineages from 2008 to 2012 and 2012 to 2016. Clearly a bit jazzier as an html widget proper.
 
 ``` r
 library(plotly)
