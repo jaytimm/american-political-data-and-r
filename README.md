@@ -306,7 +306,7 @@ dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]',
 | Alabama 5th | 0105  | 2016 | Clinton   |     31.3|
 | Alabama 6th | 0106  | 2016 | Clinton   |     26.1|
 
-#### 4.2 Presidential election results by distirct - 2016
+#### 4.2 Presidential election results by district - 2016
 
 > **Trump vote margin** by congressional district = Trump vote share (%) - Clinton vote share (%)
 
@@ -428,7 +428,7 @@ us_house_districts %>%
         axis.text.y=element_blank(),
         legend.position = 'bottom') +
   labs(title = "White working class (%) by congressional district",
-       caption = 'Data source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
+       caption = 'Data source: ACS, 5-Year estimates, 2013-17, Table C15002')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
@@ -458,6 +458,7 @@ tree <- tidycens_data %>%
 > Race & educational attainment profiles for a random sample of congressional districts:
 
 ``` r
+set.seed(99)
 samp_n <- sample(unique(tree$GEOID), 12)
 
 tree %>%
@@ -466,21 +467,21 @@ tree %>%
                fill = paste0(race_cat, ' ', ed_cat),
                label = paste0(race_cat, ' ', ed_cat),
                subgroup = paste0(race_cat, ' ', ed_cat)))+
-      treemapify::geom_treemap(alpha=.85)+
+      treemapify::geom_treemap(alpha=.7)+
       treemapify::geom_treemap_subgroup_border() +
 
-      treemapify::geom_treemap_text(colour = "white", 
+      treemapify::geom_treemap_text(colour = "black", 
                         place = "topleft", 
                         reflow = T,
-                        size = 9)+
+                        size = 8)+
       #ggthemes::scale_fill_stata()+ 
       scale_fill_brewer(palette = 'Paired') +
       facet_wrap(~paste0(STUSPS, '-', CD115FP)) +
-      theme(legend.position = "bottom",
+      theme(legend.position = "none",
             legend.title=element_blank()) + 
       labs(title = "Educational attainment by race for population over 25",
            subtitle = 'A random sample of congressional districts',
-           caption = 'Source: American Community Survey, 5-Year estimates, 2013-17, Table C15002')
+           caption = 'Source: ACS, 5-Year estimates, 2013-17, Table C15002')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
