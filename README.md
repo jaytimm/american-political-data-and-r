@@ -53,7 +53,7 @@ csusa_house_dets %>%
 -   Silent: 1928-1945
 -   Greatest: &lt; 1928
 
-> For good measure, we provide a more detailed classification of Boomers --- lumping folks born post-WWII with those born in the ~sixties is a problem for me. So, (a) Boomers-proper 1946-1954 & (b) [Generation Jones](https://en.wikipedia.org/wiki/Generation_Jones) 1955-1964.
+> For good measure, we provide a more detailed classification of Boomers --- lumping folks born post-WWII with those born in the ~Sixties is a problem for me. So, (a) Boomers-proper 1946-1954 & (b) [Generation Jones](https://en.wikipedia.org/wiki/Generation_Jones) 1955-1964.
 
 ``` r
 gens115 <- csusa_house_dets %>%
@@ -418,15 +418,9 @@ tidycens_data <- tidycensus::get_acs(geography = 'congressional district',
 
 #### 5.2 The White working class
 
-> In the Trump era, educational divides in voting behavior have received a great deal of attention. In particular, pundits & news outlets have focused on a segment of the population they have dubbed the "White working class." Here we unpack this term, and provide a simple census-based formalization that is often lacking when numbers are cited.
+> In the Trump era, educational divides in voting behavior have received a great deal of attention. In particular, pundits & news outlets have focused on a segment of the population they have dubbed the "White working class."
 
-**Some definitions:**
-
--   White: People who identify racially as White and ethnically as non-Hispanic. Hispanics that identify as White are not included in this count. Race & ethnicity are treated as distinct per the US Census/ACS.
-
--   College-educated: People who have received a Bachelor's degree or higher. Importantly, this does not include people who have received an Associate's degree. Generally, this count is constrained to the population 25 years & older.
-
--   White working class: People 25 years & older who identify as White, non-Hispanic who have *not* recieved a Bachelor's degree or higher.
+-   US Census formalization of **White working class**: People 25 years & older who identify as White & non-Hispanic who do not have a Bachelor's degree or higher.
 
 > Importantly, when relationships between voting behavior & educational attainment data are presented, ...
 
@@ -523,13 +517,15 @@ by_pres <- dailykos_pres_elections %>%
 ggplot(data = by_pres, aes(x=Per_White_Working, 
                            y=Per_Rep_Margin, 
                            fill = candidate, 
-                           color = candidate)) +
+                           color = candidate, 
+                           linetype = candidate)) +
   geom_point(alpha = .75, size = 1) +
   ggthemes::scale_fill_stata()+
   ggthemes::scale_color_stata()+
-  geom_smooth(method="lm", se=T, color = 'black', linetype = 3)+
+  geom_smooth(method="lm", se=T, color = 'black')+
   theme(legend.position = "bottom")+
-  labs(title = "Proportion White working class vs. presidential vote margin by district",
+  labs(title = "Proportion White working class vs. % Republican support",
+       subtitle = 'Presidential elctions',
        caption = 'Data source: Daily Kos & American Community Survey')
 ```
 
@@ -557,17 +553,16 @@ by_pres %>%
 > The Daily Kos makes available of set of shapefiles meant to represent congressional districts and states as .... The Daily Vos makes these shapefiles availble via Google Drive. Links are provided below.
 
 ``` r
+base <- 'https://drive.google.com/uc?authuser=0&id='
 #Hex map
-dailyvos_hex_cd <- 'https://drive.google.com/uc?authuser=0&id=1E_P0r1Uv438fZsvKsvidIR02Nb5Ju9zf&export=download/HexCDv12.zip'
-dailyvos_hex_st <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJVWxYZGtxMGhrMEE&export=download/HexSTv11.zip'
+dailyvos_hex_cd <- paste0(base, '1E_P0r1Uv438fZsvKsvidIR02Nb5Ju9zf&export=download/HexCDv12.zip')
+dailyvos_hex_st <- paste0(base, '0B2X3Bx1aCHsJVWxYZGtxMGhrMEE&export=download/HexSTv11.zip')
 #Tile map
-dailyvos_tile_outer <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJdGF4ZWRTQmVyV2s&export=download/TileOutv10.zip'
-dailyvos_tile_inner <- 'https://drive.google.com/uc?authuser=0&id=0B2X3Bx1aCHsJR1c0SzNyWlAtZjA&export=download/TileInv10.zip'
+dailyvos_tile_outer <- paste0(base, '0B2X3Bx1aCHsJdGF4ZWRTQmVyV2s&export=download/TileOutv10.zip')
+dailyvos_tile_inner <- paste0(base, '0B2X3Bx1aCHsJR1c0SzNyWlAtZjA&export=download/TileInv10.zip')
 ```
 
 #### 6.1 A simple function for shapefile extraction
-
-We first build a simple function that ... Download & load shapefile as an `sf` object -- as process.
 
 ``` r
 get_url_shape <- function (url) {
@@ -585,8 +580,6 @@ get_url_shape <- function (url) {
 
 #### 6.2 Tile map of US states
 
-Extract shapefiles from ...
-
 ``` r
 dailykos_tile <- lapply (c(dailyvos_tile_inner,
                            dailyvos_tile_outer),
@@ -594,7 +587,7 @@ dailykos_tile <- lapply (c(dailyvos_tile_inner,
 names(dailykos_tile) <- c('inner', 'outer')
 ```
 
-Senators by state by part.
+> Here we
 
 ``` r
 sens <- rvoteview_senate_50 %>%
@@ -609,7 +602,7 @@ sens <- rvoteview_senate_50 %>%
   select(congress, State, party_name, layer)
 ```
 
-Plot. To address the consistency issue. Group by aplhabetical order -- such that if D-R, then D placed in inner. Independents?
+> The tile map below demonstrates the evolution of US Senate composition by state and party affiliation over the last thirty congresses.
 
 ``` r
 dailykos_tile$outer %>% 
@@ -641,8 +634,6 @@ dailykos_tile$outer %>%
 
 #### 6.3 Hexmap of Congressional districs
 
-Apply function.
-
 ``` r
 dailykos_shapes <- lapply (c(dailyvos_hex_cd, dailyvos_hex_st), 
                            get_url_shape)
@@ -670,8 +661,6 @@ dailykos_pres_flips$`2012`[dailykos_pres_flips$District == 'Florida 7th'] <- 'Ob
 dailykos_pres_flips$`2008`[dailykos_pres_flips$District == 'Ohio 10th'] <- 'Obama' 
 dailykos_pres_flips$`2008`[dailykos_pres_flips$District == 'New York 22nd'] <- 'McCain'
 ```
-
-Some hand edits to address ties.
 
 ``` r
 dailykos_pres_flips <- dailykos_pres_flips %>%
