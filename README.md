@@ -299,13 +299,6 @@ dailykos_pres_elections <- keeps [,c('District', 'Code', grep('President_[A-z]',
 
 > Our new data structure.
 
-``` r
-dailykos_pres_elections %>%
-  select(District, GEOID, year, candidate, percent) %>%
-  head() %>%
-  knitr::kable()
-```
-
 | District    | GEOID | year | candidate |  percent|
 |:------------|:------|:-----|:----------|--------:|
 | Alabama 1st | 0101  | 2016 | Clinton   |     34.1|
@@ -413,7 +406,7 @@ tidycens_data <- tidycensus::get_acs(geography = 'congressional district',
 
 > In the Trump era, educational divides in voting behavior have received a great deal of attention. In particular, pundits & news outlets have focused on a segment of the population they have dubbed the "White working class."
 
--   **White working class** formalized in US Census terms: Population 25 years & older who identify as White & non-Hispanic without a Bachelor's degree.
+> **White working class** formalized in US Census terms: Population 25 years & older who identify as White & non-Hispanic without a Bachelor's degree.
 
 ``` r
 us_house_districts %>% 
@@ -513,7 +506,7 @@ ggplot(data = by_pres, aes(x=Per_White_Working,
   geom_point(alpha = .75, size = 1) +
   ggthemes::scale_fill_stata()+
   ggthemes::scale_color_stata()+
-  geom_smooth(method="lm", se=T, color = 'black', size = .75)+
+  geom_smooth(method="lm", se=T, color = 'black', size = .5)+
   theme(legend.position = "bottom")+
   labs(title = "Proportion White working class vs. % Republican support",
        subtitle = 'Presidential elections: 2008, 2012 & 2016',
