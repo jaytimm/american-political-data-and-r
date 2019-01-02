@@ -13,7 +13,7 @@ Data presented here have been collated from [The Daily Kos](), [CivilServiceUSA]
 -   [6 Alternative geometries](#7-Funky-geometries)
 -   [7 A work in progress](#8-A-work-in-progress)
 
-Hopefully a useful open source framework for investigating past & future election returns and congresses using R. All work presented here can be reproduced in its entirety. A developing resource.
+Hopefully a useful open source framework for investigating past & future election results and congresses using R. All work presented here can be reproduced in its entirety. A developing resource.
 
 ``` r
 library(tidyverse)
@@ -23,14 +23,12 @@ library(tidyverse)
 
 ### 1 Lawmaker details
 
-> [CivilServiceUSA](https://github.com/CivilServiceUSA) provides a wonderful collection of details about each lawmaker in the 115th Congress, including age, race, religion, biographical details, and social media info. A full roll call of information available for each lawmaker is available [here](https://github.com/CivilServiceUSA/us-house#data-set). Presumably other resources exist for accessing this type of information, but this particular resource is super rich/convenient. Tables can be downloaded directly from their Git Hub site. I prefer the json format.
+> [CivilServiceUSA](https://github.com/CivilServiceUSA) provides a wonderful collection of details about each lawmaker in the 115th Congress, including age, race, religion, biographical details, and social media info. A full roll call of information available for each lawmaker is available [here](https://github.com/CivilServiceUSA/us-house#data-set). Here, we consider some different perspectives on the composition of the 115th House utilizing these data.
 
 ``` r
 csusa_senate_dets <- jsonlite::fromJSON(url('https://raw.githubusercontent.com/CivilServiceUSA/us-senate/master/us-senate/data/us-senate.json'))
 csusa_house_dets <- jsonlite::fromJSON(url('https://raw.githubusercontent.com/CivilServiceUSA/us-house/master/us-house/data/us-house.json'))
 ```
-
-Here, we consider some different perspectives on the composition of the 115th House utilizing these data.
 
 #### 1.1 Age & generational demographics of the 115th House
 
@@ -47,7 +45,7 @@ csusa_house_dets %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
-> Pew Research has seemingly taken a leadership role in formally [delineating generations](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/), which have always been hazy, sources of contention, and good clean American fun.
+> [Pew Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/) uses the following set of birth-year ranges to delineate generations.
 
 -   Millenials: 1981-1997
 -   Generation X: 1965 -1980
@@ -55,7 +53,7 @@ csusa_house_dets %>%
 -   Silent: 1928-1945
 -   Greatest: &lt; 1928
 
-I take some liberties here with this classfication, as I have issues with the duration of the Boomer generation. Namely: (a) Boomers-proper 1946-1954 & (b) Generation Jones 1955-1964.
+> For good measure, we provide a more detailed classification of Boomers --- lumping folks born post-WWII with those born in the ~sixties is a problem for me. So, (a) Boomers-proper 1946-1954 & (b) [Generation Jones](https://en.wikipedia.org/wiki/Generation_Jones) 1955-1964.
 
 ``` r
 gens115 <- csusa_house_dets %>%
@@ -85,9 +83,7 @@ gens115 %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
-#### 1.2 Religion
-
-And perhaps a look at religion for good measure.
+#### 1.2 Faith & the 115th House
 
 ``` r
 cols <- RColorBrewer::brewer.pal(4, 'Set1') 
@@ -117,13 +113,11 @@ csusa_house_dets %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
-So, some simple examples of what can be with .... And here's hoping they continue their project into the new (116th) Congress.
-
 ------------------------------------------------------------------------
 
 ### 2 Political ideologies and congressional composition
 
-> The [VoteView](https://voteview.com/) project has been the standard for ... I oddly enough became hip to their methods via linguisti
+> The [VoteView](https://voteview.com/) project provides roll call-based political ideology scores for all lawmakers in the history of the US Congress. Data can be used to investigate congressional composition by party affiliation over time, the aggregate political ideologies of both houses over time, and the ideologies of individual lawmakers. Plus a host of other roll call-based analyses.
 
 ``` r
 rvoteview_house_50 <- lapply(c(66:115), function (x)
@@ -135,8 +129,6 @@ rvoteview_house_50 <- lapply(c(66:115), function (x)
 ```
 
 #### 2.1 Congressional composition
-
-A bit of a viz. Note that these percentages are not erfect, as non-major political parties are not included (which comprise a very small overall peracentage).
 
 ``` r
 rvoteview_house_50 %>%
