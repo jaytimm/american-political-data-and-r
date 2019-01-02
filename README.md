@@ -202,7 +202,7 @@ rvoteview_house_50 %>%
 
 #### 2.3 Political ideologies historically: a party-based overview
 
-> Another perspective. A slightly modified version of [this](https://voteview.com/parties/all) VoteView interactive visualization.
+> A slightly modified version of [this](https://voteview.com/parties/all) VoteView visualization illustrating the growing ideological divide between major political parties in the US.
 
 ``` r
 rvoteview_house_50 %>%
@@ -227,23 +227,18 @@ rvoteview_house_50 %>%
 
 #### 2.4 NOKKEN & POOLE scores
 
-An alternative approach. --- Voteview data with
-
-(that change per congress). Scores via `Rvoteview` only DW\_Nominate, which reflect an aggregate score based on lawmaker's entire voting history (eben if they switch houses, which is weird).
-
-Mention the `bioguide` which helps cross.
+> An alternative set of ideology scores are available as a csv from VoteView's website. DW-Nominate scores are constant over a lawmakers entire political career. Nokken & Poole scores, in contrast, are congress-specific scores.
 
 ``` r
-voteview_house115 <- read.csv(url("https://voteview.com/static/data/out/members/HSall_members.csv"),
-  stringsAsFactors = FALSE) %>%
-  filter(chamber == 'House' & congress == 115)
+voteview_nokken_poole <- read.csv(url("https://voteview.com/static/data/out/members/HSall_members.csv"),
+  stringsAsFactors = FALSE) 
 ```
 
 ------------------------------------------------------------------------
 
 ### 3 Political geometries
 
-> The `tigris` package provides a super convenient interface ... for loading US shapefiles ...
+> The R package `tigris` provides access to all US Census-based geometries, including US congressional districts and state legislative districts.
 
 ``` r
 nonx <- c('78', '69', '66', '72', '60', '15', '02')
@@ -264,9 +259,7 @@ us_house_districts <- sf::st_transform(us_house_districts, laea)
 
 ### 4 Federal election results
 
-> [Daily Kos data sets](https://www.dailykos.com/stories/2018/2/21/1742660/-The-ultimate-Daily-Kos-Elections-guide-to-all-of-our-data-sets)
-
-Some lawmaker bio details (Name, First elected, Birth Year, Gender, RAce/ethnicity, Religion, LGBT). House sheet: 2016/2012/2008 presidential election results by congressional district; along with 2016/2014 house congressional results; No 2018 results.
+> The Daily Kos makes available [a host of data sets](https://www.dailykos.com/stories/2018/2/21/1742660/-The-ultimate-Daily-Kos-Elections-guide-to-all-of-our-data-sets), including federal election returns for presidential & congressional races. 2016 returns are the most recent data sets available. Here we focus on presidential results for the last three elections. Seemingly one of the more comprehensive collections of open source federal election returns.
 
 #### 4.1 Restructuring election data
 
@@ -420,9 +413,7 @@ tidycens_data <- tidycensus::get_acs(geography = 'congressional district',
 
 > In the Trump era, educational divides in voting behavior have received a great deal of attention. In particular, pundits & news outlets have focused on a segment of the population they have dubbed the "White working class."
 
--   US Census formalization of **White working class**: People 25 years & older who identify as White & non-Hispanic who do not have a Bachelor's degree or higher.
-
-> Importantly, when relationships between voting behavior & educational attainment data are presented, ...
+-   **White working class** formalized in US Census terms: Population 25 years & older who identify as White & non-Hispanic without a Bachelor's degree.
 
 ``` r
 us_house_districts %>% 
@@ -522,7 +513,7 @@ ggplot(data = by_pres, aes(x=Per_White_Working,
   geom_point(alpha = .75, size = 1) +
   ggthemes::scale_fill_stata()+
   ggthemes::scale_color_stata()+
-  geom_smooth(method="lm", se=T, color = 'black')+
+  geom_smooth(method="lm", se=T, color = 'black', size = .75)+
   theme(legend.position = "bottom")+
   labs(title = "Proportion White working class vs. % Republican support",
        subtitle = 'Presidential elctions',
@@ -578,7 +569,7 @@ get_url_shape <- function (url) {
   x}
 ```
 
-#### 6.2 Tile map of US states
+#### 6.2 Tile map of US states: Senate composition historically
 
 ``` r
 dailykos_tile <- lapply (c(dailyvos_tile_inner,
@@ -632,7 +623,7 @@ dailykos_tile$outer %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
-#### 6.3 Hexmap of Congressional districs
+#### 6.3 Hexmap of Congressional districs: Presidential lineages
 
 ``` r
 dailykos_shapes <- lapply (c(dailyvos_hex_cd, dailyvos_hex_st), 
@@ -641,8 +632,6 @@ names(dailykos_shapes) <- c('cds', 'states')
 #State hex shapefile is slightly broken.
 dailykos_shapes$states <- lwgeom::st_make_valid(dailykos_shapes$states)
 ```
-
-Here, we consider Presidential voting ...
 
 ``` r
 dailykos_pres_flips <- dailykos_pres_elections %>%
