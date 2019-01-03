@@ -40,16 +40,16 @@ set.seed(99)
 csusa_house_dets %>%
   sample_n(5) %>%
   select(name, state_code, district, party, gender, ethnicity, twitter_handle) %>%
-  knitr::kable()
+  knitr::kable(row.names = FALSE)
 ```
 
-|     | name           | state\_code | district | party      | gender | ethnicity         | twitter\_handle |
-|-----|:---------------|:------------|:---------|:-----------|:-------|:------------------|:----------------|
-| 255 | Andrew Kim     | NJ          | 3        | democrat   | male   | white-american    | NA              |
-| 50  | Tony Cardenas  | CA          | 29       | democrat   | male   | hispanic-american | RepCardenas     |
-| 297 | Brian Higgins  | NY          | 26       | democrat   | male   | white-american    | RepBrianHiggins |
-| 429 | Glenn Grothman | WI          | 6        | republican | male   | white-american    | RepGrothman     |
-| 231 | Michael Guest  | MS          | 3        | republican | male   | white-american    | NA              |
+| name           | state\_code | district | party      | gender | ethnicity         | twitter\_handle |
+|:---------------|:------------|:---------|:-----------|:-------|:------------------|:----------------|
+| Andrew Kim     | NJ          | 3        | democrat   | male   | white-american    | NA              |
+| Tony Cardenas  | CA          | 29       | democrat   | male   | hispanic-american | RepCardenas     |
+| Brian Higgins  | NY          | 26       | democrat   | male   | white-american    | RepBrianHiggins |
+| Glenn Grothman | WI          | 6        | republican | male   | white-american    | RepGrothman     |
+| Michael Guest  | MS          | 3        | republican | male   | white-american    | NA              |
 
 #### 1.1 Age & generational demographics of the 115th House
 
@@ -655,7 +655,9 @@ rvoteview_senate_50 %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
-#### 6.3 Hexmap of Congressional districs: Presidential voting lineages
+#### 6.3 Hexmap of Congressional districs: Presidential voting groups
+
+> A equal-area/hexmap perspective on the voting patterns of congressional districts for the last three presidential elections.
 
 ``` r
 dailykos_shapes <- lapply (c(dailyvos_hex_cd, dailyvos_hex_st), 
@@ -665,7 +667,7 @@ names(dailykos_shapes) <- c('cds', 'states')
 dailykos_shapes$states <- lwgeom::st_make_valid(dailykos_shapes$states)
 ```
 
-> A **presidential voting lineage** is defined as ... I invented this term, as it would seem the English lexicon lacks a word/conventionalized phrase to denote this particular concept.
+> Here we treat presidential winners in each district for election years 2008, 2012, 2016 as a single "series". A total of 2 x 2 x 2 = 8 series, or voting groups, are theoretically possible.
 
 ``` r
 dailykos_pres_flips <- dailykos_pres_elections %>%
@@ -683,9 +685,7 @@ dailykos_pres_flips <- dailykos_pres_elections %>%
 dailykos_pres_flips$`2012`[dailykos_pres_flips$District == 'Florida 7th'] <- 'Obama' 
 dailykos_pres_flips$`2008`[dailykos_pres_flips$District == 'Ohio 10th'] <- 'Obama' 
 dailykos_pres_flips$`2008`[dailykos_pres_flips$District == 'New York 22nd'] <- 'McCain'
-```
 
-``` r
 dailykos_pres_flips <- dailykos_pres_flips %>%
   mutate(flips = paste0(`2008`, '-',`2012`, '-', `2016`)) %>%
   group_by(flips) %>%
@@ -693,7 +693,7 @@ dailykos_pres_flips <- dailykos_pres_flips %>%
   ungroup()
 ```
 
-> A summary of congressional district counts by presidential voting lineage for the 2008, 2012 & 2016 presidential elections.
+> A summary of congressional district counts by presidential voting group for the 2008, 2012 & 2016 presidential elections. Only the series "McCain &lt; Obama &lt; Clinton" is unattested.
 
 ``` r
 dailykos_pres_flips %>%
@@ -712,9 +712,9 @@ dailykos_pres_flips %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-38-1.png)
 
-> An equal-area map of congressional districts illustrating voting lineages for the 2008, 20012 & 2016 presidential elections.
+> An equal-area map of congressional districts illustrating voting groups for the 2008, 20012 & 2016 presidential elections.
 
 ``` r
 dailykos_shapes$cds %>%
@@ -740,15 +740,15 @@ dailykos_shapes$cds %>%
         axis.text.y=element_blank(),
         legend.title=element_blank(),
         legend.position = 'bottom') +
-  labs(title = "Presidential election results by district - 2008, 2012 & 2016",
+  labs(title = "Presidential voting groups by district - 2008, 2012 & 2016",
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-40-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
-#### 6.4 Presidential voting lineages in 2-steps: A Sankey perspective
+#### 6.4 Presidential voting groups in 2-steps: A Sankey perspective
 
-> Two-step presidential lineages. (538 numbers Romney-Clinton districts at 13. Daily Kos has them at 15. ??. The latter make their data publically available.)
+> Presidential voting groups as a two-step series.
 
 ``` r
 dailykos_pres_flips %>%
@@ -779,7 +779,7 @@ dailykos_pres_flips %>%
 
 <br>
 
-> A **Sankey diagram** of ... presidential voting lineages from 2008 to 2012 and 2012 to 2016. Clearly a bit jazzier as an html widget proper.
+> A **Sankey diagram** of presidential voting groups from (1) 2008 to 2012 and (2) 2012 to 2016. Clearly a bit jazzier as an html widget proper.
 
 ``` r
 library(plotly)
@@ -805,7 +805,7 @@ plot_ly(
       font = list(size = 10))
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-42-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-41-1.png)
 
 ------------------------------------------------------------------------
 
