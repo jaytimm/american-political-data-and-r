@@ -1,11 +1,9 @@
 American political data & R: some open source resources & methods
 -----------------------------------------------------------------
 
-A layman's guide to accessing and exploring US political data from a collection of open government resources, including presidential election returns (2008-2016 by congressional district), lawmaker biographies & political ideologies, and congressional district demographics.
+A layman's guide to accessing and exploring US political data utilizing a collection of open government resources, including presidential election returns (2008-2016 by congressional district), lawmaker biographies & political ideologies, and congressional district demographics.
 
-Here, we integrate these resources to present ...
-
-Data presented here have been collated from [The Daily Kos](), [CivilServiceUSA](), and the R packages [tidycensus]() & [Rvoteview]().
+Data presented here have been collated from [The Daily Kos](https://www.dailykos.com/stories/2018/2/21/1742660/-The-ultimate-Daily-Kos-Elections-guide-to-all-of-our-data-sets), [CivilServiceUSA](https://github.com/CivilServiceUSA), and the R packages [tidycensus](https://walkerke.github.io/tidycensus/) & [Rvoteview](https://github.com/voteview/Rvoteview).
 
 -   [1 Lawmaker details](#1-Lawmaker-details)
 -   [2 Political Ideologies](#2-political-ideologies-and-congressional-composition)
@@ -124,7 +122,7 @@ csusa_house_dets %>%
                                  grow = F, 
                                  alpha = 0.65, 
                                  colour ="black",  
-                                 min.size = 0)+ 
+                                 size = 13)+ 
       treemapify::geom_treemap_text(colour = "white", 
                         place = "topleft", 
                         reflow = T,
@@ -456,8 +454,6 @@ us_house_districts %>%
        caption = 'Data source: ACS, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-24-1.png)
-
 #### 5.3 Race & educational attainment profiles by district
 
 > Profiling congressional districts in terms of race/ethncitiy & educational attainment. Categories include *White with college degree*, *White without college degree*, *Non-White with college degree*, and *Non-White without college degree*. The **Non-White** population is defined more specifically as non-White (race) and/or Hispanic (ethnicity).
@@ -509,8 +505,6 @@ tree %>%
            caption = 'Source: ACS, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
-
 #### 5.4 White working class & Republican vote shares historically
 
 > A comparison of the relationship between the share of working class Whites and share of Republican candidate support by district for the last three presidential elections.
@@ -537,8 +531,6 @@ ggplot(data = by_pres, aes(x=Per_White_Working,
        caption = 'Data source: Daily Kos & American Community Survey')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
-
 > **As the table below attests**, this relationship has grown stronger in the Trump era.
 
 ``` r
@@ -548,19 +540,13 @@ by_pres %>%
   knitr::kable()
 ```
 
-| candidate |  cor\_coefficient|
-|:----------|-----------------:|
-| McCain    |         0.6182315|
-| Romney    |         0.6603027|
-| Trump     |         0.7865170|
-
 ------------------------------------------------------------------------
 
 ### 6 Equal-area political geometries
 
-> The Daily Kos makes available a set of alternative geometries that represent congressional districts and states as equal-area polygons. As some of the maps presented above attest, America's larger states and congressional districts tend to overwhelm a standard map, and collectively serve to under-represent/hide smaller, more populous urban areas.
+> The Daily Kos makes available a set of alternative geometries that spatially represent congressional districts and states as equal-area polygons. As some of the maps presented above attest, America's larger states and congressional districts tend to overwhelm a standard map, and ultimately serve to under-represent/hide smaller, more populous urban areas.
 
-> **Links** to these shapefiles are presented below:
+> **Links** to these shapefiles are detailed below:
 
 ``` r
 base <- 'https://drive.google.com/uc?authuser=0&id='
@@ -597,7 +583,7 @@ dailykos_tile <- lapply (c(dailyvos_tile_inner,
 names(dailykos_tile) <- c('inner', 'outer')
 ```
 
-> Here we
+> An overview of Senate representation by state and party affiliation utilizing an equal-area tile map of US states.
 
 ``` r
 sens <- rvoteview_senate_50 %>%
@@ -612,7 +598,7 @@ sens <- rvoteview_senate_50 %>%
   select(congress, State, party_name, layer)
 ```
 
-> The tile map below demonstrates the evolution of US Senate composition by state and party affiliation over the last thirty congresses.
+> The tile map below illustrates the evolution of US Senate composition by state and party affiliation over the last thirty congresses. Indded a shifting landscape.
 
 ``` r
 dailykos_tile$outer %>% 
@@ -636,13 +622,13 @@ dailykos_tile$outer %>%
         legend.title=element_blank(),
         legend.position = 'bottom') +
   facet_wrap(~congress) +
-  labs(title = "US Senate Composition by Congress, State & Party: 6 snapshots",
+  labs(title = "US Senate Composition by Congress, State & Party in 6 snapshots",
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
-> Count of states with **split Senate delegations** by congress/year. Split delegation = Senators from the same state with different party affiliations.
+> Counts of states with **split Senate delegations** by congress/year. Split delegation = Senators from the same state with different party affiliations.
 
 ``` r
 rvoteview_senate_50 %>%
@@ -715,7 +701,7 @@ dailykos_pres_flips %>%
   ggthemes::scale_fill_stata() +
   xlab(NULL) + ylab(NULL) +
   coord_flip() +
-  labs(title = 'Presidential winner lineages - 2008-16',
+  labs(title = 'Presidential voting groups - 2008-16',
        caption = 'Data source: Daily Kos')
 ```
 
@@ -818,4 +804,4 @@ plot_ly(
 
 ### 7 Summary
 
-Indeed, a work in progress. But hopefully a nice round-up of useful open source resources for investigating & visualizing federal election results.
+Hopefully a nice round-up of useful open source resources for investigating & visualizing federal election results. I will update & develop as things get updated & develop.

@@ -7,11 +7,9 @@ output:
 
 ##American political data & R: some open source resources & methods
 
-A layman's guide to accessing and exploring US political data from a collection of open government resources, including presidential election returns (2008-2016 by congressional district), lawmaker biographies & political ideologies, and congressional district demographics.
+A layman's guide to accessing and exploring US political data utilizing a collection of open government resources, including presidential election returns (2008-2016 by congressional district), lawmaker biographies & political ideologies, and congressional district demographics.
 
-Here, we integrate these resources to present ...
-
-Data presented here have been collated from [The Daily Kos](), [CivilServiceUSA](), and the R packages [tidycensus]() & [Rvoteview]().
+Data presented here have been collated from [The Daily Kos](https://www.dailykos.com/stories/2018/2/21/1742660/-The-ultimate-Daily-Kos-Elections-guide-to-all-of-our-data-sets), [CivilServiceUSA](https://github.com/CivilServiceUSA), and the R packages [tidycensus](https://walkerke.github.io/tidycensus/) & [Rvoteview](https://github.com/voteview/Rvoteview).
 
 
 - [1 Lawmaker details](#1-Lawmaker-details)
@@ -135,7 +133,7 @@ csusa_house_dets %>%
                                  grow = F, 
                                  alpha = 0.65, 
                                  colour ="black",  
-                                 min.size = 0)+ 
+                                 size = 13)+ 
       treemapify::geom_treemap_text(colour = "white", 
                         place = "topleft", 
                         reflow = T,
@@ -447,7 +445,7 @@ race_table <- as.data.frame(cbind(code,race),
 
 > Table C15002: *Sex by educational attainment for the population 25 years and over*.  Data disaggregated by race & ethncity can be accessed via suffixes A-I. The table above crosses suffix to subgroup classification.
 
-```{r message=FALSE, warning=FALSE}
+```{r eval=FALSE, message=FALSE, warning=FALSE}
 search_vars <- var_list[grepl('C1500', var_list$name),]
 
 tidycens_data <- tidycensus::get_acs(geography = 'congressional district',
@@ -476,7 +474,7 @@ tidycens_data <- tidycensus::get_acs(geography = 'congressional district',
 > **White working class** formalized in US Census terms: Population 25 years & older who identify as White & non-Hispanic without a Bachelor's degree.
 
 
-```{r fig.height=6, message=FALSE, warning=FALSE}
+```{r eval=FALSE, message=FALSE, warning=FALSE}
 us_house_districts %>% 
   filter(!gsub('..$' ,'', GEOID) %in% nonx) %>%
   left_join(tidycens_data %>% 
@@ -507,7 +505,7 @@ us_house_districts %>%
 > Profiling congressional districts in terms of race/ethncitiy & educational attainment. Categories include *White with college degree*, *White without college degree*, *Non-White with college degree*, and *Non-White without college degree*.  The **Non-White** population is defined more specifically as non-White (race) and/or Hispanic (ethnicity).
 
 
-```{r message=FALSE, warning=FALSE}
+```{r eval=FALSE, message=FALSE, warning=FALSE}
 tree <- tidycens_data %>%
   left_join(data.frame(us_house_districts) %>% select(GEOID, STUSPS, CD115FP)) %>%
   mutate (race = gsub(', | ', '_', race)) %>%
@@ -528,7 +526,7 @@ tree <- tidycens_data %>%
 
 > **Race by educational attainment profiles** for a random sample of congressional districts:
 
-```{r fig.height=5.5, message=FALSE, warning=FALSE}
+```{r eval=FALSE, fig.height=5.5, message=FALSE, warning=FALSE}
 set.seed(99)
 samp_n <- sample(unique(tree$GEOID), 12)
 
@@ -561,7 +559,7 @@ tree %>%
 
 > A comparison of the relationship between the share of working class Whites and share of Republican candidate support by district for the last three presidential elections.
 
-```{r fig.height=6, message=FALSE, warning=FALSE}
+```{r eval=FALSE, fig.height=6, message=FALSE, warning=FALSE}
 by_pres <- dailykos_pres_elections %>%
   filter(candidate %in% c('McCain', 'Romney', 'Trump')) %>% 
   left_join(tree %>% filter(race_cat == 'White' & 
@@ -586,7 +584,7 @@ ggplot(data = by_pres, aes(x=Per_White_Working,
 
 > **As the table below attests**, this relationship has grown stronger in the Trump era.
 
-```{r}
+```{r eval=FALSE}
 by_pres %>% 
   group_by(candidate) %>%
   summarize(cor_coefficient = cor(Per_White_Working, Per_Rep_Share)) %>%
@@ -598,9 +596,9 @@ by_pres %>%
 
 ### 6 Equal-area political geometries
 
-> The Daily Kos makes available a set of alternative geometries that represent congressional districts and states as equal-area polygons.  As some of the maps presented above attest, America's larger states and congressional districts tend to overwhelm a standard map, and collectively serve to under-represent/hide smaller, more populous urban areas. 
+> The Daily Kos makes available a set of alternative geometries that spatially represent congressional districts and states as equal-area polygons.  As some of the maps presented above attest, America's larger states and congressional districts tend to overwhelm a standard map, and ultimately serve to under-represent/hide smaller, more populous urban areas. 
 
-> **Links** to these shapefiles are presented below:
+> **Links** to these shapefiles are detailed below:
 
 
 ```{r}
@@ -653,7 +651,7 @@ rvoteview_senate_50 <- lapply(c(66:115), function (x)
 ```
 
 
-> Here we 
+> An overview of Senate representation by state and party affiliation utilizing an equal-area tile map of US states. 
 
 ```{r}
 sens <- rvoteview_senate_50 %>%
@@ -670,7 +668,7 @@ sens <- rvoteview_senate_50 %>%
 
 
 
-> The tile map below demonstrates the evolution of US Senate composition by state and party affiliation over the last thirty congresses.
+> The tile map below illustrates the evolution of US Senate composition by state and party affiliation over the last thirty congresses. Indded a shifting landscape.
 
 ```{r fig.height=6, message=FALSE, warning=FALSE}
 dailykos_tile$outer %>% 
@@ -694,12 +692,12 @@ dailykos_tile$outer %>%
         legend.title=element_blank(),
         legend.position = 'bottom') +
   facet_wrap(~congress) +
-  labs(title = "US Senate Composition by Congress, State & Party: 6 snapshots",
+  labs(title = "US Senate Composition by Congress, State & Party in 6 snapshots",
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
 
-> Count of states with **split Senate delegations** by congress/year.  Split delegation = Senators from the same state with different party affiliations.   
+> Counts of states with **split Senate delegations** by congress/year.  Split delegation = Senators from the same state with different party affiliations.   
 
 ```{r fig.height=4}
 rvoteview_senate_50 %>%
@@ -777,7 +775,7 @@ dailykos_pres_flips %>%
   ggthemes::scale_fill_stata() +
   xlab(NULL) + ylab(NULL) +
   coord_flip() +
-  labs(title = 'Presidential winner lineages - 2008-16',
+  labs(title = 'Presidential voting groups - 2008-16',
        caption = 'Data source: Daily Kos')
 ```
 
@@ -873,5 +871,5 @@ plot_ly(
 ### 7 Summary
 
 
-Indeed, a work in progress.  But hopefully a nice round-up of useful open source resources for investigating & visualizing federal election results.  
+Hopefully a nice round-up of useful open source resources for investigating & visualizing federal election results.  I will update & develop as things get updated & develop.
 
