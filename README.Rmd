@@ -249,7 +249,7 @@ rvoteview_house_50 %>%
   group_by(congress, party_name, xmed) %>%
   summarize(med = median(nominate.dim1)) %>%
   ungroup() %>%
-  mutate(year = 1916 + 2*rep(c(1:50), each = 2)) %>%
+  mutate(year = 1917 + 2*rep(c(1:50), each = 2)) %>%
   ggplot() +
   geom_line(aes(x = year, y= med, color = party_name), size = 1) +
   ggthemes::scale_color_stata()+
@@ -691,6 +691,25 @@ dailykos_tile$outer %>%
 ```
 
 
+> Count of states with split Senate delegations by congress/year.  **Split delegation** = Senators from the same state with different party affiliations.   
+
+```{r}
+rvoteview_senate_50 %>%
+  filter(congress > 84) %>%
+  group_by(congress, state) %>%
+  summarize(splits = length(unique(party_code))) %>%
+  filter(splits == 2) %>%
+  group_by(congress) %>%
+  summarize(n=n())%>%
+  mutate(year = 1955 + 2*rep(c(1:31))) %>%
+  ggplot() +
+  geom_line(aes(x = year, y= n), size = 1.5, color= 'steelblue')+
+  ylim(10,30)+
+  labs(title = "Split delegations in the US Senate: Congresses 85 to 115",
+       caption = 'Data sources: VoteView')
+```
+
+
 
 #### 6.3 Hexmap of Congressional districs: Presidential voting lineages
 
@@ -817,7 +836,7 @@ dailykos_pres_flips %>%
 
 > A **Sankey diagram** of ... presidential voting lineages from 2008 to 2012 and 2012 to 2016.  Clearly a bit jazzier as an html widget proper.
 
-```{r message=FALSE, warning=FALSE, eval=FALSE}
+```{r message=FALSE, warning=FALSE}
 library(plotly)
 r<- '#9e5055'; b <- '#395f81'
 plot_ly(

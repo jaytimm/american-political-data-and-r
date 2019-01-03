@@ -1,7 +1,9 @@
 American political data & R: some open source resources & methods
 -----------------------------------------------------------------
 
-A layman's guide to accessing, integrating, and exploring US political data from a collection of open government resources, including presidential election returns (2008-2016 by congressional district), lawmaker biographies & political ideologies, and congressional district demographics.
+A layman's guide to accessing and exploring US political data from a collection of open government resources, including presidential election returns (2008-2016 by congressional district), lawmaker biographies & political ideologies, and congressional district demographics.
+
+Here, we integrate these resources to present ...
 
 Data presented here have been collated from [The Daily Kos](), [CivilServiceUSA](), and the R packages [tidycensus]() & [Rvoteview]().
 
@@ -43,11 +45,11 @@ csusa_house_dets %>%
 
 |     | name           | state\_code | district | party      | gender | ethnicity         | twitter\_handle |
 |-----|:---------------|:------------|:---------|:-----------|:-------|:------------------|:----------------|
-| 255 | Tom MacArthur  | NJ          | 3        | republican | male   | white-american    | RepTomMacArthur |
+| 255 | Andrew Kim     | NJ          | 3        | democrat   | male   | white-american    | NA              |
 | 50  | Tony Cardenas  | CA          | 29       | democrat   | male   | hispanic-american | RepCardenas     |
 | 297 | Brian Higgins  | NY          | 26       | democrat   | male   | white-american    | RepBrianHiggins |
 | 429 | Glenn Grothman | WI          | 6        | republican | male   | white-american    | RepGrothman     |
-| 231 | Gregg Harper   | MS          | 3        | republican | male   | white-american    | GreggHarper     |
+| 231 | Michael Guest  | MS          | 3        | republican | male   | white-american    | NA              |
 
 #### 1.1 Age & generational demographics of the 115th House
 
@@ -232,7 +234,7 @@ rvoteview_house_50 %>%
   group_by(congress, party_name, xmed) %>%
   summarize(med = median(nominate.dim1)) %>%
   ungroup() %>%
-  mutate(year = 1916 + 2*rep(c(1:50), each = 2)) %>%
+  mutate(year = 1917 + 2*rep(c(1:50), each = 2)) %>%
   ggplot() +
   geom_line(aes(x = year, y= med, color = party_name), size = 1) +
   ggthemes::scale_color_stata()+
@@ -633,6 +635,26 @@ dailykos_tile$outer %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
+> Count of states with split Senate delegations by congress/year. **Split delegation** = Senators from the same state with different party affiliations.
+
+``` r
+rvoteview_senate_50 %>%
+  filter(congress > 84) %>%
+  group_by(congress, state) %>%
+  summarize(splits = length(unique(party_code))) %>%
+  filter(splits == 2) %>%
+  group_by(congress) %>%
+  summarize(n=n())%>%
+  mutate(year = 1955 + 2*rep(c(1:31))) %>%
+  ggplot() +
+  geom_line(aes(x = year, y= n), size = 1.5, color= 'steelblue')+
+  ylim(10,30)+
+  labs(title = "Split delegations in the US Senate: Congresses 85 to 115",
+       caption = 'Data sources: VoteView')
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
+
 #### 6.3 Hexmap of Congressional districs: Presidential voting lineages
 
 ``` r
@@ -690,7 +712,7 @@ dailykos_pres_flips %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-38-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 > An equal-area map of congressional districts illustrating voting lineages for the 2008, 20012 & 2016 presidential elections.
 
@@ -722,7 +744,7 @@ dailykos_shapes$cds %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-40-1.png)
 
 #### 6.4 Presidential voting lineages in 2-steps: A Sankey perspective
 
@@ -782,6 +804,8 @@ plot_ly(
       title = "Presidential support by Congressional District count",
       font = list(size = 10))
 ```
+
+![](README_files/figure-markdown_github/unnamed-chunk-42-1.png)
 
 ------------------------------------------------------------------------
 
