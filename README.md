@@ -13,7 +13,7 @@ Data presented here have been collated from [The Daily Kos](https://www.dailykos
 -   [6 Equal-area political geometries](#6-Equal-area-political-geometries)
 -   [7 Summary](#7-Summary)
 
-Hopefully a useful open source & transparent framework for investigating past & future election results and congresses using R. All work presented here can be reproduced in its entirety. A developing resource.
+Hopefully a useful **open source & transparent framework** for investigating past & future election results and congresses using R. All work presented here can be reproduced in its entirety. A developing resource.
 
 ``` r
 library(tidyverse)
@@ -129,7 +129,7 @@ csusa_house_dets %>%
                         size = 11)+
       ggthemes::scale_fill_stata()+
       facet_wrap(~party)+
-      theme(legend.position = "none",
+      theme(legend.position = "bottom",
             legend.title=element_blank()) +
       labs(title = '116th House composition by party, ethnicity & gender',
            caption = 'Data source: CivilServiceUSA')
@@ -292,7 +292,7 @@ url <- 'https://docs.google.com/spreadsheets/d/1oRl7vxEJUUDWJCyrjo62cELJD2ONIVl-
 house <- gsheet::gsheet2tbl(url) 
 ```
 
-> A simple cleaning procedure that should (more or less) scale to other data sources at the Daily Kos.
+> **A simple cleaning procedure** that should (more or less) scale to other data sources at the Daily Kos.
 
 ``` r
 fix <- as.data.frame(cbind(colnames(house), as.character(house[1,])), 
@@ -816,4 +816,4 @@ plot_ly(
 
 ### 7 Summary
 
-Hopefully a nice round-up of useful open source resources for investigating & visualizing federal election results. I will update & develop as things get updated & develop.
+**Hopefully a nice round-up** of useful open source resources for investigating & visualizing federal election results. I will update & develop as things get updated & develop.

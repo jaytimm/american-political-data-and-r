@@ -21,7 +21,7 @@ Data presented here have been collated from [The Daily Kos](https://www.dailykos
 - [7 Summary](#7-Summary)
 
 
-Hopefully a useful open source & transparent framework for investigating past & future election results and congresses using R.  All work presented here can be reproduced in its entirety. A developing resource.
+Hopefully a useful **open source & transparent framework** for investigating past & future election results and congresses using R.  All work presented here can be reproduced in its entirety. A developing resource.
 
 
 ```{r message=FALSE, warning=FALSE}
@@ -871,5 +871,5 @@ plot_ly(
 ### 7 Summary
 
 
-Hopefully a nice round-up of useful open source resources for investigating & visualizing federal election results.  I will update & develop as things get updated & develop.
+**Hopefully a nice round-up** of useful open source resources for investigating & visualizing federal election results.  I will update & develop as things get updated & develop.
 
