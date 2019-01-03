@@ -3,7 +3,7 @@ American political data & R: some open source resources & methods
 
 A layman's, R-based guide to accessing, exploring & visualizing US political data utilizing a collection of open government resources, including presidential election returns (2008-2016 by congressional district), lawmaker biographies & political ideologies, and congressional district demographics.
 
-Data presented here have been collated from [The Daily Kos](https://www.dailykos.com/stories/2018/2/21/1742660/-The-ultimate-Daily-Kos-Elections-guide-to-all-of-our-data-sets), [CivilServiceUSA](https://github.com/CivilServiceUSA), and the R packages [tidycensus](https://walkerke.github.io/tidycensus/) & [Rvoteview](https://github.com/voteview/Rvoteview).
+Data used in this guide have been collated from [The Daily Kos](https://www.dailykos.com/stories/2018/2/21/1742660/-The-ultimate-Daily-Kos-Elections-guide-to-all-of-our-data-sets), [CivilServiceUSA](https://github.com/CivilServiceUSA), and the R packages [tidycensus](https://walkerke.github.io/tidycensus/) & [Rvoteview](https://github.com/voteview/Rvoteview).
 
 -   [1 Lawmaker details](#1-Lawmaker-details)
 -   [2 Political Ideologies](#2-political-ideologies-and-congressional-composition)
@@ -74,6 +74,8 @@ csusa_house_dets %>%
 
 > For good measure, we provide a more detailed classification of Boomers --- lumping folks born post-WWII with those born in the ~Sixties is a problem for me. So, (a) Boomers-proper 1946-1954 & (b) [Generation Jones](https://en.wikipedia.org/wiki/Generation_Jones) 1955-1964.
 
+> Look out! Millenials coming!
+
 ``` r
 gens116 <- csusa_house_dets %>%
   mutate (yob = as.numeric(gsub('-.*$', '', date_of_birth))) %>%
@@ -118,15 +120,15 @@ csusa_house_dets %>%
                subgroup = toupper(ethnicity))) +
       treemapify::geom_treemap(alpha=.85) +
       treemapify::geom_treemap_subgroup_border() +
-      treemapify::geom_treemap_subgroup_text(place = "bottom", 
-                                 grow = F, 
-                                 alpha = 0.65, 
-                                 colour ="black",  
-                                 size = 13)+ 
       treemapify::geom_treemap_text(colour = "white", 
                         place = "topleft", 
                         reflow = T,
                         size = 11)+
+      treemapify::geom_treemap_subgroup_text(place = "bottom", 
+                                 grow = F, 
+                                 alpha = 0.65, 
+                                 colour ="black",  
+                                 size = 13)+   
       ggthemes::scale_fill_stata()+
       facet_wrap(~party)+
       theme(legend.position = "bottom",
@@ -192,7 +194,7 @@ extremes <- rvoteview_house_50 %>%
            estimate == min((estimate)))
 ```
 
-> The 111th House took office in 2009; members were elected in a Presidential election year with Obama & McCain on the top of the ticket. Below we plot members of the 111th House in two-dimensional political space. Ideoligically extreme members are labelled.
+> The 111th House took office in 2009; members were elected in a Presidential election year with Obama & McCain on the top of the ticket. Below we plot members of the 111th House in two-dimensional political space. Ideoligically extreme members are labeled.
 
 ``` r
 rvoteview_house_50 %>%
@@ -719,7 +721,7 @@ dailykos_pres_flips %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-38-1.png)
 
-> An equal-area map of congressional districts illustrating voting groups for the 2008, 20012 & 2016 presidential elections.
+> An **equal-area map of congressional districts** illustrating voting groups for the 2008, 20012 & 2016 presidential elections.
 
 ``` r
 dailykos_shapes$cds %>%
@@ -784,7 +786,7 @@ dailykos_pres_flips %>%
 
 <br>
 
-> A **Sankey diagram** detailing transitions in presidential voting groups from (1) 2008 to 2012 and (2) 2012 to 2016. Clearly a bit jazzier as an html widget proper.
+> A **Sankey diagram** detailing transitions in presidential voting patterns (at the district level) from (1) 2008 to 2012 and (2) 2012 to 2016. Clearly a bit jazzier as an html widget proper.
 
 ``` r
 library(plotly)
@@ -806,7 +808,7 @@ plot_ly(
       value =  c(1,192,210,32,189,21,15,207))) %>% 
   
     layout(
-      title = "Transitions in presidential voting groups",
+      title = "Transitions in presidential voting patterns: 2008-2016",
       font = list(size = 10))
 ```
 
