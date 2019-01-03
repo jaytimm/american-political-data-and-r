@@ -31,6 +31,24 @@ csusa_house_dets <- jsonlite::fromJSON(url(paste0(git, 'us-senate/master/us-sena
 csusa_house_dets <- jsonlite::fromJSON(url(paste0(git, 'us-house/master/us-house/data/us-house.json')))
 ```
 
+> A small sample of the data made available by CivilServiceUSA:
+
+``` r
+set.seed(99)
+csusa_house_dets %>%
+  sample_n(5) %>%
+  select(name, state_code, district, party, gender, ethnicity, twitter_handle) %>%
+  knitr::kable()
+```
+
+|     | name           | state\_code | district | party      | gender | ethnicity         | twitter\_handle |
+|-----|:---------------|:------------|:---------|:-----------|:-------|:------------------|:----------------|
+| 255 | Tom MacArthur  | NJ          | 3        | republican | male   | white-american    | RepTomMacArthur |
+| 50  | Tony Cardenas  | CA          | 29       | democrat   | male   | hispanic-american | RepCardenas     |
+| 297 | Brian Higgins  | NY          | 26       | democrat   | male   | white-american    | RepBrianHiggins |
+| 429 | Glenn Grothman | WI          | 6        | republican | male   | white-american    | RepGrothman     |
+| 231 | Gregg Harper   | MS          | 3        | republican | male   | white-american    | GreggHarper     |
+
 #### 1.1 Age & generational demographics of the 115th House
 
 ``` r
@@ -44,7 +62,7 @@ csusa_house_dets %>%
        caption = 'Data source: CivilServiceUSA')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
 > [Pew Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/) uses the following set of birth-year ranges to delineate generations.
 
@@ -82,7 +100,7 @@ gens115 %>%
        caption = 'Data source: CivilServiceUSA')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
 #### 1.2 Faith & the 115th House
 
@@ -112,7 +130,7 @@ csusa_house_dets %>%
            caption = 'Data source: CivilServiceUSA')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
 ------------------------------------------------------------------------
 
@@ -152,7 +170,7 @@ rvoteview_house_50 %>%
        caption = 'Data source: VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 #### 2.2 Lawmaker political ideologies
 
@@ -199,7 +217,7 @@ rvoteview_house_50 %>%
        caption = 'Data source: VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 #### 2.3 Political ideologies historically: a party-based overview
 
@@ -224,7 +242,7 @@ rvoteview_house_50 %>%
        caption = 'Data source: VoteView') 
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
 #### 2.4 NOKKEN & POOLE scores
 
@@ -329,7 +347,7 @@ us_house_districts %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 #### 4.3 Rural & urban voting
 
@@ -353,7 +371,7 @@ us_house_districts %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 ------------------------------------------------------------------------
 
@@ -431,7 +449,7 @@ us_house_districts %>%
        caption = 'Data source: ACS, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
 #### 5.3 Race & educational attainment profiles by district
 
@@ -484,7 +502,7 @@ tree %>%
            caption = 'Source: ACS, 5-Year estimates, 2013-17, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
 #### 5.4 White working class & Republican vote shares historically
 
@@ -512,7 +530,7 @@ ggplot(data = by_pres, aes(x=Per_White_Working,
        caption = 'Data source: Daily Kos & American Community Survey')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 > So, as the table below attests, this relationship has grown stronger in the Trump era.
 
@@ -613,7 +631,7 @@ dailykos_tile$outer %>%
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 #### 6.3 Hexmap of Congressional districs: Presidential voting lineages
 
@@ -672,7 +690,7 @@ dailykos_pres_flips %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-38-1.png)
 
 > An equal-area map of congressional districts illustrating voting lineages for the 2008, 20012 & 2016 presidential elections.
 
@@ -704,7 +722,7 @@ dailykos_shapes$cds %>%
        caption = 'Data source: Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-38-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 #### 6.4 Presidential voting lineages in 2-steps: A Sankey perspective
 
@@ -764,8 +782,6 @@ plot_ly(
       title = "Presidential support by Congressional District count",
       font = list(size = 10))
 ```
-
-![](README_files/figure-markdown_github/unnamed-chunk-40-1.png)
 
 ------------------------------------------------------------------------
 
