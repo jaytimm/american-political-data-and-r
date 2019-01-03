@@ -118,7 +118,7 @@ csusa_house_dets %>%
 
 ### 2 Political ideologies and congressional composition
 
-> The [VoteView](https://voteview.com/) project provides roll call-based political ideology scores for all lawmakers in the history of the US Congress. Data can be used to investigate congressional composition by party affiliation over time, the aggregate political ideologies of both houses over time, and the ideologies of individual lawmakers. Plus a host of other roll call-based analyses.
+> The [VoteView](https://voteview.com/) project provides roll call-based political ideology scores for all lawmakers in the history of the US Congress. Data can be used to investigate congressional composition by party affiliation over time, the aggregate political ideologies of both houses over time, and the ideologies of individual lawmakers. And any number of other roll call-based analyses.
 
 ``` r
 rvoteview_house_50 <- lapply(c(66:115), function (x)
@@ -435,7 +435,7 @@ us_house_districts %>%
 
 #### 5.3 Race & educational attainment profiles by district
 
-> Profiling congressional districts in terms of race/ethncitiy & educational attainment. Categories include *White with college degree*, *White without college degree*, *Non-White with college degree*, and *Non-White without college degree*. The **Non-White** population is defined more specifically as non-White (race) & non-Hispanic (ethnicity).
+> Profiling congressional districts in terms of race/ethncitiy & educational attainment. Categories include *White with college degree*, *White without college degree*, *Non-White with college degree*, and *Non-White without college degree*. The **Non-White** population is defined more specifically as non-White (race) and/or Hispanic (ethnicity).
 
 ``` r
 tree <- tidycens_data %>%
@@ -514,7 +514,7 @@ ggplot(data = by_pres, aes(x=Per_White_Working,
 
 ![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
-> So, this relationship has grown stronger in the Trump era.
+> So, as the table below attests, this relationship has grown stronger in the Trump era.
 
 ``` r
 by_pres %>% 
@@ -737,7 +737,9 @@ dailykos_pres_flips %>%
 | Romney 12 | Clinton 16 |     15|
 | Romney 12 | Trump 16   |    209|
 
-> **Sankey diagramming** presidential voting lineages from 2008 to 2012 and 2012 to 2016. Clearly a bit jazzier as an html widget proper.
+<br>
+
+> A **Sankey diagram** of ... presidential voting lineages from 2008 to 2012 and 2012 to 2016. Clearly a bit jazzier as an html widget proper.
 
 ``` r
 library(plotly)
