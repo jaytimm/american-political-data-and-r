@@ -51,6 +51,8 @@ csusa_house_dets %>%
 
 #### 1.1 Age & generational demographics of the 115th House
 
+> An overview of the new 116th House in terms of age distributions and generational distributions.
+
 ``` r
 csusa_house_dets %>%
   mutate (years = 
@@ -572,7 +574,7 @@ dailyvos_tile_outer <- paste0(base, '0B2X3Bx1aCHsJdGF4ZWRTQmVyV2s&export=downloa
 dailyvos_tile_inner <- paste0(base, '0B2X3Bx1aCHsJR1c0SzNyWlAtZjA&export=download/TileInv10.zip')
 ```
 
-#### 6.1 A simple function for shapefile extraction
+> A simple function for shapefile extraction:
 
 ``` r
 get_url_shape <- function (url) {
@@ -588,7 +590,7 @@ get_url_shape <- function (url) {
   x}
 ```
 
-#### 6.2 Tile map of US states: Senate composition historically
+#### 6.1 Tile map of US states: Senate composition historically
 
 ``` r
 dailykos_tile <- lapply (c(dailyvos_tile_inner,
@@ -662,7 +664,7 @@ rvoteview_senate_50 %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
-#### 6.3 Hexmap of Congressional districs: Presidential voting groups
+#### 6.2 Hexmap of Congressional districs: Presidential voting groups
 
 > A equal-area/hexmap perspective on the voting patterns of congressional districts for the last three presidential elections.
 
@@ -753,7 +755,7 @@ dailykos_shapes$cds %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
-#### 6.4 Presidential voting groups in 2-steps: A Sankey perspective
+#### 6.3 Presidential voting groups in 2-steps: A Sankey perspective
 
 > Presidential voting groups as a two-step series. A more detailed perspective.
 
@@ -808,7 +810,7 @@ plot_ly(
       value =  c(1,192,210,32,189,21,15,207))) %>% 
   
     layout(
-      title = "Transitions in presidential voting patterns: 2008-2016",
+      title = "Transitions in district-level presidential voting patterns: 2008-2016",
       font = list(size = 10))
 ```
 
@@ -818,4 +820,4 @@ plot_ly(
 
 ### 7 Summary
 
-**Hopefully a nice round-up** of useful open source resources for investigating & visualizing federal election results. I will update & develop as things get updated & develop. Ley us know!
+**Hopefully a nice round-up** of useful open source resources for investigating & visualizing federal election results. I will update & develop as things get updated & develop. Let us know!
