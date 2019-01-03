@@ -454,6 +454,8 @@ us_house_districts %>%
        caption = 'Data source: ACS, 5-Year estimates, 2013-17, Table C15002')
 ```
 
+![](README_files/figure-markdown_github/unnamed-chunk-24-1.png)
+
 #### 5.3 Race & educational attainment profiles by district
 
 > Profiling congressional districts in terms of race/ethncitiy & educational attainment. Categories include *White with college degree*, *White without college degree*, *Non-White with college degree*, and *Non-White without college degree*. The **Non-White** population is defined more specifically as non-White (race) and/or Hispanic (ethnicity).
@@ -505,6 +507,8 @@ tree %>%
            caption = 'Source: ACS, 5-Year estimates, 2013-17, Table C15002')
 ```
 
+![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
+
 #### 5.4 White working class & Republican vote shares historically
 
 > A comparison of the relationship between the share of working class Whites and share of Republican candidate support by district for the last three presidential elections.
@@ -531,6 +535,8 @@ ggplot(data = by_pres, aes(x=Per_White_Working,
        caption = 'Data source: Daily Kos & American Community Survey')
 ```
 
+![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
+
 > **As the table below attests**, this relationship has grown stronger in the Trump era.
 
 ``` r
@@ -539,6 +545,12 @@ by_pres %>%
   summarize(cor_coefficient = cor(Per_White_Working, Per_Rep_Share)) %>%
   knitr::kable()
 ```
+
+| candidate |  cor\_coefficient|
+|:----------|-----------------:|
+| McCain    |         0.6182315|
+| Romney    |         0.6603027|
+| Trump     |         0.7865170|
 
 ------------------------------------------------------------------------
 
@@ -583,7 +595,7 @@ dailykos_tile <- lapply (c(dailyvos_tile_inner,
 names(dailykos_tile) <- c('inner', 'outer')
 ```
 
-> An overview of Senate representation by state and party affiliation utilizing an equal-area tile map of US states.
+> **An overview of Senate representation** by state and party affiliation utilizing an equal-area tile map of US states.
 
 ``` r
 sens <- rvoteview_senate_50 %>%
@@ -598,7 +610,7 @@ sens <- rvoteview_senate_50 %>%
   select(congress, State, party_name, layer)
 ```
 
-> The tile map below illustrates the evolution of US Senate composition by state and party affiliation over the last thirty congresses. Indded a shifting landscape.
+> The **tile map** below illustrates the evolution of US Senate composition by state and party affiliation over the last thirty congresses. Indded a shifting landscape.
 
 ``` r
 dailykos_tile$outer %>% 
