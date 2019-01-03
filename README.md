@@ -595,7 +595,7 @@ dailykos_tile <- lapply (c(dailyvos_tile_inner,
 names(dailykos_tile) <- c('inner', 'outer')
 ```
 
-> **An overview of Senate representation** by state and party affiliation utilizing an equal-area tile map of US states.
+> An overview of **Senate representation** by state and party affiliation utilizing an equal-area tile map of US states.
 
 ``` r
 sens <- rvoteview_senate_50 %>%
@@ -806,7 +806,7 @@ plot_ly(
       value =  c(1,192,210,32,189,21,15,207))) %>% 
   
     layout(
-      title = "District count transitions in presidential voting groups",
+      title = "Transitions in presidential voting groups",
       font = list(size = 10))
 ```
 
@@ -816,4 +816,4 @@ plot_ly(
 
 ### 7 Summary
 
-**Hopefully a nice round-up** of useful open source resources for investigating & visualizing federal election results. I will update & develop as things get updated & develop.
+**Hopefully a nice round-up** of useful open source resources for investigating & visualizing federal election results. I will update & develop as things get updated & develop. Ley us know!
