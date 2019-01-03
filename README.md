@@ -25,7 +25,7 @@ library(tidyverse)
 
 ### 1 Lawmaker details
 
-> [CivilServiceUSA](https://github.com/CivilServiceUSA) provides a wonderful collection of details about each lawmaker in the 115th Congress, including age, race, religion, biographical details, and social media info. A full roll call of information available for each lawmaker is available [here](https://github.com/CivilServiceUSA/us-house#data-set). Here, we consider some different perspectives on the composition of the 115th House utilizing these data.
+> [CivilServiceUSA](https://github.com/CivilServiceUSA) provides a wonderful collection of details about each lawmaker in the 116th Congress, including age, race, religion, biographical details, and social media info. A full roll call of information available for each lawmaker is available [here](https://github.com/CivilServiceUSA/us-house#data-set). Here, we consider some different perspectives on the composition of the 115th House utilizing these data.
 
 ``` r
 git <- 'https://raw.githubusercontent.com/CivilServiceUSA/'
@@ -36,7 +36,7 @@ csusa_house_dets <- jsonlite::fromJSON(url(paste0(git, 'us-house/master/us-house
 > A small sample of the data made available by CivilServiceUSA:
 
 ``` r
-set.seed(99)
+set.seed(9997)
 csusa_house_dets %>%
   sample_n(5) %>%
   select(name, state_code, district, party, gender, ethnicity, twitter_handle) %>%
@@ -45,11 +45,11 @@ csusa_house_dets %>%
 
 | name           | state\_code | district | party      | gender | ethnicity         | twitter\_handle |
 |:---------------|:------------|:---------|:-----------|:-------|:------------------|:----------------|
-| Andrew Kim     | NJ          | 3        | democrat   | male   | white-american    | NA              |
-| Tony Cardenas  | CA          | 29       | democrat   | male   | hispanic-american | RepCardenas     |
-| Brian Higgins  | NY          | 26       | democrat   | male   | white-american    | RepBrianHiggins |
-| Glenn Grothman | WI          | 6        | republican | male   | white-american    | RepGrothman     |
-| Michael Guest  | MS          | 3        | republican | male   | white-american    | NA              |
+| Harley Rouda   | CA          | 48       | democrat   | male   | white-american    | HarleyRouda     |
+| Julia Brownley | CA          | 26       | democrat   | female | white-american    | JuliaBrownley26 |
+| Buddy Carter   | GA          | 1        | republican | male   | white-american    | RepBuddyCarter  |
+| José Serrano   | NY          | 15       | democrat   | male   | hispanic-american | RepJoseSerrano  |
+| Mike Quigley   | IL          | 5        | democrat   | male   | white-american    | RepMikeQuigley  |
 
 #### 1.1 Age & generational demographics of the 115th House
 
@@ -60,7 +60,7 @@ csusa_house_dets %>%
             lubridate::year(as.Date(date_of_birth))) %>%
   ggplot (aes(years)) +
   geom_histogram(bins=20, fill = 'steelblue', alpha = .85) +
-  labs(title = '115th House composition by age',
+  labs(title = '116th House composition by age',
        caption = 'Data source: CivilServiceUSA')
 ```
 
@@ -77,14 +77,15 @@ csusa_house_dets %>%
 > For good measure, we provide a more detailed classification of Boomers --- lumping folks born post-WWII with those born in the ~Sixties is a problem for me. So, (a) Boomers-proper 1946-1954 & (b) [Generation Jones](https://en.wikipedia.org/wiki/Generation_Jones) 1955-1964.
 
 ``` r
-gens115 <- csusa_house_dets %>%
+gens116 <- csusa_house_dets %>%
   mutate (yob = as.numeric(gsub('-.*$', '', date_of_birth))) %>%
   mutate (gen = case_when (yob < 1998 & yob > 1980 ~ '4- Millenial',
                            yob < 1981 & yob > 1964 ~ '3- Gen X',
                            yob < 1965 & yob > 1954 ~ '2b - Gen Jones',
                            yob < 1955 & yob > 1945 ~ '2a - Boomer-proper',
                            yob < 1946 & yob > 1927 ~ '1 - Silent'))
-gens115 %>%
+gens116 %>%
+  filter(!is.na(gen)) %>%
   group_by(gen,party) %>%
   summarize(n=n()) %>%
   group_by(party) %>%
@@ -98,7 +99,7 @@ gens115 %>%
   xlab(NULL) + ylab(NULL) +
   facet_wrap(~party) +
   coord_flip() +
-  labs(title = '115th US House composition by generation',
+  labs(title = '116th US House composition by generation',
        caption = 'Data source: CivilServiceUSA')
 ```
 
@@ -107,28 +108,30 @@ gens115 %>%
 #### 1.2 Faith & the 115th House
 
 ``` r
-cols <- RColorBrewer::brewer.pal(4, 'Set1') 
-cols <- colorRampPalette(cols)(31)
-
 csusa_house_dets %>%
-  group_by(religion) %>%
+  group_by(party, ethnicity, gender) %>%
   summarize(n = n()) %>%
   na.omit() %>%
     ggplot(aes(area = n,
-               fill = religion,
-               label = religion,
-               subgroup = religion)) +
+               fill = ethnicity,
+               label = gender,
+               subgroup = ethnicity)) +
       treemapify::geom_treemap(alpha=.85) +
       treemapify::geom_treemap_subgroup_border() +
+      treemapify::geom_treemap_subgroup_text(place = "bottom", 
+                                 grow = F, 
+                                 #alpha = 0.5, 
+                                 colour ="white",  
+                                 min.size = 0)+ 
       treemapify::geom_treemap_text(colour = "white", 
                         place = "topleft", 
                         reflow = T,
                         size = 11)+
-      scale_fill_manual(values = cols) +
+      ggthemes::scale_fill_stata()+
+      facet_wrap(~party)+
       theme(legend.position = "none",
-            #plot.title = element_text(size=12),
             legend.title=element_blank()) +
-      labs(title = '115th House composition by religion',
+      labs(title = '116th House composition by ethnicity & gender',
            caption = 'Data source: CivilServiceUSA')
 ```
 
@@ -635,7 +638,7 @@ dailykos_tile$outer %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
-> Count of states with split Senate delegations by congress/year. **Split delegation** = Senators from the same state with different party affiliations.
+> Count of states with **split Senate delegations** by congress/year. Split delegation = Senators from the same state with different party affiliations.
 
 ``` r
 rvoteview_senate_50 %>%
@@ -693,7 +696,7 @@ dailykos_pres_flips <- dailykos_pres_flips %>%
   ungroup()
 ```
 
-> A summary of congressional district counts by presidential voting group for the 2008, 2012 & 2016 presidential elections. Only the series "McCain &lt; Obama &lt; Clinton" is unattested.
+> A summary of congressional district counts by presidential voting group for the 2008, 2012 & 2016 presidential elections. Only the series **McCain &lt; Obama &lt; Clinton** is unattested.
 
 ``` r
 dailykos_pres_flips %>%
@@ -801,7 +804,7 @@ plot_ly(
       value =  c(1,192,210,32,189,21,15,207))) %>% 
   
     layout(
-      title = "Presidential support by Congressional District count",
+      title = "Presidential voting groups by Congressional District count",
       font = list(size = 10))
 ```
 
