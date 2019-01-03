@@ -105,23 +105,25 @@ gens116 %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
-#### 1.2 Faith & the 115th House
+#### 1.2 Ethnicity & gender in the 116th House
+
+> A quick look at gender & ehtnicity diversity by party affiliation in the new 116th House.
 
 ``` r
 csusa_house_dets %>%
   group_by(party, ethnicity, gender) %>%
   summarize(n = n()) %>%
-  na.omit() %>%
+  #na.omit() %>%
     ggplot(aes(area = n,
                fill = ethnicity,
                label = gender,
-               subgroup = ethnicity)) +
+               subgroup = toupper(ethnicity))) +
       treemapify::geom_treemap(alpha=.85) +
       treemapify::geom_treemap_subgroup_border() +
       treemapify::geom_treemap_subgroup_text(place = "bottom", 
                                  grow = F, 
-                                 #alpha = 0.5, 
-                                 colour ="white",  
+                                 alpha = 0.65, 
+                                 colour ="black",  
                                  min.size = 0)+ 
       treemapify::geom_treemap_text(colour = "white", 
                         place = "topleft", 
@@ -131,7 +133,7 @@ csusa_house_dets %>%
       facet_wrap(~party)+
       theme(legend.position = "none",
             legend.title=element_blank()) +
-      labs(title = '116th House composition by ethnicity & gender',
+      labs(title = '116th House composition by party, ethnicity & gender',
            caption = 'Data source: CivilServiceUSA')
 ```
 
@@ -141,7 +143,7 @@ csusa_house_dets %>%
 
 ### 2 Political ideologies and congressional composition
 
-> The [VoteView](https://voteview.com/) project provides roll call-based political ideology scores for all lawmakers in the history of the US Congress. Data can be used to investigate congressional composition by party affiliation over time, the aggregate political ideologies of both houses over time, and the ideologies of individual lawmakers. And any number of other roll call-based analyses.
+> The [VoteView](https://voteview.com/) project provides roll call-based political ideology scores for all lawmakers in the history of the US Congress. Data can be used to investigate congressional composition by party affiliation over time, the aggregate political ideologies of both houses over time, and the ideologies of individual lawmakers. And any number of other roll call-based analyses. The R package `Rvoteview` provides access to these data.
 
 ``` r
 rvoteview_house_50 <- lapply(c(66:115), function (x)
@@ -179,7 +181,7 @@ rvoteview_house_50 %>%
 
 #### 2.2 Lawmaker political ideologies
 
-> A brief description of methods. Interpreting ideology scores.
+> The [NOMINATE scaling procedure](https://voteview.com/about) is used to calculate the political ideology of lawmakers based on voting behavior. Ideologies are scored along two dimensions. The first captures ideological variation based in the standard liberal-conservative dvide. The second captures variation based in social conservatism that crosscut political affiliation.
 
 ``` r
 extremes <- rvoteview_house_50 %>%
@@ -478,7 +480,7 @@ tree <- tidycens_data %>%
   ungroup()
 ```
 
-> Race & educational attainment profiles for a random sample of congressional districts:
+> **Race by educational attainment profiles** for a random sample of congressional districts:
 
 ``` r
 set.seed(99)
@@ -537,7 +539,7 @@ ggplot(data = by_pres, aes(x=Per_White_Working,
 
 ![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
-> So, as the table below attests, this relationship has grown stronger in the Trump era.
+> **As the table below attests**, this relationship has grown stronger in the Trump era.
 
 ``` r
 by_pres %>% 
@@ -557,6 +559,8 @@ by_pres %>%
 ### 6 Equal-area political geometries
 
 > The Daily Kos makes available a set of alternative geometries that represent congressional districts and states as equal-area polygons. As some of the maps presented above attest, America's larger states and congressional districts tend to overwhelm a standard map, and collectively serve to under-represent/hide smaller, more populous urban areas.
+
+> **Links** to these shapefiles are presented below:
 
 ``` r
 base <- 'https://drive.google.com/uc?authuser=0&id='
@@ -632,7 +636,7 @@ dailykos_tile$outer %>%
         legend.title=element_blank(),
         legend.position = 'bottom') +
   facet_wrap(~congress) +
-  labs(title = "US Senate Composition by Congress, State & Party: Snapshots",
+  labs(title = "US Senate Composition by Congress, State & Party: 6 snapshots",
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
