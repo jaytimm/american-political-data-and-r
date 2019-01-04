@@ -794,7 +794,7 @@ dailykos_pres_flips %>%
 library(plotly)
 r<- '#9e5055'; b <- '#395f81'
 
-x <- plot_ly(
+viz <- plot_ly(
     type = "sankey",
     orientation = "h",
     node = list(
@@ -813,15 +813,10 @@ x <- plot_ly(
     layout(
       title = "Transitions in district-level presidential voting patterns: 2008-2016",
       font = list(size = 10))
-
-x
+viz
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-41-1.png)
-
-``` r
-#htmltools::save_html(x, 'pres_sank.html')
-```
 
 ------------------------------------------------------------------------
 

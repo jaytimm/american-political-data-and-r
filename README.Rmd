@@ -84,7 +84,7 @@ csusa_house_dets %>%
 > For good measure, we provide a more detailed classification of Boomers --- lumping folks born post-WWII with those born in the ~Sixties is a problem for me. So, (a) Boomers-proper 1946-1954 & (b) [Generation Jones](https://en.wikipedia.org/wiki/Generation_Jones) 1955-1964. 
 
 
-```{r fig.height=3}
+```{r fig.height=3.5}
 gens116 <- csusa_house_dets %>%
   mutate (yob = as.numeric(gsub('-.*$', '', date_of_birth))) %>%
   mutate (gen = case_when (yob < 1998 & yob > 1980 ~ '4- Millenial',
@@ -848,7 +848,7 @@ dailykos_pres_flips %>%
 library(plotly)
 r<- '#9e5055'; b <- '#395f81'
 
-x <- plot_ly(
+viz <- plot_ly(
     type = "sankey",
     orientation = "h",
     node = list(
@@ -867,12 +867,13 @@ x <- plot_ly(
     layout(
       title = "Transitions in district-level presidential voting patterns: 2008-2016",
       font = list(size = 10))
-
-x
-#htmltools::save_html(x, 'pres_sank.html')
+viz
 ```
 
 
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+htmltools::save_html(viz, 'pres_sank.html')
+```
 ---
 
 
