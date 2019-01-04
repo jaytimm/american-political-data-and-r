@@ -844,9 +844,10 @@ dailykos_pres_flips %>%
 > A **Sankey diagram** detailing transitions in presidential voting patterns (at the district level) from (1) 2008 to 2012 and (2) 2012 to 2016.  Clearly a bit jazzier as an [html widget proper](https://www.jtimm.net/odds/).
 
 
-```{r message=FALSE, warning=FALSE}
+```{r eval=FALSE, message=FALSE, warning=FALSE}
 library(plotly)
 r<- '#9e5055'; b <- '#395f81'
+#htmltools::save_html(viz, 'pres_sank.html')
 
 viz <- plot_ly(
     type = "sankey",
@@ -870,10 +871,6 @@ viz <- plot_ly(
 viz
 ```
 
-
-```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
-htmltools::save_html(viz, 'pres_sank.html')
-```
 ---
 
 

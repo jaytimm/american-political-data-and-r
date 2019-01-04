@@ -793,6 +793,7 @@ dailykos_pres_flips %>%
 ``` r
 library(plotly)
 r<- '#9e5055'; b <- '#395f81'
+#htmltools::save_html(viz, 'pres_sank.html')
 
 viz <- plot_ly(
     type = "sankey",
@@ -815,8 +816,6 @@ viz <- plot_ly(
       font = list(size = 10))
 viz
 ```
-
-![](README_files/figure-markdown_github/unnamed-chunk-41-1.png)
 
 ------------------------------------------------------------------------
 
