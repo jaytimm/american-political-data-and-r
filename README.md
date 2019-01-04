@@ -49,7 +49,7 @@ csusa_house_dets %>%
 | José Serrano   | NY          | 15       | democrat   | male   | hispanic-american | RepJoseSerrano  |
 | Mike Quigley   | IL          | 5        | democrat   | male   | white-american    | RepMikeQuigley  |
 
-#### 1.1 Age & generational demographics of the 115th House
+#### 1.1 Age & generational demographics of the 116th House
 
 > An overview of the new 116th House in terms of age and generational distributions.
 
