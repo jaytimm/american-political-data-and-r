@@ -817,6 +817,8 @@ viz <- plot_ly(
 viz
 ```
 
+![](README_files/figure-markdown_github/unnamed-chunk-41-1.png)
+
 ------------------------------------------------------------------------
 
 ### 7 Summary
