@@ -841,7 +841,7 @@ dailykos_pres_flips %>%
 <br>
 
 
-> A **Sankey diagram** detailing transitions in presidential voting patterns (at the district level) from (1) 2008 to 2012 and (2) 2012 to 2016.  Clearly a bit jazzier as an html widget proper.
+> A **Sankey diagram** detailing transitions in presidential voting patterns (at the district level) from (1) 2008 to 2012 and (2) 2012 to 2016.  Clearly a bit jazzier as an [html widget proper](https://www.jtimm.net/odds/).
 
 
 ```{r message=FALSE, warning=FALSE}
@@ -868,7 +868,8 @@ x <- plot_ly(
       title = "Transitions in district-level presidential voting patterns: 2008-2016",
       font = list(size = 10))
 
-widgetframe::saveWidgetframe(x, 'pres_sank.html')
+x
+#htmltools::save_html(x, 'pres_sank.html')
 ```
 
 
@@ -878,5 +879,5 @@ widgetframe::saveWidgetframe(x, 'pres_sank.html')
 ### 7 Summary
 
 
-**Hopefully a nice round-up** of useful open source resources for investigating & visualizing federal election results.  I will update & develop as things get updated & develop.  Let us know!  **Open government data**.
+**Hopefully a nice round-up** of useful open source resources for investigating & visualizing federal election results.  I will update & develop as things get updated & develop.  Let us know!  
 
