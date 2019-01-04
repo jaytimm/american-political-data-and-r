@@ -455,7 +455,7 @@ us_house_districts %>%
         axis.text.y=element_blank(),
         legend.position = 'bottom') +
   labs(title = "White working class (%) by congressional district",
-       caption = 'Data source: ACS, 5-Year estimates, 2013-17, Table C15002')
+       caption = 'Data source: ACS 5-Year estimates, 2013-17, Table C15002')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-24-1.png)
@@ -508,7 +508,7 @@ tree %>%
             legend.title=element_blank()) + 
       labs(title = "Race by educational attainment profiles",
            subtitle = 'A random sample of congressional districts',
-           caption = 'Source: ACS, 5-Year estimates, 2013-17, Table C15002')
+           caption = 'Source: ACS 5-Year estimates, 2013-17, Table C15002')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
@@ -536,7 +536,7 @@ ggplot(data = by_pres, aes(x=Per_White_Working,
   theme(legend.position = "bottom")+
   labs(title = "% White working class vs. % Republican vote share",
        subtitle = 'By Presidential election',
-       caption = 'Data source: Daily Kos & American Community Survey')
+       caption = 'Data source: Daily Kos & ACS')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
@@ -823,4 +823,4 @@ viz
 
 ### 7 Summary
 
-**Hopefully a nice round-up** of useful open source resources for investigating & visualizing federal election results. I will update & develop as things get updated & develop. Let us know!
+**Hopefully a nice round-up** of useful open source resources for investigating & visualizing some American political data. I will update & develop as things get updated & develop. Let us know!
