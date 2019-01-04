@@ -1,7 +1,7 @@
 American political data & R: some open source resources & methods
 -----------------------------------------------------------------
 
-A layman's, R-based guide to accessing, exploring & visualizing US political data utilizing a collection of open government resources, including presidential election returns (2008-2016 by congressional district), lawmaker biographies & political ideologies, and congressional district demographics.
+A layman's R-based guide to accessing, exploring & visualizing US political data utilizing a collection of open government resources, including presidential election returns (2008-2016 by congressional district), lawmaker biographies & political ideologies, and congressional district demographics.
 
 Data used in this guide have been collated from [The Daily Kos](https://www.dailykos.com/stories/2018/2/21/1742660/-The-ultimate-Daily-Kos-Elections-guide-to-all-of-our-data-sets), [CivilServiceUSA](https://github.com/CivilServiceUSA), and the R packages [tidycensus](https://walkerke.github.io/tidycensus/) & [Rvoteview](https://github.com/voteview/Rvoteview).
 
@@ -13,7 +13,7 @@ Data used in this guide have been collated from [The Daily Kos](https://www.dail
 -   [6 Equal-area political geometries](#6-Equal-area-political-geometries)
 -   [7 Summary](#7-Summary)
 
-Hopefully a useful **open source & transparent framework** for investigating past & future election results and congresses using R. All work presented here can be reproduced in its entirety. A developing resource.
+Hopefully a useful **open source & transparent framework** for investigating past & future election results and congresses using R. All work presented here can be reproduced in its entirety. A developing resource. Open government data.
 
 ``` r
 library(tidyverse)
@@ -51,7 +51,7 @@ csusa_house_dets %>%
 
 #### 1.1 Age & generational demographics of the 115th House
 
-> An overview of the new 116th House in terms of age distributions and generational distributions.
+> An overview of the new 116th House in terms of age and generational distributions.
 
 ``` r
 csusa_house_dets %>%
@@ -75,8 +75,6 @@ csusa_house_dets %>%
 -   Greatest: &lt; 1928
 
 > For good measure, we provide a more detailed classification of Boomers --- lumping folks born post-WWII with those born in the ~Sixties is a problem for me. So, (a) Boomers-proper 1946-1954 & (b) [Generation Jones](https://en.wikipedia.org/wiki/Generation_Jones) 1955-1964.
-
-> Look out! Millenials coming!
 
 ``` r
 gens116 <- csusa_house_dets %>%
@@ -157,6 +155,8 @@ rvoteview_house_50 <- lapply(c(66:115), function (x)
 ```
 
 #### 2.1 Congressional composition by political affiliation
+
+> A summary of House compositions for the last fifty congresses, ie, last 100 years. Until fairly recently, a Democratic stronghold.
 
 ``` r
 rvoteview_house_50 %>%
@@ -360,7 +360,7 @@ us_house_districts %>%
 
 #### 4.3 Rural & urban voting
 
-> Using the area of congressional districts (in log square meters) as a proxy for the often cited urban-rural divide in American votership, the plot below illustrates the relationship between Trump margins and ~degree of urbanicity. The pattern below helps account for the very red map above despite Clinton's success in the popular vote.
+> Using the area of congressional districts (in log square meters) as a proxy for the often cited **urban-rural divide** in American votership, the plot below illustrates the relationship between Trump margins and ~degree of urbanicity. The pattern below helps account for the very red map above despite Clinton's success in the popular vote.
 
 ``` r
 us_house_districts %>%
@@ -614,7 +614,7 @@ sens <- rvoteview_senate_50 %>%
   select(congress, State, party_name, layer)
 ```
 
-> The **tile map** below illustrates the evolution of US Senate composition by state and party affiliation over the last thirty congresses. Indded a shifting landscape.
+> The **tile map** below illustrates the evolution of US Senate composition by state and party affiliation over the last thirty congresses. Indeed a shifting landscape.
 
 ``` r
 dailykos_tile$outer %>% 
@@ -793,7 +793,8 @@ dailykos_pres_flips %>%
 ``` r
 library(plotly)
 r<- '#9e5055'; b <- '#395f81'
-plot_ly(
+
+x <- plot_ly(
     type = "sankey",
     orientation = "h",
     node = list(
@@ -812,12 +813,12 @@ plot_ly(
     layout(
       title = "Transitions in district-level presidential voting patterns: 2008-2016",
       font = list(size = 10))
-```
 
-![](README_files/figure-markdown_github/unnamed-chunk-41-1.png)
+widgetframe::saveWidgetframe(x, 'pres_sank.html')
+```
 
 ------------------------------------------------------------------------
 
 ### 7 Summary
 
-**Hopefully a nice round-up** of useful open source resources for investigating & visualizing federal election results. I will update & develop as things get updated & develop. Let us know!
+**Hopefully a nice round-up** of useful open source resources for investigating & visualizing federal election results. I will update & develop as things get updated & develop. Let us know! **Open government data**.
