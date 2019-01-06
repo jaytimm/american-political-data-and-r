@@ -7,7 +7,7 @@ output:
 
 ##American political data & R: some open source resources & methods
 
-A layman's R-based guide to accessing, exploring & visualizing US political data utilizing a collection of open government resources, including presidential election returns (2008-2016 by congressional district), lawmaker biographies & political ideologies, and congressional district demographics.
+An R-based guide to accessing, exploring & visualizing US political data utilizing a collection of open government resources, including presidential election returns (2008-2016 by congressional district), lawmaker biographies & political ideologies, and congressional district demographics.
 
 Data used in this guide have been collated from [The Daily Kos](https://www.dailykos.com/stories/2018/2/21/1742660/-The-ultimate-Daily-Kos-Elections-guide-to-all-of-our-data-sets), [CivilServiceUSA](https://github.com/CivilServiceUSA), and the R packages [tidycensus](https://walkerke.github.io/tidycensus/) & [Rvoteview](https://github.com/voteview/Rvoteview).
 
@@ -33,7 +33,7 @@ library(tidyverse)
 
 ### 1 Lawmaker details
 
-> [CivilServiceUSA](https://github.com/CivilServiceUSA) provides a wonderful collection of details about each lawmaker in the 116th Congress, including age, race, religion, biographical details, and social media info.  A full roll call of information available for each lawmaker is available [here](https://github.com/CivilServiceUSA/us-house#data-set). Here, we consider some different perspectives on the composition of the 115th House utilizing these data.
+> [CivilServiceUSA](https://github.com/CivilServiceUSA) provides a wonderful collection of details about each lawmaker in the 116th Congress, including age, race, religion, biographical details, and social media info.  A full roll call of information available for each lawmaker is available [here](https://github.com/CivilServiceUSA/us-house#data-set). Here, we consider some different perspectives on the composition of the 116th House utilizing these data.
 
 
 ```{r message=FALSE, warning=FALSE}
@@ -196,7 +196,7 @@ rvoteview_house_50 %>%
 
 #### 2.2 Lawmaker political ideologies
 
-> The [NOMINATE scaling procedure](https://voteview.com/about) is used to calculate the political ideology of lawmakers based on voting behavior.  Ideologies are scored along two dimensions.  The first captures ideological variation based in the standard liberal-conservative dvide. The second captures variation based in social conservatism that crosscut political affiliation.  
+> The [NOMINATE scaling procedure](https://voteview.com/about) is used to calculate the political ideology of lawmakers based on voting behavior.  Ideologies are scored along two dimensions.  The first captures ideological variation based in the standard liberal-conservative dvide. The second captures variation based in social conservatism that crosscuts political affiliation.  
 
 ```{r}
 extremes <- rvoteview_house_50 %>%
@@ -506,7 +506,16 @@ us_house_districts %>%
 
 #### 5.3 Race & educational attainment profiles by district
 
-> Profiling congressional districts in terms of race/ethncitiy & educational attainment. Categories include *White with college degree*, *White without college degree*, *Non-White with college degree*, and *Non-White without college degree*.  The **Non-White** population is defined more specifically as non-White (race) and/or Hispanic (ethnicity).
+> Profiling congressional districts in terms of race/ethncitiy & educational attainment. Categories include: 
+
+
+* White with college degree, 
+* White without college degree, 
+* Non-White with college degree, and 
+* Non-White without college degree.  
+
+
+> The **Non-White** population is defined more specifically as non-White (race) and/or Hispanic (ethnicity).
 
 
 ```{r message=FALSE, warning=FALSE}
