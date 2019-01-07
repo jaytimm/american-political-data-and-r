@@ -146,7 +146,7 @@ csusa_house_dets %>%
 > The [VoteView](https://voteview.com/) project provides roll call-based political ideology scores for all lawmakers in the history of the US Congress. Data can be used to investigate congressional composition by party affiliation over time, the aggregate political ideologies of both houses over time, and the ideologies of individual lawmakers. And any number of other roll call-based analyses. The R package `Rvoteview` provides access to these data.
 
 ``` r
-rvoteview_house_50 <- lapply(c(66:115), function (x)
+rvoteview_house_50 <- lapply(c(66:116), function (x)
                     Rvoteview::member_search (
                       chamber = 'House', 
                       congress = x)) %>% 
@@ -160,7 +160,8 @@ rvoteview_house_50 <- lapply(c(66:115), function (x)
 
 ``` r
 rvoteview_house_50 %>%
-  filter(party_name %in% c('Democratic Party', 'Republican Party')) %>%
+  filter(party_name %in% c('Democratic Party', 'Republican Party') &
+      congress > 66) %>%
   group_by(congress, party_name) %>%
   summarize(n = n()) %>%
   mutate(n = n/sum(n)) %>%
@@ -175,7 +176,7 @@ rvoteview_house_50 %>%
            color = 'white',
            size = 4) +
   theme(legend.position = "none")+
-  labs(title = "House Composition over the last 50 congresses",
+  labs(title = "House Composition over the last 50 congresses (67 to 116)",
        caption = 'Data source: VoteView')
 ```
 
@@ -235,7 +236,8 @@ rvoteview_house_50 %>%
 ``` r
 rvoteview_house_50 %>%
   filter(!is.na(nominate.dim1) & 
-           party_name %in% c('Democratic Party','Republican Party')) %>%
+           party_name %in% c('Democratic Party','Republican Party')&
+           congress > 66) %>%
   group_by(congress) %>%
   mutate(xmed = median(nominate.dim1)) %>%
   group_by(congress, party_name, xmed) %>%

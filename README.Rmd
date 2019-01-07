@@ -155,7 +155,7 @@ csusa_house_dets %>%
 
 
 ```{r message=FALSE, warning=FALSE}
-rvoteview_house_50 <- lapply(c(66:115), function (x)
+rvoteview_house_50 <- lapply(c(66:116), function (x)
                     Rvoteview::member_search (
                       chamber = 'House', 
                       congress = x)) %>% 
@@ -174,7 +174,8 @@ rvoteview_house_50 <- lapply(c(66:115), function (x)
 
 ```{r fig.height=5.5, message=FALSE, warning=FALSE}
 rvoteview_house_50 %>%
-  filter(party_name %in% c('Democratic Party', 'Republican Party')) %>%
+  filter(party_name %in% c('Democratic Party', 'Republican Party') &
+      congress > 66) %>%
   group_by(congress, party_name) %>%
   summarize(n = n()) %>%
   mutate(n = n/sum(n)) %>%
@@ -189,7 +190,7 @@ rvoteview_house_50 %>%
            color = 'white',
            size = 4) +
   theme(legend.position = "none")+
-  labs(title = "House Composition over the last 50 congresses",
+  labs(title = "House Composition over the last 50 congresses (67 to 116)",
        caption = 'Data source: VoteView')
 ```
 
@@ -250,7 +251,8 @@ rvoteview_house_50 %>%
 ```{r fig.height=5.5}
 rvoteview_house_50 %>%
   filter(!is.na(nominate.dim1) & 
-           party_name %in% c('Democratic Party','Republican Party')) %>%
+           party_name %in% c('Democratic Party','Republican Party')&
+           congress > 66) %>%
   group_by(congress) %>%
   mutate(xmed = median(nominate.dim1)) %>%
   group_by(congress, party_name, xmed) %>%
