@@ -614,8 +614,9 @@ names(dailykos_tile) <- c('inner', 'outer')
 sens <- rvoteview_senate_50 %>%
   mutate(party_name = factor(party_name, levels =c('Democratic Party', 
                                          'Republican Party', 
-                                         'Independent'))) %>%
-  filter(congress %in% c(85, 91, 97, 103, 109, 115)) %>%
+                                         'Independent',
+                                         'Conservative Party'))) %>%
+  filter(congress %in% c(86, 92, 98, 104, 110, 116)) %>%
   arrange (state_abbrev, party_name) %>%
   group_by(congress, state_abbrev) %>%
   mutate(layer = row_number())%>%
@@ -657,17 +658,17 @@ dailykos_tile$outer %>%
 
 ``` r
 rvoteview_senate_50 %>%
-  filter(congress > 84) %>%
+  filter(congress > 85) %>%
   group_by(congress, state) %>%
   summarize(splits = length(unique(party_code))) %>%
   filter(splits == 2) %>%
   group_by(congress) %>%
   summarize(n=n())%>%
-  mutate(year = 1955 + 2*rep(c(1:31))) %>%
+  mutate(year = 1957 + 2*rep(c(1:31))) %>%
   ggplot() +
   geom_line(aes(x = year, y= n), size = 1.5, color= 'steelblue')+
   ylim(10,30)+
-  labs(title = "Split delegations in the US Senate: Congresses 85 to 115",
+  labs(title = "Split delegations in the US Senate: Congresses 86 to 116",
        caption = 'Data sources: VoteView')
 ```
 
