@@ -277,6 +277,12 @@ vote_share <- uspols::uspols_wiki_pres %>%
   mutate(label = paste0(year, ' - ', winner))
 ```
 
+> The Deep South’s collective enthusiasm for FDR in the 30’s matched
+> only by the Mountain West’s enthusiasm for William Jennings Bryant.
+
+> No US president has been more … in time and place than FDR during the
+> 1930’s in the Deep South.
+
 ``` r
 new <- uspols::xsf_TileInv10 %>% 
   left_join(vote_share, by ='state_abbrev') %>%
@@ -362,7 +368,7 @@ vvo <- Rvoteview::download_metadata(type = 'members',
   filter(congress > 66 & chamber != 'President')
 ```
 
-    ## [1] "/tmp/RtmpoCn4kt/Hall_members.csv"
+    ## [1] "/tmp/RtmpjQd7He/Hall_members.csv"
 
 ``` r
 house <- vvo %>%
@@ -509,8 +515,8 @@ quicknews::qnews_search_contexts(qorp = qorp,
 
 <table>
 <colgroup>
-<col style="width: 6%" />
-<col style="width: 93%" />
+<col style="width: 5%" />
+<col style="width: 94%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -521,31 +527,31 @@ quicknews::qnews_search_contexts(qorp = qorp,
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">text9164</td>
-<td style="text-align: left;">… that the impeachment it has provided is not even a <code>scare-crow</code> ; that such opinions as the one you combat , …</td>
+<td style="text-align: left;">… that the impeachment it has provided is not even a || scare-crow || ; that such opinions as the one you combat , …</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">text10132</td>
-<td style="text-align: left;">… experience that impeachmt is an impracticable thing , a mere <code>scare-crow</code> , they consider themselves secure for life ; they sculk …</td>
+<td style="text-align: left;">… experience that impeachmt is an impracticable thing , a mere || scare-crow || , they consider themselves secure for life ; they sculk …</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">text10260</td>
-<td style="text-align: left;">… instead of that we have substituted impeachment , a mere <code>scare-crow</code> , &amp; which experience proves impractitiable . but from these …</td>
+<td style="text-align: left;">… instead of that we have substituted impeachment , a mere || scare-crow || , &amp; which experience proves impractitiable . but from these …</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">text10277</td>
-<td style="text-align: left;">… beyond responsibility , impeachment being found in practice a mere <code>scare-crow</code> . yet a respect for the high parties in the …</td>
+<td style="text-align: left;">… beyond responsibility , impeachment being found in practice a mere || scare-crow || . yet a respect for the high parties in the …</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">text10690</td>
-<td style="text-align: left;">… an irresponsible body , ( for impeachment is scarcely a <code>scare-crow</code> ) working like gravity by night and by day , …</td>
+<td style="text-align: left;">… an irresponsible body , ( for impeachment is scarcely a || scare-crow || ) working like gravity by night and by day , …</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">text11349</td>
-<td style="text-align: left;">… to no authority ( for impeachment is not even a <code>scare-crow</code> ) advancing with a noiseless and steady pace to the …</td>
+<td style="text-align: left;">… to no authority ( for impeachment is not even a || scare-crow || ) advancing with a noiseless and steady pace to the …</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">text12944</td>
-<td style="text-align: left;">… members , who would not hang me up as a <code>scare-crow</code> and enemy to a constitution on which many believe the …</td>
+<td style="text-align: left;">… members , who would not hang me up as a || scare-crow || and enemy to a constitution on which many believe the …</td>
 </tr>
 </tbody>
 </table>
@@ -667,6 +673,18 @@ The we have to match – perhaps not worth it –
 Age in the House
 ----------------
 
+freshmen house members –
+
+``` r
+freshmen <- house %>%
+  group_by(icpsr, bioname) %>%
+  mutate(n = length(congress)) %>%
+  ungroup() %>%
+  filter(congress == 116) %>%
+  mutate(fresh = ifelse(n == 1, 'Y', 'n')) %>%
+  select(icpsr, fresh)
+```
+
 ``` r
 house %>%
   mutate(age = year - born) %>%
@@ -684,22 +702,37 @@ house %>%
   theme(legend.position = "none")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
 Identifying freshmen house members –
 
 ``` r
 house %>%
-  mutate(age = year - born) %>%
   filter (party_code %in% c('100', '200'), 
-          year == 2016, party_code == '100') %>% 
+          congress == 116) %>% 
+  mutate(age = year - born) %>%
+  left_join(freshmen, by = "icpsr") %>%
+  
   ## 100 == democrat --
-  ggplot(aes(x = age)) +
-  geom_dotplot(dotsize = .5, binwidth = 1.5, stackratio = 1.4) + 
-  theme_minimal()
+  ggplot(aes(x = age, fill = fresh)) +
+  
+  geom_dotplot(dotsize = .5, binpositions = 'all') + 
+  
+  geom_vline(xintercept = c(40, 50, 65, 80),
+             linetype =2, 
+             color = 'black', 
+             size = .25) +
+  
+  theme_minimal() + 
+  ggthemes::scale_fill_economist() +
+  facet_wrap(~party_code, nrow = 2) +
+  theme(legend.position = "none") + 
+  ylim (0, 1.25) +
+  
+  labs(title = "Age distribution of house members by party")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-30-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
 Profiling congressional districts
 ---------------------------------
@@ -760,7 +793,7 @@ base_viz +
        subtitle = "New Mexico's 2nd District")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-33-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 Some notes on rural America
 ---------------------------
@@ -885,7 +918,7 @@ mplot %>%
   labs(title = "The American White Working Class")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-38-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 Zoom to cities –
 
@@ -921,7 +954,7 @@ patchwork::wrap_plots(plots, ncol = 4) +
   patchwork::plot_annotation(title = 'In some American cities')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-39-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-40-1.png)
 
 ### White working profiles
 
@@ -953,7 +986,7 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-40-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-41-1.png)
 
 ### Swing states & white working class
 
