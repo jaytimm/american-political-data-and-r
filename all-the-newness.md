@@ -3,12 +3,18 @@ American political data & R
 
 An open-source guide to … (apdr)
 
-*Updated: 2020-10-20*
+*Updated: 2020-10-25*
 
 ![](all-the-newness_files/figure-markdown_github/collage1.png)
 
 ``` r
 library(tidyverse)
+```
+
+``` r
+# leg_dets <- 'https://theunitedstates.io/congress-legislators/legislators-current.csv'
+# twitters <- read.csv((url(leg_dets)), stringsAsFactors = FALSE) %>%
+#   rename (state_abbrev = state, district_code = district)
 ```
 
 ### A simple add-on map theme
@@ -235,7 +241,7 @@ last_dem %>%
   theme(legend.position = "none")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-11-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
 ``` r
 uspols::xsf_TileOutv10 %>% 
@@ -257,13 +263,63 @@ uspols::xsf_TileOutv10 %>%
   labs(title = "Last vote for a Democratic Presidential candidate")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
-I wish I ~~was~~ were in Dixie
-------------------------------
+### Highest vote share historically
 
-> Per VoteView definition: The South = Dixie + Kentucky + Oklahoma. Away
-> down south in Dixie.
+``` r
+vote_share <- uspols::uspols_wiki_pres %>%
+  select(-party_win) %>%
+  gather(key = 'party', value = 'per', democrat:republican) %>%
+  group_by(state_abbrev) %>%
+  slice(which.max(per)) %>%
+  ungroup() %>%
+  mutate(label = paste0(year, ' - ', winner))
+```
+
+``` r
+new <- uspols::xsf_TileInv10 %>% 
+  left_join(vote_share, by ='state_abbrev') %>%
+  mutate(winner = gsub('Franklin D. Roosevelt', 'FDR', winner),
+         winner = gsub('Lyndon B. Johnson', 'LBJ', winner)) %>%
+  
+  mutate(per = round(per, 1)) %>%
+  mutate(label = paste0(state_abbrev, 
+                        '\n', 
+                        year,
+                        '\n', 
+                        gsub('^.* ', '', winner), 
+                        '\n',
+                        per))
+
+uspols::xsf_TileOutv10 %>% 
+  left_join(vote_share, by ='state_abbrev') %>%
+  mutate(label = paste0(state_abbrev, '\n', 
+                           gsub('^.* ', '', winner))) %>%
+  
+  ggplot() + 
+  geom_sf(aes(fill = winner),
+          color = 'white' , 
+          alpha = .85) + 
+  
+  ggsflabel::geom_sf_text(data = new,
+                          aes(label = new$label), 
+                          size = 2.5,
+                          color = 'white') +
+    scale_fill_manual(
+      values = colorRampPalette(ggthemes::economist_pal()(8))(14)) +
+  
+  theme_minimal() + theme_guide() + 
+  theme(legend.position = 'none') +
+  labs(title = "Largest vote share by state since 1864")
+```
+
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-15-1.png)
+
+Away down south in Dixie
+------------------------
+
+> Per VoteView definition: The South = Dixie + Kentucky + Oklahoma
 
 ``` r
 library(tidyverse)
@@ -292,9 +348,11 @@ states_sf %>%
        subtitle = "= Dixie + KY + OK")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 ### Rvoteview: House composition
+
+AND – historical composition from \#1 –
 
 *Obviously do this the once* –
 
@@ -304,7 +362,7 @@ vvo <- Rvoteview::download_metadata(type = 'members',
   filter(congress > 66 & chamber != 'President')
 ```
 
-    ## [1] "/tmp/Rtmppf3ZxX/Hall_members.csv"
+    ## [1] "/tmp/RtmpoCn4kt/Hall_members.csv"
 
 ``` r
 house <- vvo %>%
@@ -353,7 +411,7 @@ house %>%
   labs(title="Republican percentage of House seats, since 1919") 
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 A comparison of ideal points for members of the 111th, 113th & 115th
 Houses & Presidential vote margins for the 2008, 2012 & 2016 elections,
@@ -385,7 +443,7 @@ uspols::uspols_dk_pres %>%
   labs(title="Presidential Election Margins & DW-Nominate scores")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-17-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 Founding fathers corpus
 -----------------------
@@ -521,7 +579,7 @@ uspols::xsf_TileOutv10 %>%
        caption = "Source: DailyKos")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
 ### Split ticket voting –
 
@@ -566,7 +624,7 @@ splits %>%
         axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
 Mapping splits quickly – need to add CLASS information – !!
 
@@ -600,7 +658,11 @@ uspols::xsf_TileOutv10 %>%
 labs(title = "Split tickets per General Election")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-24-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-27-1.png)
+
+House leadership – briefly –
+
+The we have to match – perhaps not worth it –
 
 Age in the House
 ----------------
@@ -622,7 +684,22 @@ house %>%
   theme(legend.position = "none")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-25-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-29-1.png)
+
+Identifying freshmen house members –
+
+``` r
+house %>%
+  mutate(age = year - born) %>%
+  filter (party_code %in% c('100', '200'), 
+          year == 2016, party_code == '100') %>% 
+  ## 100 == democrat --
+  ggplot(aes(x = age)) +
+  geom_dotplot(dotsize = .5, binwidth = 1.5, stackratio = 1.4) + 
+  theme_minimal()
+```
+
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
 Profiling congressional districts
 ---------------------------------
@@ -683,7 +760,7 @@ base_viz +
        subtitle = "New Mexico's 2nd District")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-28-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
 Some notes on rural America
 ---------------------------
@@ -808,7 +885,7 @@ mplot %>%
   labs(title = "The American White Working Class")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-33-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-38-1.png)
 
 Zoom to cities –
 
@@ -844,7 +921,7 @@ patchwork::wrap_plots(plots, ncol = 4) +
   patchwork::plot_annotation(title = 'In some American cities')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-34-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 ### White working profiles
 
@@ -876,7 +953,7 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-35-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-40-1.png)
 
 ### Swing states & white working class
 
