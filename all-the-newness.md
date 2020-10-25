@@ -11,12 +11,6 @@ An open-source guide to … (apdr)
 library(tidyverse)
 ```
 
-``` r
-# leg_dets <- 'https://theunitedstates.io/congress-legislators/legislators-current.csv'
-# twitters <- read.csv((url(leg_dets)), stringsAsFactors = FALSE) %>%
-#   rename (state_abbrev = state, district_code = district)
-```
-
 ### A simple add-on map theme
 
 ``` r
@@ -360,15 +354,13 @@ states_sf %>%
 
 AND – historical composition from \#1 –
 
-*Obviously do this the once* –
-
 ``` r
 vvo <- Rvoteview::download_metadata(type = 'members', 
                                     chamber = 'house') %>%
   filter(congress > 66 & chamber != 'President')
 ```
 
-    ## [1] "/tmp/RtmpjQd7He/Hall_members.csv"
+    ## [1] "/tmp/RtmpQW6l7q/Hall_members.csv"
 
 ``` r
 house <- vvo %>%
@@ -673,18 +665,6 @@ The we have to match – perhaps not worth it –
 Age in the House
 ----------------
 
-freshmen house members –
-
-``` r
-freshmen <- house %>%
-  group_by(icpsr, bioname) %>%
-  mutate(n = length(congress)) %>%
-  ungroup() %>%
-  filter(congress == 116) %>%
-  mutate(fresh = ifelse(n == 1, 'Y', 'n')) %>%
-  select(icpsr, fresh)
-```
-
 ``` r
 house %>%
   mutate(age = year - born) %>%
@@ -702,37 +682,78 @@ house %>%
   theme(legend.position = "none")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-30-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-29-1.png)
 
 Identifying freshmen house members –
+
+freshmen house members –
+
+``` r
+freshmen <- house %>%
+  group_by(icpsr, bioname) %>%
+  mutate(n = length(congress)) %>%
+  ungroup() %>%
+  filter(congress == 116) %>%
+  mutate(fresh = ifelse(n == 1, 'Y', 'n')) %>%
+  select(icpsr, fresh)
+```
+
+CCC
+
+``` r
+gens <- tables::pew_generations %>%
+  mutate(age = 2020 - end_yr) %>%
+  filter(order %in% c(2:5))
+```
 
 ``` r
 house %>%
   filter (party_code %in% c('100', '200'), 
           congress == 116) %>% 
-  mutate(age = year - born) %>%
+  mutate(age = year - born,
+         party_code = ifelse(party_code == '100', 
+                             'House Democrats', 
+                             'House Republicans')) %>%
   left_join(freshmen, by = "icpsr") %>%
   
   ## 100 == democrat --
-  ggplot(aes(x = age, fill = fresh)) +
+  ggplot() +
   
-  geom_dotplot(dotsize = .5, binpositions = 'all') + 
+  geom_dotplot(aes(x = age, fill = fresh),
+               dotsize = .75, 
+               binpositions = 'all', 
+               stackratio = 1.3, 
+               binwidth = 1) + 
   
-  geom_vline(xintercept = c(40, 50, 65, 80),
+  geom_vline(xintercept =gens$age - 0.5,
              linetype =2, 
              color = 'black', 
              size = .25) +
   
+  geom_text(data = gens, 
+            aes(x = age + 2.25, 
+                y = 0.4,
+                label = generation),
+            size = 3) +
+  # annotate(geom = "text",
+  #          x = gens$age + 2.5,
+  #          y = .4,
+  #          label = gens$generation,
+  #          size = 3.25) +
+  
   theme_minimal() + 
   ggthemes::scale_fill_economist() +
   facet_wrap(~party_code, nrow = 2) +
-  theme(legend.position = "none") + 
-  ylim (0, 1.25) +
+  theme(legend.position = "none",
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank()) + 
+  ylim (0, .5) +
   
-  labs(title = "Age distribution of house members by party")
+  labs(title = "Age distribution of house members by party",
+       subtitle = '116th House')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-31-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 Profiling congressional districts
 ---------------------------------
@@ -793,7 +814,7 @@ base_viz +
        subtitle = "New Mexico's 2nd District")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-34-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
 Some notes on rural America
 ---------------------------
@@ -918,7 +939,7 @@ mplot %>%
   labs(title = "The American White Working Class")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-39-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-40-1.png)
 
 Zoom to cities –
 
@@ -954,7 +975,7 @@ patchwork::wrap_plots(plots, ncol = 4) +
   patchwork::plot_annotation(title = 'In some American cities')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-40-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-41-1.png)
 
 ### White working profiles
 
@@ -986,7 +1007,7 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-41-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-42-1.png)
 
 ### Swing states & white working class
 
