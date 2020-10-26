@@ -201,12 +201,19 @@ Historical presidential election results
 ----------------------------------------
 
 ``` r
-last_dem <- uspols::uspols_wiki_pres %>%
-  #filter(party_win == 'democrat') %>% 
+clean_prex <-  uspols::uspols_wiki_pres %>%
+  mutate(winner = gsub('Franklin D. Roosevelt', 'FDR', winner),
+         winner = gsub('Lyndon B. Johnson', 'LBJ', winner),
+         winner = gsub('Hillary Clinton', 'HRC', winner)) 
+```
+
+``` r
+last_dem <- clean_prex %>%
   group_by(state_abbrev, party_win) %>%
-  filter(year == max(year)) %>%
+  filter(year == max(year),
+         party_win == 'democrat') %>%
   ungroup() %>%
-  mutate(label = paste0(year, ' - ', winner))
+  mutate(lab = paste0(year, ' - ', winner))
 ```
 
 > **Nine US states** have not voted for a Democratic Presidential
@@ -215,49 +222,56 @@ last_dem <- uspols::uspols_wiki_pres %>%
 
 ``` r
 last_dem %>%
-  group_by(party_win, label) %>%
+  group_by(party_win, lab) %>%
   summarise(n = n()) %>%
   ungroup() %>%
   arrange(party_win, desc(n)) %>%
-  filter(party_win == 'democrat') %>% 
-  ggplot(aes(x = reorder(label,n), 
+  ggplot(aes(x = reorder(lab,n), 
              y = n, 
-             fill = label, 
+             fill = lab, 
              label = n)) + 
   
   geom_col(width=.65, color = 'lightgray') +  
   geom_text(size = 3, nudge_y = .5) +
   coord_flip()+
-  #labs(title = "Last Democrats") +
   theme_minimal()+
   ggthemes::scale_fill_economist()+
   xlab('') + ylab('') +
   theme(legend.position = "none")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 ``` r
+new1 <- uspols::xsf_TileInv10 %>% 
+  left_join(last_dem, by ='state_abbrev') %>%
+  mutate(label = paste0(state_abbrev, 
+                        '\n', 
+                        year,
+                        '\n', 
+                        gsub('^.* ', '', winner)))
+
+
 uspols::xsf_TileOutv10 %>% 
-  left_join(last_dem %>%
-              filter(party_win == 'democrat'), by ='state_abbrev') %>%
-  
+  left_join(last_dem, by ='state_abbrev') %>%
   ggplot() + 
-  geom_sf(aes(fill = label),
+  geom_sf(aes(fill = winner),
           color = 'white' , 
           alpha = .85) + 
   
-  ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
-                          aes(label = state_abbrev), 
+  ggsflabel::geom_sf_text(data = new1,
+                          aes(label = new1$label), 
                           size = 3,
                           color = 'white') +
-  theme_minimal() + theme_guide() + 
-  theme(legend.position = 'right') +
+
+  theme_minimal() + 
+  theme_guide() + 
+  theme(legend.position = 'none') +
   ggthemes::scale_fill_economist()+
   labs(title = "Last vote for a Democratic Presidential candidate")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
 ### Highest vote share historically
 
@@ -280,9 +294,6 @@ vote_share <- uspols::uspols_wiki_pres %>%
 ``` r
 new <- uspols::xsf_TileInv10 %>% 
   left_join(vote_share, by ='state_abbrev') %>%
-  mutate(winner = gsub('Franklin D. Roosevelt', 'FDR', winner),
-         winner = gsub('Lyndon B. Johnson', 'LBJ', winner)) %>%
-  
   mutate(per = round(per, 1)) %>%
   mutate(label = paste0(state_abbrev, 
                         '\n', 
@@ -294,9 +305,6 @@ new <- uspols::xsf_TileInv10 %>%
 
 uspols::xsf_TileOutv10 %>% 
   left_join(vote_share, by ='state_abbrev') %>%
-  mutate(label = paste0(state_abbrev, '\n', 
-                           gsub('^.* ', '', winner))) %>%
-  
   ggplot() + 
   geom_sf(aes(fill = winner),
           color = 'white' , 
@@ -314,7 +322,7 @@ uspols::xsf_TileOutv10 %>%
   labs(title = "Largest vote share by state since 1864")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-15-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
 Away down south in Dixie
 ------------------------
@@ -322,7 +330,6 @@ Away down south in Dixie
 > Per VoteView definition: The South = Dixie + Kentucky + Oklahoma
 
 ``` r
-library(tidyverse)
 south <- c('SC', 'MS', 'FL', 
            'AL', 'GA', 'LA', 'TX', 
            'VA', 'AR', 'NC', 'TN',
@@ -348,7 +355,7 @@ states_sf %>%
        subtitle = "= Dixie + KY + OK")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-17-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 ### Rvoteview: House composition
 
@@ -360,15 +367,10 @@ vvo <- Rvoteview::download_metadata(type = 'members',
   filter(congress > 66 & chamber != 'President')
 ```
 
-    ## [1] "/tmp/RtmpQW6l7q/Hall_members.csv"
+    ## [1] "/tmp/Rtmp0tRegV/Hall_members.csv"
 
 ``` r
 house <- vvo %>%
-  
-  # lapply(c(66:116), function (x)
-  #                   Rvoteview::member_search (
-  #                     chamber = 'House', 
-  #                     congress = x)) %>% 
   bind_rows() %>%
     mutate(x = length(unique(district_code))) %>%
     ungroup() %>%
@@ -409,7 +411,7 @@ house %>%
   labs(title="Republican percentage of House seats, since 1919") 
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 A comparison of ideal points for members of the 111th, 113th & 115th
 Houses & Presidential vote margins for the 2008, 2012 & 2016 elections,
@@ -441,7 +443,7 @@ uspols::uspols_dk_pres %>%
   labs(title="Presidential Election Margins & DW-Nominate scores")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 Founding fathers corpus
 -----------------------
@@ -507,8 +509,8 @@ quicknews::qnews_search_contexts(qorp = qorp,
 
 <table>
 <colgroup>
-<col style="width: 5%" />
-<col style="width: 94%" />
+<col style="width: 6%" />
+<col style="width: 93%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -519,31 +521,31 @@ quicknews::qnews_search_contexts(qorp = qorp,
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">text9164</td>
-<td style="text-align: left;">… that the impeachment it has provided is not even a || scare-crow || ; that such opinions as the one you combat , …</td>
+<td style="text-align: left;">… that the impeachment it has provided is not even a <code>scare-crow</code> ; that such opinions as the one you combat , …</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">text10132</td>
-<td style="text-align: left;">… experience that impeachmt is an impracticable thing , a mere || scare-crow || , they consider themselves secure for life ; they sculk …</td>
+<td style="text-align: left;">… experience that impeachmt is an impracticable thing , a mere <code>scare-crow</code> , they consider themselves secure for life ; they sculk …</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">text10260</td>
-<td style="text-align: left;">… instead of that we have substituted impeachment , a mere || scare-crow || , &amp; which experience proves impractitiable . but from these …</td>
+<td style="text-align: left;">… instead of that we have substituted impeachment , a mere <code>scare-crow</code> , &amp; which experience proves impractitiable . but from these …</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">text10277</td>
-<td style="text-align: left;">… beyond responsibility , impeachment being found in practice a mere || scare-crow || . yet a respect for the high parties in the …</td>
+<td style="text-align: left;">… beyond responsibility , impeachment being found in practice a mere <code>scare-crow</code> . yet a respect for the high parties in the …</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">text10690</td>
-<td style="text-align: left;">… an irresponsible body , ( for impeachment is scarcely a || scare-crow || ) working like gravity by night and by day , …</td>
+<td style="text-align: left;">… an irresponsible body , ( for impeachment is scarcely a <code>scare-crow</code> ) working like gravity by night and by day , …</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">text11349</td>
-<td style="text-align: left;">… to no authority ( for impeachment is not even a || scare-crow || ) advancing with a noiseless and steady pace to the …</td>
+<td style="text-align: left;">… to no authority ( for impeachment is not even a <code>scare-crow</code> ) advancing with a noiseless and steady pace to the …</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">text12944</td>
-<td style="text-align: left;">… members , who would not hang me up as a || scare-crow || and enemy to a constitution on which many believe the …</td>
+<td style="text-align: left;">… members , who would not hang me up as a <code>scare-crow</code> and enemy to a constitution on which many believe the …</td>
 </tr>
 </tbody>
 </table>
@@ -577,7 +579,7 @@ uspols::xsf_TileOutv10 %>%
        caption = "Source: DailyKos")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
 ### Split ticket voting –
 
@@ -622,7 +624,7 @@ splits %>%
         axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-26-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 Mapping splits quickly – need to add CLASS information – !!
 
@@ -656,11 +658,7 @@ uspols::xsf_TileOutv10 %>%
 labs(title = "Split tickets per General Election")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-27-1.png)
-
-House leadership – briefly –
-
-The we have to match – perhaps not worth it –
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-28-1.png)
 
 Age in the House
 ----------------
@@ -668,25 +666,59 @@ Age in the House
 ``` r
 house %>%
   mutate(age = year - born) %>%
-  filter (party_code %in% c('100', '200'), year > 1995) %>% 
+  filter (party_code %in% c('100', '200'), year > 1960) %>%
+  group_by(party_code, year) %>%
+  summarize(age = round(mean(age, na.rm = T), 1)) %>%
+  mutate(label = if_else(year == max(year) | year == min(year), 
+                         age, NULL)) %>%
+  
+  ggplot() +
+  geom_line(aes(x = year, 
+                y = age, 
+                color = party_code), 
+            size = .65) +
+  
+    ggrepel::geom_text_repel(aes(x = year, 
+                                 y = age, 
+                                 label = label),
+                             size= 3.25,
+                             nudge_x = 1,
+                             na.rm = TRUE) +
+
+  ggthemes::scale_color_stata()+
+  theme_minimal() +
+  theme(legend.position = 'none',
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_continuous(breaks=seq(1962,2018,2)) +
+  labs(title = "Average age of house members by party") 
+```
+
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-29-1.png)
+
+``` r
+house %>%
+  mutate(age = year - born) %>%
+  filter (party_code %in% c('100', '200'), year > 2007) %>% 
   ## 100 == democrat --
   ggplot(aes(age, 
              fill = party_code)) +
 
   ggthemes::scale_fill_stata()+
   theme_minimal() +
+  theme(legend.position = "none",
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank()) + 
   geom_density(alpha = 0.6, color = 'gray') +
-  facet_wrap(~year)+
+  facet_wrap(~year, nrow = 2)+
 
-  labs(title="Age distributions in the House since 1997, by party") +
-  theme(legend.position = "none")
+  labs(title="Age distributions in the House since 2008, by party")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
 Identifying freshmen house members –
 
-freshmen house members –
+freshmen house members – *SOPHMORES* – ??
 
 ``` r
 freshmen <- house %>%
@@ -694,14 +726,18 @@ freshmen <- house %>%
   mutate(n = length(congress)) %>%
   ungroup() %>%
   filter(congress == 116) %>%
-  mutate(fresh = ifelse(n == 1, 'Y', 'n')) %>%
-  select(icpsr, fresh)
+  
+  mutate (Class = case_when (n == 1 ~ 'Freshmen',
+                             n == 2 ~ 'Sophmores',
+                             n > 2 ~ 'Upper-class')) %>%
+  
+  select(icpsr, party_code, Class)
 ```
 
 CCC
 
 ``` r
-gens <- tables::pew_generations %>%
+gens <- sometables::pew_generations %>%
   mutate(age = 2020 - end_yr) %>%
   filter(order %in% c(2:5))
 ```
@@ -714,15 +750,19 @@ house %>%
          party_code = ifelse(party_code == '100', 
                              'House Democrats', 
                              'House Republicans')) %>%
-  left_join(freshmen, by = "icpsr") %>%
+  left_join(freshmen %>% select(-party_code), by = "icpsr") %>%
   
   ## 100 == democrat --
   ggplot() +
   
-  geom_dotplot(aes(x = age, fill = fresh),
+  geom_dotplot(aes(x = age, 
+                   color = Class,
+                   fill = Class),
+               method="histodot",
                dotsize = .75, 
                binpositions = 'all', 
                stackratio = 1.3, 
+               stackgroups=TRUE,
                binwidth = 1) + 
   
   geom_vline(xintercept =gens$age - 0.5,
@@ -732,28 +772,25 @@ house %>%
   
   geom_text(data = gens, 
             aes(x = age + 2.25, 
-                y = 0.4,
+                y = 0.95,
                 label = generation),
             size = 3) +
-  # annotate(geom = "text",
-  #          x = gens$age + 2.5,
-  #          y = .4,
-  #          label = gens$generation,
-  #          size = 3.25) +
   
   theme_minimal() + 
   ggthemes::scale_fill_economist() +
+  ggthemes::scale_color_economist() +
+  
   facet_wrap(~party_code, nrow = 2) +
-  theme(legend.position = "none",
+  theme(legend.position = "bottom",
         axis.title.y=element_blank(),
-        axis.text.y=element_blank()) + 
-  ylim (0, .5) +
+        axis.text.y=element_blank()) +
+  #ylim (0, .5) +
   
   labs(title = "Age distribution of house members by party",
        subtitle = '116th House')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-32-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
 Profiling congressional districts
 ---------------------------------
@@ -814,10 +851,39 @@ base_viz +
        subtitle = "New Mexico's 2nd District")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-35-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-36-1.png)
 
 Some notes on rural America
 ---------------------------
+
+``` r
+gen %>%
+  left_join(uspols::uspols_dk_pres, 
+            by = c("state_abbrev", "district_code")) %>%
+  filter(year == 2016) %>%
+  mutate(Trump_margins = republican - democrat) %>%
+  
+  ggplot(aes(y = Trump_margins, 
+             x = estimate,
+             color = variable))+ 
+  
+  geom_point(size =1) + #
+  geom_smooth(method="loess", se=T, color = 'black', linetype = 3) +
+  
+    scale_color_manual(
+    values = colorRampPalette(ggthemes::economist_pal()(6))(12)) +
+  #ggthemes::scale_color_stata()+
+  theme_minimal() +
+  theme(legend.position = "none", 
+        plot.title = element_text(size=12))+
+  facet_wrap(~variable, scales = 'free_x') +
+  #xlab('Margins') + ylab('DW-Nominate D1') +
+  labs(title = "2019 ACS estimates vs. 2016 Trump margins")
+```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-37-1.png)
 
 Swing states
 ------------
@@ -939,7 +1005,7 @@ mplot %>%
   labs(title = "The American White Working Class")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-40-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-41-1.png)
 
 Zoom to cities –
 
@@ -975,7 +1041,7 @@ patchwork::wrap_plots(plots, ncol = 4) +
   patchwork::plot_annotation(title = 'In some American cities')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-41-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-42-1.png)
 
 ### White working profiles
 
@@ -1007,7 +1073,7 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-42-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-43-1.png)
 
 ### Swing states & white working class
 
