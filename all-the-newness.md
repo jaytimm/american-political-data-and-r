@@ -57,146 +57,6 @@ laea <- sf::st_crs("+proj=laea +lat_0=30 +lon_0=-95")
 #uscds  <- sf::st_transform(uscds , laea)
 ```
 
-On impeachment
---------------
-
-### VoteView: Legislation & roll calls
-
-Fifteen US Senators served in the impeachment trials of both President
-Clinton in 1999 and President Trump in 2020. Here we take a quick look
-at how they voted using the `Rvoteview` package.
-
-The table below summarizes impeachment roll calls for the two 1999
-articles & the two 2020 articles. There was also a resolution to censure
-President Clinton. (Note that Mitt Romney (UT) voted in support of
-Article I and against Article II in the 2020 impeachment trial of
-President Trump.)
-
-``` r
-res <- Rvoteview::voteview_search("impeachment") %>%
-  filter(chamber == 'Senate' & 
-           date %in% c('2020-02-05', '1999-02-12')) %>%
-  select(id, date, bill_number, text, question, yea, nay) %>%
-  arrange(date) 
-```
-
-``` r
-res %>%
-  select(-id, -bill_number) %>%
-  mutate(article = c('-', 'I', 'II', 'II', 'I')) %>%
-  arrange(date, article) %>%
-  knitr::kable()
-```
-
-<table style="width:100%;">
-<colgroup>
-<col style="width: 6%" />
-<col style="width: 70%" />
-<col style="width: 12%" />
-<col style="width: 2%" />
-<col style="width: 2%" />
-<col style="width: 4%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">date</th>
-<th style="text-align: left;">text</th>
-<th style="text-align: left;">question</th>
-<th style="text-align: right;">yea</th>
-<th style="text-align: right;">nay</th>
-<th style="text-align: left;">article</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">1999-02-12</td>
-<td style="text-align: left;">A resolution relating to the censure of William Jefferson Clinton.</td>
-<td style="text-align: left;">On the Motion</td>
-<td style="text-align: right;">43</td>
-<td style="text-align: right;">56</td>
-<td style="text-align: left;">-</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">1999-02-12</td>
-<td style="text-align: left;">A resolution impeaching William Jefferson Clinton, President of the United States, for high crimes and misdemeanors.</td>
-<td style="text-align: left;">Guilty or Not Guilty</td>
-<td style="text-align: right;">50</td>
-<td style="text-align: right;">51</td>
-<td style="text-align: left;">I</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">1999-02-12</td>
-<td style="text-align: left;">A resolution impeaching William Jefferson Clinton, President of the United States, for high crimes and misdemeanors.</td>
-<td style="text-align: left;">Guilty or Not Guilty</td>
-<td style="text-align: right;">45</td>
-<td style="text-align: right;">56</td>
-<td style="text-align: left;">II</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2020-02-05</td>
-<td style="text-align: left;">A resolution impeaching Donald John Trump, President of the United States, for high crimes and misdemeanors.</td>
-<td style="text-align: left;">Guilty or Not Guilty</td>
-<td style="text-align: right;">47</td>
-<td style="text-align: right;">53</td>
-<td style="text-align: left;">I</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">2020-02-05</td>
-<td style="text-align: left;">A resolution impeaching Donald John Trump, President of the United States, for high crimes and misdemeanors.</td>
-<td style="text-align: left;">Guilty or Not Guilty</td>
-<td style="text-align: right;">48</td>
-<td style="text-align: right;">52</td>
-<td style="text-align: left;">II</td>
-</tr>
-</tbody>
-</table>
-
-Here we look at how the 15 US Senators – members of both the 106th &
-116th congresses – voted on Article I from the 2020 trial and Article II
-of the 1999 trial.
-
-``` r
-votes <- Rvoteview::voteview_download(res$id)
-```
-
-``` r
-sens <- Rvoteview:: member_search(chamber= 'Senate', 
-                                  congress = c(106, 116))  
-## re-do this piece --         
-
-votes$votes.long %>% 
-  inner_join(sens %>% 
-               mutate(icpsr = as.character(icpsr))) %>%
-  filter(vname %in% c('RS1060018', 'RS1160461')) %>%
-  select(bioname, state_abbrev, 
-         congress, party_name, vote) %>%
-  mutate(vote = ifelse(vote == 1, 'Yea', 'Nay')) %>%
-  spread(congress, vote) %>%
-  filter(complete.cases(.)) %>%
-  arrange(party_name, `106`) %>%
-  knitr::kable()
-```
-
-| bioname                             | state\_abbrev | party\_name      | 106 | 116 |
-|:------------------------------------|:--------------|:-----------------|:----|:----|
-| DURBIN, Richard Joseph              | IL            | Democratic Party | Nay | Yea |
-| FEINSTEIN, Dianne                   | CA            | Democratic Party | Nay | Yea |
-| LEAHY, Patrick Joseph               | VT            | Democratic Party | Nay | Yea |
-| MURRAY, Patty                       | WA            | Democratic Party | Nay | Yea |
-| REED, John F. (Jack)                | RI            | Democratic Party | Nay | Yea |
-| SCHUMER, Charles Ellis (Chuck)      | NY            | Democratic Party | Nay | Yea |
-| WYDEN, Ronald Lee                   | OR            | Democratic Party | Nay | Yea |
-| COLLINS, Susan Margaret             | ME            | Republican Party | Nay | Nay |
-| CRAPO, Michael Dean                 | ID            | Republican Party | Yea | Nay |
-| ENZI, Michael B.                    | WY            | Republican Party | Yea | Nay |
-| GRASSLEY, Charles Ernest            | IA            | Republican Party | Yea | Nay |
-| INHOFE, James Mountain              | OK            | Republican Party | Yea | Nay |
-| McCONNELL, Addison Mitchell (Mitch) | KY            | Republican Party | Yea | Nay |
-| ROBERTS, Charles Patrick (Pat)      | KS            | Republican Party | Yea | Nay |
-| SHELBY, Richard C.                  | AL            | Republican Party | Yea | Nay |
-
-################ 
-
 Historical presidential election results
 ----------------------------------------
 
@@ -240,7 +100,7 @@ last_dem %>%
   theme(legend.position = "none")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 ``` r
 new1 <- uspols::xsf_TileInv10 %>% 
@@ -271,7 +131,7 @@ uspols::xsf_TileOutv10 %>%
   labs(title = "Last vote for a Democratic Presidential candidate")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 ### Highest vote share historically
 
@@ -322,7 +182,7 @@ uspols::xsf_TileOutv10 %>%
   labs(title = "Largest vote share by state since 1864")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
 Away down south in Dixie
 ------------------------
@@ -358,7 +218,7 @@ states_sf %>%
        subtitle = "= Dixie + KY + OK")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 ### Rvoteview: House composition
 
@@ -370,7 +230,7 @@ vvo <- Rvoteview::download_metadata(type = 'members',
   filter(congress > 66 & chamber != 'President')
 ```
 
-    ## [1] "/tmp/RtmpkGnicg/Hall_members.csv"
+    ## [1] "/tmp/Rtmp4J8THn/Hall_members.csv"
 
 ``` r
 house <- vvo %>%
@@ -449,40 +309,7 @@ house_south %>%
   labs(title = "House composition since 1921")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-21-1.png)
-
-Second perspective –
-
-``` r
-house_south %>%
-  group_by(year, southerner, party_name) %>%
-  summarize(n = n()) %>%
-  mutate(n = n/sum(n)) %>%
-  
-  ggplot(aes(x = year+1, 
-             y = n, 
-             fill = party_name)) +
-  geom_area(alpha = 0.65, color = 'gray') +
-  
-  geom_hline(yintercept = 0.5, color = 'white', linetype = 2) +
-
-  scale_x_continuous(breaks=seq(1921,2018,4)) +
-  
-  ggthemes::scale_fill_stata() +
-  
-  theme_minimal() + 
-  theme(legend.position = 'none',
-        legend.title=element_blank(),
-        axis.title.y=element_blank(),
-        axis.title.x=element_blank(),
-        axis.text.y=element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
-  
-  facet_wrap(~southerner) +
-  labs(title = "Proportion of seats by geo-party since 1921")
-```
-
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-22-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
 #### 2.2 Lawmaker political ideologies
 
@@ -518,7 +345,7 @@ house_south %>%
                size = .25) +
   
   geom_point(aes(color = Member), 
-             size= 1.5,
+             size= 1.25,
              shape = 17) + 
   
   scale_color_manual(values = c('#1a476f', '#8faabe',
@@ -531,89 +358,7 @@ house_south %>%
   labs(title="DW-Nominate ideology scores for the 111th US House")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-23-1.png)
-
-#### 2.4 NOKKEN & POOLE scores
-
-> An alternative set of ideology scores are available as a csv from
-> VoteView’s website. DW-Nominate scores are constant over a lawmakers
-> entire political career. Nokken & Poole scores, in contrast, are
-> congress-specific scores.
-
-``` r
-voteview_nokken_poole <- read.csv(url("https://voteview.com/static/data/out/members/HSall_members.csv"),
-  stringsAsFactors = FALSE) 
-```
-
-Founding fathers corpus
------------------------
-
-### Scare-crows & impeachment
-
-``` r
-setwd(ffc_dir)
-gfiles <- list.files(path = ffc_dir, 
-                     pattern = "rds", 
-                     recursive = TRUE) 
-
-ffc_tj <- readRDS(gfiles[6])
-
-qorp <- quanteda::corpus(ffc_tj)
-#quanteda::docnames(qorp) <- korpus$status_id
-
-quicknews::qnews_search_contexts(qorp = qorp, 
-                                        search = "scare-crow", 
-                                 ## need to check - should not require space
-                                        window = 10,
-                                        highlight_color = '|') %>%
-  #left_join(metas, by = c('docname' = 'link')) %>%
-  select(docname, context) %>%
-  #sample_n(7)  %>%
-  knitr::kable()
-```
-
-<table>
-<colgroup>
-<col style="width: 6%" />
-<col style="width: 93%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">docname</th>
-<th style="text-align: left;">context</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">text9164</td>
-<td style="text-align: left;">… that the impeachment it has provided is not even a <code>scare-crow</code> ; that such opinions as the one you combat , …</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">text10132</td>
-<td style="text-align: left;">… experience that impeachmt is an impracticable thing , a mere <code>scare-crow</code> , they consider themselves secure for life ; they sculk …</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">text10260</td>
-<td style="text-align: left;">… instead of that we have substituted impeachment , a mere <code>scare-crow</code> , &amp; which experience proves impractitiable . but from these …</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">text10277</td>
-<td style="text-align: left;">… beyond responsibility , impeachment being found in practice a mere <code>scare-crow</code> . yet a respect for the high parties in the …</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">text10690</td>
-<td style="text-align: left;">… an irresponsible body , ( for impeachment is scarcely a <code>scare-crow</code> ) working like gravity by night and by day , …</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">text11349</td>
-<td style="text-align: left;">… to no authority ( for impeachment is not even a <code>scare-crow</code> ) advancing with a noiseless and steady pace to the …</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">text12944</td>
-<td style="text-align: left;">… members , who would not hang me up as a <code>scare-crow</code> and enemy to a constitution on which many believe the …</td>
-</tr>
-</tbody>
-</table>
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 Presidential elections historically
 -----------------------------------
@@ -644,7 +389,7 @@ uspols::xsf_TileOutv10 %>%
        caption = "Source: DailyKos")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-26-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 ### The end of split-ticket voting
 
@@ -694,7 +439,7 @@ uspols::xsf_TileOutv10 %>%
 labs(title = "Pres-Senate split-tickets per general election year")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-28-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 Four generations of lawmakers
 -----------------------------
@@ -739,7 +484,7 @@ house %>%
   labs(title = "Average age of house members by party") 
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 ``` r
 house %>%
@@ -760,7 +505,7 @@ house %>%
   labs(title="Age distributions in the House since 2008, by party")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-30-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
 Identifying freshmen house members –
 
@@ -836,7 +581,7 @@ house %>%
        subtitle = '116th House')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-33-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
 Profiling congressional districts
 ---------------------------------
@@ -897,7 +642,7 @@ base_viz +
        subtitle = "New Mexico's 2nd District")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-36-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-28-1.png)
 
 Some notes on rural America
 ---------------------------
@@ -927,9 +672,7 @@ gen %>%
   labs(title = "2019 ACS estimates vs. 2016 Trump margins")
 ```
 
-    ## `geom_smooth()` using formula 'y ~ x'
-
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-37-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-29-1.png)
 
 Swing states
 ------------
@@ -1049,7 +792,7 @@ mplot %>%
   labs(title = "The American White Working Class")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-41-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
 ### White working profiles
 
@@ -1081,7 +824,7 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-42-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 ### Swing states & white working class
 
