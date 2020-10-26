@@ -29,6 +29,8 @@ theme_guide <- function () {
 
 ### Some geo-spatial data
 
+Clean this up – organize – describe what is – !
+
 ``` r
 library(sf)
 library(tigris)
@@ -57,8 +59,83 @@ laea <- sf::st_crs("+proj=laea +lat_0=30 +lon_0=-95")
 #uscds  <- sf::st_transform(uscds , laea)
 ```
 
+Some quick definitions
+----------------------
+
+Away down south in Dixie
+
+> Per VoteView definition: The South = Dixie + Kentucky + Oklahoma
+
+``` r
+south <- c('SC', 'MS', 'FL', 
+           'AL', 'GA', 'LA', 'TX', 
+           'VA', 'AR', 'NC', 'TN',
+           'OK', 'KY')
+
+swing <- c('AZ', 'FL', 'GA', 'MI', 
+           'MN', 'NC', 'PA', 'WI')
+```
+
+> Dixie Land in context:
+
+``` r
+states_sf %>%
+  filter(!state_code %in% nonx) %>%
+  mutate(south = ifelse(state_abbrev %in% south, 
+                        'south', 'not'),
+         swing = ifelse(state_abbrev %in% swing, 
+                        'swing', 'not')) %>%
+  select(state_abbrev, geometry, south, swing) %>%
+  gather(-state_abbrev, -geometry, key = 'type', value = 'val') %>%
+  mutate(label = ifelse(!grepl('not', val), state_abbrev, NA)) %>%
+  sf::st_transform(laea) %>%
+  
+  ggplot() + 
+  geom_sf(aes(fill = val),
+           color = 'white', size = .15) +
+  ggsflabel::geom_sf_text(aes(label = label),
+                          size = 2.25,
+                          color='black') +
+  ggthemes::scale_fill_few () + 
+  theme_minimal() + 
+  theme_guide() +
+  theme(panel.background = 
+          element_rect(fill = '#d5e4eb', color = NA)) +
+  facet_wrap(~type) 
+```
+
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-6-1.png)
+
 Historical presidential election results
 ----------------------------------------
+
+### Presidential results since 1956
+
+``` r
+uspols::xsf_TileOutv10 %>%
+  left_join(uspols::uspols_wiki_pres %>%
+              filter(year > 1955) %>%
+              mutate(margins = republican - democrat)) %>% 
+  ggplot() + 
+  geom_sf(aes(fill = margins),
+           color = 'white') +
+  geom_sf(data = uspols::xsf_TileInv10, 
+          fill = NA, 
+          show.legend = F, 
+          color = NA, 
+          lwd=.5) +
+  ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
+                          aes(label = state_abbrev),
+                          size = 1.25,
+                          color='black') +
+  scale_fill_distiller(palette = "RdBu", direction=-1) +
+  facet_wrap(~year) +
+  theme_minimal()+ theme_guide() +
+  labs(title = "Equal-area US State geometry",
+       caption = "Source: DailyKos")
+```
+
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 ``` r
 clean_prex <-  uspols::uspols_wiki_pres %>%
@@ -79,28 +156,6 @@ last_dem <- clean_prex %>%
 > **Nine US states** have not voted for a Democratic Presidential
 > candidate since LBJ. So, roughly 1/5 of US States haven’t supported a
 > Democrat since LBJ –
-
-``` r
-last_dem %>%
-  group_by(party_win, lab) %>%
-  summarise(n = n()) %>%
-  ungroup() %>%
-  arrange(party_win, desc(n)) %>%
-  ggplot(aes(x = reorder(lab,n), 
-             y = n, 
-             fill = lab, 
-             label = n)) + 
-  
-  geom_col(width=.65, color = 'lightgray') +  
-  geom_text(size = 3, nudge_y = .5) +
-  coord_flip()+
-  theme_minimal()+
-  ggthemes::scale_fill_economist()+
-  xlab('') + ylab('') +
-  theme(legend.position = "none")
-```
-
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 ``` r
 new1 <- uspols::xsf_TileInv10 %>% 
@@ -131,7 +186,7 @@ uspols::xsf_TileOutv10 %>%
   labs(title = "Last vote for a Democratic Presidential candidate")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 ### Highest vote share historically
 
@@ -182,43 +237,7 @@ uspols::xsf_TileOutv10 %>%
   labs(title = "Largest vote share by state since 1864")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-11-1.png)
-
-Away down south in Dixie
-------------------------
-
-> Per VoteView definition: The South = Dixie + Kentucky + Oklahoma
-
-``` r
-south <- c('SC', 'MS', 'FL', 
-           'AL', 'GA', 'LA', 'TX', 
-           'VA', 'AR', 'NC', 'TN',
-           'OK', 'KY')
-```
-
-> Dixie Land in context:
-
-``` r
-states_sf %>%
-  mutate(south = ifelse(state_abbrev %in% south, 
-                        'south', 'not-south')) %>%
-  sf::st_transform(laea) %>%
-  
-  ggplot() + 
-  geom_sf(aes(fill = south),
-           color = 'white', size = .15) +
-  
-  ggthemes::scale_fill_few () + 
-  theme_minimal() + 
-  theme_guide() +
-  theme(panel.background = 
-          element_rect(fill = '#d5e4eb', color = NA)) +
-  
-  labs(title = "The American South",
-       subtitle = "= Dixie + KY + OK")
-```
-
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
 ### Rvoteview: House composition
 
@@ -230,7 +249,7 @@ vvo <- Rvoteview::download_metadata(type = 'members',
   filter(congress > 66 & chamber != 'President')
 ```
 
-    ## [1] "/tmp/Rtmp4J8THn/Hall_members.csv"
+    ## [1] "/tmp/RtmpzFyVf8/Hall_members.csv"
 
 ``` r
 house <- vvo %>%
@@ -309,7 +328,7 @@ house_south %>%
   labs(title = "House composition since 1921")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-15-1.png)
 
 #### 2.2 Lawmaker political ideologies
 
@@ -358,38 +377,7 @@ house_south %>%
   labs(title="DW-Nominate ideology scores for the 111th US House")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-17-1.png)
-
-Presidential elections historically
------------------------------------
-
-### Presidential results since 1956
-
-``` r
-uspols::xsf_TileOutv10 %>%
-  left_join(uspols::uspols_wiki_pres %>%
-              filter(year > 1955) %>%
-              mutate(margins = republican - democrat)) %>% 
-  ggplot() + 
-  geom_sf(aes(fill = margins),
-           color = 'white') +
-  geom_sf(data = uspols::xsf_TileInv10, 
-          fill = NA, 
-          show.legend = F, 
-          color = NA, 
-          lwd=.5) +
-  ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
-                          aes(label = state_abbrev),
-                          size = 1.25,
-                          color='black') +
-  scale_fill_distiller(palette = "RdBu", direction=-1) +
-  facet_wrap(~year) +
-  theme_minimal()+ theme_guide() +
-  labs(title = "Equal-area US State geometry",
-       caption = "Source: DailyKos")
-```
-
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
 ### The end of split-ticket voting
 
@@ -439,7 +427,7 @@ uspols::xsf_TileOutv10 %>%
 labs(title = "Pres-Senate split-tickets per general election year")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 Four generations of lawmakers
 -----------------------------
@@ -484,7 +472,7 @@ house %>%
   labs(title = "Average age of house members by party") 
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 ``` r
 house %>%
@@ -505,7 +493,7 @@ house %>%
   labs(title="Age distributions in the House since 2008, by party")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-22-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 Identifying freshmen house members –
 
@@ -581,7 +569,7 @@ house %>%
        subtitle = '116th House')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-25-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
 Profiling congressional districts
 ---------------------------------
@@ -642,7 +630,7 @@ base_viz +
        subtitle = "New Mexico's 2nd District")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-28-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
 Some notes on rural America
 ---------------------------
@@ -672,19 +660,7 @@ gen %>%
   labs(title = "2019 ACS estimates vs. 2016 Trump margins")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-29-1.png)
-
-Swing states
-------------
-
-``` r
-swing_states <- c('Arizona', 'Florida', 'Georgia', 
-                  'Michigan', 'Minnesota', 'North Carolina', 
-                  'Pennsylvania', 'Wisconsin')
-
-swing <- c('AZ', 'FL', 'GA', 'MI', 
-           'MN', 'NC', 'PA', 'WI')
-```
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 The White working class
 -----------------------
@@ -792,7 +768,7 @@ mplot %>%
   labs(title = "The American White Working Class")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-33-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
 ### White working profiles
 
@@ -824,7 +800,7 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-34-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
 ### Swing states & white working class
 
