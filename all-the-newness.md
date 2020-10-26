@@ -101,7 +101,7 @@ states_sf %>%
   theme_guide() +
   theme(panel.background = 
           element_rect(fill = '#d5e4eb', color = NA)) +
-  facet_wrap(~type) 
+  facet_wrap(~type, ncol = 1) 
 ```
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-6-1.png)
@@ -118,12 +118,13 @@ uspols::xsf_TileOutv10 %>%
               mutate(margins = republican - democrat)) %>% 
   ggplot() + 
   geom_sf(aes(fill = margins),
-           color = 'white') +
+           color = 'black', lwd = .25) +
   geom_sf(data = uspols::xsf_TileInv10, 
           fill = NA, 
           show.legend = F, 
           color = NA, 
           lwd=.5) +
+  
   ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
                           aes(label = state_abbrev),
                           size = 1.25,
@@ -177,7 +178,7 @@ uspols::xsf_TileOutv10 %>%
   ggsflabel::geom_sf_text(data = new1,
                           aes(label = new1$label), 
                           size = 3,
-                          color = 'white') +
+                          color = 'black') +
 
   theme_minimal() + 
   theme_guide() + 
@@ -228,7 +229,7 @@ uspols::xsf_TileOutv10 %>%
   ggsflabel::geom_sf_text(data = new,
                           aes(label = new$label), 
                           size = 2.5,
-                          color = 'white') +
+                          color = 'black') +
     scale_fill_manual(
       values = colorRampPalette(ggthemes::economist_pal()(8))(14)) +
   
@@ -249,7 +250,7 @@ vvo <- Rvoteview::download_metadata(type = 'members',
   filter(congress > 66 & chamber != 'President')
 ```
 
-    ## [1] "/tmp/RtmpzFyVf8/Hall_members.csv"
+    ## [1] "/tmp/RtmpyrXegZ/Hall_members.csv"
 
 ``` r
 house <- vvo %>%
