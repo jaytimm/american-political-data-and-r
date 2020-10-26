@@ -367,7 +367,7 @@ vvo <- Rvoteview::download_metadata(type = 'members',
   filter(congress > 66 & chamber != 'President')
 ```
 
-    ## [1] "/tmp/Rtmp0tRegV/Hall_members.csv"
+    ## [1] "/tmp/RtmpzzFZnR/Hall_members.csv"
 
 ``` r
 house <- vvo %>%
@@ -660,8 +660,8 @@ labs(title = "Split tickets per General Election")
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-28-1.png)
 
-Age in the House
-----------------
+Four generations of lawmakers
+-----------------------------
 
 ``` r
 house %>%
@@ -826,11 +826,11 @@ gen <-  tidycensus::get_acs(geography = 'congressional district',
 > A quick look at New Mexico’s 2nd district.
 
 ``` r
-base_viz <- gen %>% 
+base_viz <- gen %>%
   ggplot( aes(estimate, fill = variable)) +
   geom_density(alpha = 0.65,
                color = 'darkgray',
-               adjust = 1) +
+               adjust = 2.5) +
   scale_fill_manual(
     values = colorRampPalette(ggthemes::economist_pal()(6))(12)) +
   facet_wrap(~variable, scale = 'free', ncol = 4)+
@@ -1007,42 +1007,6 @@ mplot %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-41-1.png)
 
-Zoom to cities –
-
-``` r
-sub_geos <- c('New York, NY', 'Los Angeles, CA',
-              'Chicago, IL', 'Houston, TX', 
-              'Dallas, TX', 'Philadelphia, PA',
-              'San Diego, CA', 'San Antonio, TX')
-
-main <- mplot
-plots <- lapply(sub_geos, function(x) {
-
-    lc <- tmaptools::geocode_OSM (q = x, as.sf = T)
-    lc$bbox <- sf::st_set_crs(lc$bbox, sf::st_crs(main))
-    cropped <- sf::st_crop(main, lc$bbox)
-
-    ggplot() + geom_sf(data = cropped,
-                       aes(fill = per),
-                       color = 'white', size = .4) +
-
-    scale_fill_distiller(palette = "YlGnBu", 
-                         direction = 1, 
-                         limit = range(c(mins, maxs))) + #!
-  theme_minimal() + theme_guide() +
-  theme(panel.background = element_rect(fill = '#d5e4eb', 
-                                        color = NA),
-        plot.title = element_text(size=9)) +
-      
-      ggtitle(gsub(',.*$', '', x))   })
-  
-
-patchwork::wrap_plots(plots, ncol = 4) +
-  patchwork::plot_annotation(title = 'In some American cities')
-```
-
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-42-1.png)
-
 ### White working profiles
 
 > Culture wars, identity politics, etc.
@@ -1073,7 +1037,7 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-43-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-42-1.png)
 
 ### Swing states & white working class
 
