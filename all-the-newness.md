@@ -367,7 +367,7 @@ vvo <- Rvoteview::download_metadata(type = 'members',
   filter(congress > 66 & chamber != 'President')
 ```
 
-    ## [1] "/tmp/RtmpzzFZnR/Hall_members.csv"
+    ## [1] "/tmp/Rtmpu3XLzu/Hall_members.csv"
 
 ``` r
 house <- vvo %>%
@@ -581,7 +581,7 @@ uspols::xsf_TileOutv10 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
-### Split ticket voting –
+### The end of split-ticket voting
 
 Here, per presidential election, Party Senator !- Party President –
 
@@ -595,36 +595,10 @@ splits <- uspols::uspols_wiki_pres %>%
   select(year, state_abbrev, party_pres) %>%
   inner_join(uspols::uspols_medsl_senate, 
          by = c('year', 'state_abbrev')) %>%
-  mutate(split = ifelse(party_pres != party_win, 1, 0)) 
+  mutate(split = ifelse(party_pres != party_win, 1, 0)) %>%
+  complete(year, state_abbrev) 
+  #mutate(split = ifelse(is.na(split), 0, split))
 ```
-
-*ADD Senate class and actual numbers underlying percentages* –
-
-``` r
-#splits1 <- splits %>%
-```
-
-``` r
-splits %>%
-  group_by(year) %>%
-  summarize(per_split = round(mean(split)*100, 1)) %>%
-  ggplot(aes(x = year, 
-             y = per_split, 
-             label = per_split)) + 
-  
-  geom_col(width = 2.75, 
-           fill = 'steelblue',  
-           color = 'lightgray') +  
-  geom_text(size = 3, nudge_y = 1) +
-  scale_x_continuous(breaks=seq(1976, 2016, 4)) +
-  labs(title = "Senator-President Splits") +
-  theme_minimal()+
-  ylab('') + xlab('') +
-  theme(legend.position = "none",
-        axis.text.x = element_text(angle = 45, hjust = 1))
-```
-
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 Mapping splits quickly – need to add CLASS information – !!
 
@@ -632,33 +606,32 @@ And change dark blue color – sos to see – !! and note that no
 distinctions are made here wrt party affiliation – Although a simple
 cross-tab/typology will show – !!
 
-> All states with a Senator on the ballot in 2016 voted … as they did
-> the President.
-
 ``` r
+year <- seq(from = 1976, to = 2016, by = 2)
+class <- paste0('Class-', c(rep(1:3,7)))
+df <- data.frame(year, class)
+
 uspols::xsf_TileOutv10 %>%
-  left_join(splits, by = 'state_abbrev') %>% 
+  left_join(splits, by = 'state_abbrev') %>%
+  left_join(df, by = 'year') %>%
+
   ggplot() + 
   geom_sf(aes(fill = as.character(split)),
-           color = 'gray') +
-  geom_sf(data = uspols::xsf_TileInv10, 
-          fill = NA, 
-          show.legend = F, 
-          color = NA, 
-          lwd=.5) +
+           color = 'black', lwd = .25) +
+
   ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
                           aes(label = state_abbrev),
                           size = 1.25,
-                          color='black') +
-  #scale_fill_distiller(palette = "RdBu", direction=-1) +
+                          color = 'black') +
+
   ggthemes::scale_fill_few () + 
-  facet_wrap(~year) +
+  facet_wrap(~year + class) +
   theme_minimal() + theme_guide() +
   theme(legend.position = 'bottom') +
 labs(title = "Split tickets per General Election")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-28-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
 Four generations of lawmakers
 -----------------------------
@@ -693,7 +666,7 @@ house %>%
   labs(title = "Average age of house members by party") 
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 ``` r
 house %>%
@@ -714,7 +687,7 @@ house %>%
   labs(title="Age distributions in the House since 2008, by party")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-30-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-28-1.png)
 
 Identifying freshmen house members –
 
@@ -759,7 +732,7 @@ house %>%
                    color = Class,
                    fill = Class),
                method="histodot",
-               dotsize = .75, 
+               dotsize = .9, 
                binpositions = 'all', 
                stackratio = 1.3, 
                stackgroups=TRUE,
@@ -790,7 +763,7 @@ house %>%
        subtitle = '116th House')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-33-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
 Profiling congressional districts
 ---------------------------------
@@ -851,7 +824,7 @@ base_viz +
        subtitle = "New Mexico's 2nd District")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-36-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 Some notes on rural America
 ---------------------------
@@ -883,7 +856,7 @@ gen %>%
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-37-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
 Swing states
 ------------
@@ -911,13 +884,9 @@ white_ed_vars <- c(white_m_bach = 'C15002H_006',
                    all_m_xgrad = 'C15002_009',
                    all_pop = 'C15002_001')
 
-# Denominator = everyone 25 and over -- !!
-
-#Get White-not Hispanic education levels
 white_ed <- tidycensus::get_acs(geography = 'congressional district',
                             variables = white_ed_vars,
                             year = 2019,
-                            #output = 'wide',
                             survey = 'acs1') %>%
   select(-moe) %>%
   spread(key = variable, value = estimate) %>%
@@ -956,7 +925,9 @@ white_ed <- tidycensus::get_acs(geography = 'congressional district',
 
 ``` r
 white_ed %>%
-  mutate(swing = ifelse(state_abbrev %in% swing, 'swing', 'not-swing')) %>%
+  mutate(swing = ifelse(state_abbrev %in% swing, 
+                        'swing', 
+                        'not-swing')) %>%
   group_by(group) %>%
   summarise(estimate = sum(estimate)) %>%
   mutate(per = round(estimate/sum(estimate) * 100, 1),
@@ -1005,7 +976,7 @@ mplot %>%
   labs(title = "The American White Working Class")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-41-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 ### White working profiles
 
@@ -1037,7 +1008,7 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-42-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-40-1.png)
 
 ### Swing states & white working class
 
