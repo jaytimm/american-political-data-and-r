@@ -3,7 +3,7 @@ American political data & R
 
 An open-source guide to … (apdr)
 
-*Updated: 2020-10-25*
+*Updated: 2020-10-26*
 
 ![](all-the-newness_files/figure-markdown_github/collage1.png)
 
@@ -347,10 +347,13 @@ states_sf %>%
   ggplot() + 
   geom_sf(aes(fill = south),
            color = 'white', size = .15) +
+  
   ggthemes::scale_fill_few () + 
-  theme_minimal() + theme_guide() +
+  theme_minimal() + 
+  theme_guide() +
   theme(panel.background = 
           element_rect(fill = '#d5e4eb', color = NA)) +
+  
   labs(title = "The American South",
        subtitle = "= Dixie + KY + OK")
 ```
@@ -367,7 +370,7 @@ vvo <- Rvoteview::download_metadata(type = 'members',
   filter(congress > 66 & chamber != 'President')
 ```
 
-    ## [1] "/tmp/Rtmpu3XLzu/Hall_members.csv"
+    ## [1] "/tmp/RtmpkGnicg/Hall_members.csv"
 
 ``` r
 house <- vvo %>%
@@ -378,7 +381,13 @@ house <- vvo %>%
     mutate(district_code = 
              stringr::str_pad (as.numeric(district_code), 
                                2, pad = 0),
-           party_code = as.character(party_code)) %>%
+           
+           southerner = ifelse(state_abbrev %in% south, 
+                        'South', 'Non-south'),
+           party_name = case_when (party_code == 100 ~ 'Democrat',
+                                   party_code == 200 ~ 'Republican',
+                                   !party_code %in% c(100, 200) ~ 'other')) %>%
+  
   left_join(data.frame(year = c(1918 + 2*rep(c(1:50))), 
                        ## NOTE: election years.  term begins year + 1
                        congress = c(67:116)), by = 'congress') 
@@ -386,102 +395,158 @@ house <- vvo %>%
 
 ### Southern states versus non-Southern states
 
-\~75% of GOP House members are from Dixie. In 1960, this % was less than
-10.
+### 2 Political ideologies and congressional composition
+
+> The [VoteView](https://voteview.com/) project provides roll call-based
+> political ideology scores for all lawmakers in the history of the US
+> Congress. Data can be used to investigate congressional composition by
+> party affiliation over time, the aggregate political ideologies of
+> both houses over time, and the ideologies of individual lawmakers. And
+> any number of other roll call-based analyses. The R package
+> `Rvoteview` provides access to these data.
+
+#### 2.1 Congressional composition by political affiliation
+
+> A summary of House compositions for the last fifty congresses, ie,
+> last 100 years. Until fairly recently, a Democratic stronghold.
 
 ``` r
-house %>%
-  mutate(is_south = ifelse(state_abbrev %in% south, 
-                           'south', 'non-south')) %>%
-  group_by(year, is_south, party_code) %>%
-  summarize (n = n()) %>%
-  group_by(year, is_south) %>%
+house_south <- house %>% 
+  filter(party_code %in% c(100, 200)) %>%
+  mutate(Member = as.factor(paste0(party_name, ', ', southerner))) %>%
   
-  mutate(per = round(n/sum(n)*100, 1)) %>%
-  filter(party_code == '200') %>%
-  ungroup() %>%
-  
-  ggplot() +
-  geom_line(aes(x = year, y= per, color = is_south), size = 1.25) +
-  ggthemes::scale_color_stata()+
-  theme_minimal() +
-  theme(legend.position = 'bottom',
-        axis.text.x = element_text(angle = 90, hjust = 1)) +
-  scale_x_continuous(breaks=seq(1920,2020,10)) +
-  labs(title="Republican percentage of House seats, since 1919") 
+  ## re-factor 
+  mutate(Member = forcats::fct_relevel(Member, 
+                                       'Republican, Non-south', 
+                                       after = 3)) 
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-20-1.png)
-
-A comparison of ideal points for members of the 111th, 113th & 115th
-Houses & Presidential vote margins for the 2008, 2012 & 2016 elections,
-respectively. Plots re-created, in part, from Barber & McCarty (2015).
-
-Two observations/points to the plot below:
-
 ``` r
-uspols::uspols_dk_pres %>%
-  mutate(margin = republican - democrat) %>%
+house_south %>%
+  group_by(year, Member) %>%
+  summarize(n = n()) %>%
+  mutate(n = n/sum(n)) %>%
   
-  left_join(house %>% filter(congress %in% c('111', '113', '115')), 
-            by = c('year', 'state_abbrev', 'district_code')) %>%
+  ggplot(aes(x = year+1, 
+             y = n, 
+             fill = Member)) +
+  geom_area(alpha = 0.65, color = 'gray') +
   
+  geom_hline(yintercept = 0.5, color = 'white', linetype = 2) +
+
+  scale_x_continuous(breaks=seq(1921,2018,4)) +
+  scale_fill_manual(values = c('#1a476f', '#8faabe',
+                                '#e19463', '#913a40')) +
   
-  ggplot(aes(y = nominate_dim1, 
-             x = margin, 
-             color = party_code))+ 
+  theme_minimal() + 
+  theme(legend.position = 'top',
+        legend.title=element_blank(),
+        axis.title.y=element_blank(),
+        axis.title.x=element_blank(),
+        axis.text.y=element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
   
-  geom_point()+ #
-  geom_smooth(method="lm", se=T) +
-  ggthemes::scale_color_stata()+
-  theme_minimal() +
-  theme(legend.position = "none", 
-        plot.title = element_text(size=12),
-        axis.title = element_text())+
-  facet_wrap(~year, nrow = 1) +
-  xlab('Margins') + ylab('DW-Nominate D1') +
-  labs(title="Presidential Election Margins & DW-Nominate scores")
+  labs(title = "House composition since 1921")
 ```
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
-Founding fathers corpus
------------------------
-
-### A relevant correspondence
-
-> An excerpt from this letter sent by Alexander Hamilton to George
-> Washington on 1792-08-18, and quoted by Representative Adam Schiff on
-> 2020-1-22 during the impeachment trial of Donald J. Trump. Accessed
-> here via this Git Hub resource that makes the Founders Online database
-> of writings/correspondences available as a collection of RDS files.
+Second perspective –
 
 ``` r
-setwd(ffc_dir)
-gfiles <- list.files(path = ffc_dir, 
-                     pattern = "rds", 
-                     recursive = TRUE) 
+house_south %>%
+  group_by(year, southerner, party_name) %>%
+  summarize(n = n()) %>%
+  mutate(n = n/sum(n)) %>%
+  
+  ggplot(aes(x = year+1, 
+             y = n, 
+             fill = party_name)) +
+  geom_area(alpha = 0.65, color = 'gray') +
+  
+  geom_hline(yintercept = 0.5, color = 'white', linetype = 2) +
 
-ffc_washington <- readRDS(gfiles[8])
-
-ah <- ffc_washington %>% 
-  filter(grepl('No popular Government was ever without its Catalines', og_text))
-
-ah1 <- strsplit(ah$og_text, 'Yet it would not be difficult to lay the finger upon some of their party who may justly be suspected.')[[1]][2]
-
-ah2 <- strsplit(ah1, 'It has aptly been observed that Cato was the Tory-Cæsar the whig of his day. ')[[1]][1]
+  scale_x_continuous(breaks=seq(1921,2018,4)) +
+  
+  ggthemes::scale_fill_stata() +
+  
+  theme_minimal() + 
+  theme(legend.position = 'none',
+        legend.title=element_blank(),
+        axis.title.y=element_blank(),
+        axis.title.x=element_blank(),
+        axis.text.y=element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  
+  facet_wrap(~southerner) +
+  labs(title = "Proportion of seats by geo-party since 1921")
 ```
 
-> When a man unprincipled in private life desperate in his fortune, bold
-> in his temper, possessed of considerable talents, having the advantage
-> of military habits—despotic in his ordinary demeanour—known to have
-> scoffed in private at the principles of liberty—when such a man is
-> seen to mount the hobby horse of popularity—to join in the cry of
-> danger to liberty—to take every opportunity of embarrassing the
-> General Government & bringing it under suspicion—to flatter and fall
-> in with all the non sense of the zealots of the day—It may justly be
-> suspected that his object is to throw things into confusion that he
-> may “ride the storm and direct the whirlwind.”
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-22-1.png)
+
+#### 2.2 Lawmaker political ideologies
+
+> The [NOMINATE scaling procedure](https://voteview.com/about) is used
+> to calculate the political ideology of lawmakers based on voting
+> behavior. Ideologies are scored along two dimensions. The first
+> captures ideological variation based in the standard
+> liberal-conservative dvide. The second captures variation based in
+> social conservatism that crosscuts political affiliation.
+
+<a href="https://www.politico.com/magazine/story/2018/12/02/larry-mcdonald-communists-deep-state-222726" class="uri">https://www.politico.com/magazine/story/2018/12/02/larry-mcdonald-communists-deep-state-222726</a>
+
+> A slightly modified version of
+> [this](https://voteview.com/parties/all) VoteView visualization
+> illustrating the growing ideological divide between major political
+> parties in the US. The gray line reflects overall median ideology
+> scores in the House, and roughly approximates party control of the
+> House historically.
+
+``` r
+house_south %>%
+  filter (congress %in% c(84, 88, 92, 
+                          96, 100, 104, 
+                          108, 112, 116)) %>%
+  
+  ggplot(aes(x = nominate_dim1, 
+             y = nominate_dim2) ) +
+  
+          annotate("path",
+               x=cos(seq(0,2*pi,length.out=300)),
+               y=sin(seq(0,2*pi,length.out=300)),
+               color='gray',
+               size = .25) +
+  
+  geom_point(aes(color = Member), 
+             size= 1.5,
+             shape = 17) + 
+  
+  scale_color_manual(values = c('#1a476f', '#8faabe',
+                                '#e19463', '#913a40')) +
+  
+  facet_wrap(~year + congress) +
+  theme_minimal() +
+  theme(legend.title=element_blank(),
+        legend.position = 'bottom') +
+  labs(title="DW-Nominate ideology scores for the 111th US House")
+```
+
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-23-1.png)
+
+#### 2.4 NOKKEN & POOLE scores
+
+> An alternative set of ideology scores are available as a csv from
+> VoteView’s website. DW-Nominate scores are constant over a lawmakers
+> entire political career. Nokken & Poole scores, in contrast, are
+> congress-specific scores.
+
+``` r
+voteview_nokken_poole <- read.csv(url("https://voteview.com/static/data/out/members/HSall_members.csv"),
+  stringsAsFactors = FALSE) 
+```
+
+Founding fathers corpus
+-----------------------
 
 ### Scare-crows & impeachment
 
@@ -579,14 +644,11 @@ uspols::xsf_TileOutv10 %>%
        caption = "Source: DailyKos")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-24-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
 ### The end of split-ticket voting
 
-Here, per presidential election, Party Senator !- Party President –
-
-Split means that folks from a given state sent a Senator from party X to
-the senate and sent electoral votes to President from party Y.
+*I think we could do this with VoteView – * ?? and go back all the way –
 
 ``` r
 splits <- uspols::uspols_wiki_pres %>% 
@@ -600,12 +662,6 @@ splits <- uspols::uspols_wiki_pres %>%
   #mutate(split = ifelse(is.na(split), 0, split))
 ```
 
-Mapping splits quickly – need to add CLASS information – !!
-
-And change dark blue color – sos to see – !! and note that no
-distinctions are made here wrt party affiliation – Although a simple
-cross-tab/typology will show – !!
-
 ``` r
 year <- seq(from = 1976, to = 2016, by = 2)
 class <- paste0('Class-', c(rep(1:3,7)))
@@ -614,33 +670,50 @@ df <- data.frame(year, class)
 uspols::xsf_TileOutv10 %>%
   left_join(splits, by = 'state_abbrev') %>%
   left_join(df, by = 'year') %>%
+  
+  mutate (split1 = case_when (split == 0 ~ 'Straight-ticket',
+                             split == 1 ~ 'Split-ticket',
+                             is.na(split) ~ 'No-contest')) %>%
+  
+  
 
   ggplot() + 
-  geom_sf(aes(fill = as.character(split)),
+  geom_sf(aes(fill = split1),
            color = 'black', lwd = .25) +
 
   ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
                           aes(label = state_abbrev),
-                          size = 1.25,
-                          color = 'black') +
+                          size = 1.75,
+                          color = 'white') +
 
-  ggthemes::scale_fill_few () + 
+  ggthemes::scale_fill_economist () + 
   facet_wrap(~year + class) +
-  theme_minimal() + theme_guide() +
+  theme_minimal() + 
+  theme_guide() +
   theme(legend.position = 'bottom') +
-labs(title = "Split tickets per General Election")
+labs(title = "Pres-Senate split-tickets per general election year")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-26-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-28-1.png)
 
 Four generations of lawmakers
 -----------------------------
+
+> [Pew
+> Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/)
+> uses the following set of birth-year ranges to delineate generations.
+
+-   Millenials: 1981-1997
+-   Generation X: 1965 -1980
+-   Baby Boomers: 1946-1964
+-   Silent: 1928-1945
+-   Greatest: \< 1928
 
 ``` r
 house %>%
   mutate(age = year - born) %>%
   filter (party_code %in% c('100', '200'), year > 1960) %>%
-  group_by(party_code, year) %>%
+  group_by(party_name, year) %>%
   summarize(age = round(mean(age, na.rm = T), 1)) %>%
   mutate(label = if_else(year == max(year) | year == min(year), 
                          age, NULL)) %>%
@@ -648,7 +721,7 @@ house %>%
   ggplot() +
   geom_line(aes(x = year, 
                 y = age, 
-                color = party_code), 
+                color = party_name), 
             size = .65) +
   
     ggrepel::geom_text_repel(aes(x = year, 
@@ -666,7 +739,7 @@ house %>%
   labs(title = "Average age of house members by party") 
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-27-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-29-1.png)
 
 ``` r
 house %>%
@@ -674,7 +747,7 @@ house %>%
   filter (party_code %in% c('100', '200'), year > 2007) %>% 
   ## 100 == democrat --
   ggplot(aes(age, 
-             fill = party_code)) +
+             fill = party_name)) +
 
   ggthemes::scale_fill_stata()+
   theme_minimal() +
@@ -687,7 +760,7 @@ house %>%
   labs(title="Age distributions in the House since 2008, by party")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-28-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
 Identifying freshmen house members –
 
@@ -763,7 +836,7 @@ house %>%
        subtitle = '116th House')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-31-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
 Profiling congressional districts
 ---------------------------------
@@ -824,7 +897,7 @@ base_viz +
        subtitle = "New Mexico's 2nd District")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-34-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-36-1.png)
 
 Some notes on rural America
 ---------------------------
@@ -856,7 +929,7 @@ gen %>%
 
     ## `geom_smooth()` using formula 'y ~ x'
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-35-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-37-1.png)
 
 Swing states
 ------------
@@ -976,7 +1049,7 @@ mplot %>%
   labs(title = "The American White Working Class")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-39-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-41-1.png)
 
 ### White working profiles
 
@@ -1008,7 +1081,7 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-40-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-42-1.png)
 
 ### Swing states & white working class
 
