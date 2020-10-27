@@ -5,50 +5,48 @@ American political data & R
 
 ![](all-the-newness_files/figure-markdown_github/collage1.png)
 
-An R-based guide to accessing, exploring & visualizing US political data
-utilizing a collection of open government resources, including
-presidential election returns (2008-2016 by congressional district),
-lawmaker biographies & political ideologies, and congressional district
-demographics.
+**An R-based guide** to accessing, exploring & visualizing US political
+data utilizing a collection of open resources, including election
+returns for presidential and congressional races, lawmaker political
+ideologies, and congressional district demographics.
 
-Data used in this guide have been collated from The Daily Kos,
-CivilServiceUSA, and the R packages tidycensus & Rvoteview.
+Data used in this guide have been collated from [Daily
+Kos](https://www.dailykos.com/), [MIT Election Data and Science
+Lab](MIT%20Election%20Data%20and%20Science%20Lab) and the R packages
+[tidycensus](https://walker-data.com/tidycensus/) &
+[Rvoteview](https://github.com/voteview/Rvoteview).
 
-Hopefully a useful open source & transparent framework for investigating
-past & future election results and congresses using R. All work
-presented here can be reproduced in its entirety. A developing resource.
-Open government data.
+Hopefully **a useful open source & transparent framework** for
+investigating past & future election results and congresses using R. All
+work presented here can be reproduced in its entirety.
 
 ``` r
 library(tidyverse)
 ```
 
-Quick preliminaries
--------------------
+------------------------------------------------------------------------
 
-### A simple add-on map theme
-
-``` r
-# not really a guide -- but adds for mapping in theme_minimal()
-theme_guide <- function () {
-  
-    theme(axis.title.x=element_blank(), 
-          axis.text.x=element_blank(),
-          axis.title.y=element_blank(),
-          axis.text.y=element_blank(),
-          legend.title=element_blank(),
-          legend.position = 'none', 
-          complete = F)
-}
-```
+I. Quick preliminaries
+----------------------
 
 ### Some geo-spatial data
 
-Clean this up – organize – describe what is – !
+#### State-based geo-data
 
 ``` r
 library(sf)
+```
+
+    ## Linking to GEOS 3.8.0, GDAL 3.0.4, PROJ 6.3.1
+
+``` r
 library(tigris)
+```
+
+    ## To enable 
+    ## caching of data, set `options(tigris_use_cache = TRUE)` in your R script or .Rprofile.
+
+``` r
 options(tigris_use_cache = TRUE, tigris_class = "sf")
 
 nonx <- c('78', '69', '66', '72', '60', '15', '02')
@@ -59,7 +57,11 @@ states_sf <- tigris::states(cb = TRUE) %>%
 states <- states_sf %>%
   data.frame() %>%
   select(state_code, state_abbrev)
-  
+```
+
+#### Congressional districts
+
+``` r
 uscds <- tigris::congressional_districts(cb = TRUE) %>%
   select(GEOID) %>%
   mutate(CD_AREA = round(log(as.numeric(
@@ -70,15 +72,23 @@ uscds <- tigris::congressional_districts(cb = TRUE) %>%
          district_code = substr(GEOID, 3, 4)) 
 
 laea <- sf::st_crs("+proj=laea +lat_0=30 +lon_0=-95") 
-# Lambert equal area
-#uscds  <- sf::st_transform(uscds , laea)
+```
+
+### A simple add-on map theme
+
+``` r
+theme_guide <- function () {
+  
+    theme(axis.title.x=element_blank(), 
+          axis.text.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.text.y=element_blank(),
+          legend.title=element_blank(),
+          legend.position = 'none', 
+          complete = F) }
 ```
 
 ### Some quick definitions
-
-*A congress - year crosswalk* — !!
-
-Away down south in Dixie
 
 > Per VoteView definition: The South = Dixie + Kentucky + Oklahoma
 
@@ -91,8 +101,6 @@ south <- c('SC', 'MS', 'FL',
 swing <- c('AZ', 'FL', 'GA', 'MI', 
            'MN', 'NC', 'PA', 'WI')
 ```
-
-> Dixie Land in context:
 
 ``` r
 states_sf %>%
@@ -123,20 +131,18 @@ states_sf %>%
   facet_wrap(~type, ncol = 1) 
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
-Data sources
-------------
+------------------------------------------------------------------------
+
+II. Data sources
+----------------
 
 ### VoteView
 
 > The [VoteView](https://voteview.com/) project provides roll call-based
 > political ideology scores for all lawmakers in the history of the US
-> Congress. Data can be used to investigate congressional composition by
-> party affiliation over time, the aggregate political ideologies of
-> both congresss over time, and the ideologies of individual lawmakers.
-> And any number of other roll call-based analyses. The R package
-> `Rvoteview` provides access to these data.
+> Congress. The R package `Rvoteview` provides access to these data.
 
 ``` r
 vvo <- lapply(c('house', 'senate'), function(x) {
@@ -145,8 +151,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/RtmpB2UT7N/Hall_members.csv"
-    ## [1] "/tmp/RtmpB2UT7N/Sall_members.csv"
+    ## [1] "/tmp/RtmpCMTRk1/Hall_members.csv"
+    ## [1] "/tmp/RtmpCMTRk1/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -169,8 +175,27 @@ congress <- vvo %>%
                        congress = c(67:116)), by = 'congress') 
 ```
 
-Historical presidential election results
-----------------------------------------
+### `uspols`
+
+> The [`uspols` package](https://github.com/jaytimm/uspols) is my
+> attempt at taming publicly available US election data. The package
+> collates data from Daily Kos, MEDSL & Wikipedia in a uniform format.
+> **Importantly, package documentation details all data transformation
+> processes from raw data to package table**. So, if you take issue with
+> a data point, check out the documentation and let me know.
+
+> Why election return data are so nebulous from an accessibility
+> standpoint is absolutely beyond me. This package should not have to
+> exist.
+
+``` r
+library(devtools)
+devtools::install_github("jaytimm/uspols")
+library(uspols) 
+```
+
+III. Historical presidential election results
+---------------------------------------------
 
 ### §1 Margins pf vctory since 1956
 
@@ -199,7 +224,7 @@ uspols::xsf_TileOutv10 %>%
        caption = "Source: DailyKos")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 ### §2 Last vote for a Democrat
 
@@ -252,7 +277,7 @@ uspols::xsf_TileOutv10 %>%
   labs(title = "Last vote for a Democratic Presidential candidate")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-11-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 ### §3 Highest vote share historically
 
@@ -303,10 +328,10 @@ uspols::xsf_TileOutv10 %>%
   labs(title = "Largest vote share by state since 1864")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-15-1.png)
 
-Senate composition: split-tickets & split-delegations
------------------------------------------------------
+IV. Senate composition: split-tickets & split-delegations
+---------------------------------------------------------
 
 ### §4 Split delegations
 
@@ -347,7 +372,7 @@ uspols::xsf_TileOutv10 %>%
   
   ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
                           aes(label = state_abbrev), 
-                          size = 1.75,
+                          size = 1.5,
                           color = 'white') +
   
   ggthemes::scale_fill_stata()+
@@ -360,7 +385,7 @@ uspols::xsf_TileOutv10 %>%
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-15-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 ### §5 Total split delegations
 
@@ -386,7 +411,7 @@ congress %>%
        caption = 'Data sources: VoteView')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 ### §6 The end of split-ticket voting
 
@@ -437,10 +462,10 @@ uspols::xsf_TileOutv10 %>%
 labs(title = "Pres-Senate split-tickets per general election year")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
-US House: historical composition
---------------------------------
+V. US House: historical composition
+-----------------------------------
 
 ``` r
 congress_south <- congress %>% 
@@ -478,12 +503,12 @@ congress_south %>%
         axis.title.y=element_blank(),
         axis.title.x=element_blank(),
         axis.text.y=element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
+        axis.text.x = element_text(angle = 90, hjust = 1)) +
   
   labs(title = "House composition since 1921")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
 ### §8 The birth of the Southern Republican
 
@@ -520,10 +545,10 @@ congress_south %>%
   labs(title="DW-Nominate ideology scores for the 111th US congress")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
-US House: Four generations of lawmakers
----------------------------------------
+VI. US House: Four generations of lawmakers
+-------------------------------------------
 
 > [Pew
 > Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/)
@@ -568,7 +593,7 @@ congress %>%
   labs(title = "Average age of congress members by party") 
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-22-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
 ### §10 Shifting ditributions
 
@@ -592,7 +617,7 @@ congress %>%
   labs(title="Age distributions in the House since 2009, by party")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
 ### §11 Watergte babies, and other freshman members
 
@@ -636,7 +661,7 @@ freshmen1 %>%
   labs(title = "Freshman House members by party")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-24-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
 ### §12 Millenials & Gen Xers
 
@@ -707,10 +732,10 @@ congress %>%
   labs(title = "Age distribution of the 116th House by party")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-27-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-29-1.png)
 
-Congressional districts & the American Communty Survey
-------------------------------------------------------
+VII. Congressional districts & the American Communty Survey
+-----------------------------------------------------------
 
 ``` r
 variable_list <-  c(bachelors_higher = 'DP02_0068P',
@@ -769,7 +794,7 @@ base_viz +
        subtitle = "New Mexico's 2nd District")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-31-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
 ### §14 Socio-dem estmates & margins of victory
 
@@ -798,12 +823,12 @@ gen %>%
   labs(title = "2019 ACS estimates vs. 2016 Trump margins")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-32-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 ### Some notes on rural America
 
-The White working class
------------------------
+VIII. The White working class
+-----------------------------
 
 ``` r
 white_ed_vars <- c(white_m_bach = 'C15002H_006',
@@ -883,7 +908,7 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-35-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-37-1.png)
 
 ### §16 A working map
 
@@ -943,7 +968,7 @@ ggplot() +
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-38-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-40-1.png)
 
-Lastly
-------
+IX. Lastly
+----------
