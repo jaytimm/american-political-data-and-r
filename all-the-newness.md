@@ -3,7 +3,7 @@ American political data & R
 
 An open-source guide to … (apdr)
 
-*Updated: 2020-10-26*
+*Updated: 2020-10-27*
 
 ![](all-the-newness_files/figure-markdown_github/collage1.png)
 
@@ -256,8 +256,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/RtmpzSEjML/Hall_members.csv"
-    ## [1] "/tmp/RtmpzSEjML/Sall_members.csv"
+    ## [1] "/tmp/RtmpBhOEUp/Hall_members.csv"
+    ## [1] "/tmp/RtmpBhOEUp/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -423,7 +423,7 @@ uspols::xsf_TileOutv10 %>%
   ggplot() + 
   geom_sf(aes(fill = split1),
           color = 'black', 
-          lwd = .25,
+          lwd = .15,
           alpha = 0.65) +
 
   ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
@@ -768,27 +768,6 @@ white_ed <- tidycensus::get_acs(geography = 'congressional district',
          district_code, group, per, estimate)
 ```
 
-### America’s silent plurality
-
-``` r
-white_ed %>%
-  mutate(swing = ifelse(state_abbrev %in% swing, 
-                        'swing', 
-                        'not-swing')) %>%
-  group_by(group) %>%
-  summarise(estimate = sum(estimate)) %>%
-  mutate(per = round(estimate/sum(estimate) * 100, 1),
-         estimate = format(estimate, big.mark = ',') ) %>%
-  knitr::kable()  #janitor::adorn_totals()
-```
-
-| group               | estimate   |   per|
-|:--------------------|:-----------|-----:|
-| non\_white\_college | 21,955,537 |   9.7|
-| non\_white\_working | 61,012,235 |  26.9|
-| white\_college      | 53,172,694 |  23.4|
-| white\_working      | 91,059,837 |  40.1|
-
 ### White working profiles
 
 ``` r
@@ -817,7 +796,7 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-32-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
 ``` r
 ## agg to states --
@@ -875,7 +854,7 @@ ggplot() +
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-35-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 ### Swing states & white working class
 
