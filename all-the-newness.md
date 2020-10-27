@@ -6,9 +6,9 @@ American political data & R
 ![](all-the-newness_files/figure-markdown_github/collage1.png)
 
 **An R-based guide** to accessing, exploring & visualizing US political
-data utilizing a collection of open resources, including election
-returns for presidential and congressional races, lawmaker political
-ideologies, and congressional district demographics.
+data utilizing a collection of publicly available resources, including
+election returns for presidential and congressional races, lawmaker
+political ideologies, and congressional district demographics.
 
 Data used in this guide have been collated from [Daily
 Kos](https://www.dailykos.com/), [MIT Election Data and Science
@@ -30,8 +30,8 @@ work presented here can be reproduced in its entirety.
         -   [uspols](#uspols)
     -   [Historical presidential election
         results](#historical-presidential-election-results)
-        -   [V1 Margins of victory since
-            1956](#v1-margins-of-victory-since-1956)
+        -   [V1 Voting margins in Presidential elections since
+            1956](#v1-voting-margins-in-presidential-elections-since-1956)
         -   [V2 When each state last voted for a Democratic presidential
             nominee](#v2-when-each-state-last-voted-for-a-democratic-presidential-nominee)
         -   [V3 Presidential elections and vote shares and crosses of
@@ -61,15 +61,15 @@ work presented here can be reproduced in its entirety.
             Xers](#v12-introducing-millenials-and-gen-xers)
     -   [Congressional districts and the
         ACS](#congressional-districts-and-the-acs)
-        -   [V13 Profiling New Mexico 2nd
-            district](#v13-profiling-new-mexico-2nd-district)
-        -   [V14 SocioDems and margins of
-            victory](#v14-sociodems-and-margins-of-victory)
-        -   [V15 Some notes on rural
-            America](#v15-some-notes-on-rural-america)
-    -   [The White working class](#the-white-working-class)
+        -   [V13 Profiling congressional
+            districts](#v13-profiling-congressional-districts)
+        -   [V14 ACS variables and margins of
+            victory](#v14-acs-variables-and-margins-of-victory)
+    -   [America’s White working class](#america's-white-working-class)
         -   [V15 White working profiles](#v15-white-working-profiles)
         -   [V16 A working map](#v16-a-working-map)
+        -   [V17 White working class and rural
+            America](#v17-white-working-class-and-rural-america)
     -   [Lastly](#lastly)
 
 Quick preliminaries
@@ -190,8 +190,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/RtmpFuJnTA/Hall_members.csv"
-    ## [1] "/tmp/RtmpFuJnTA/Sall_members.csv"
+    ## [1] "/tmp/Rtmpv6DDsz/Hall_members.csv"
+    ## [1] "/tmp/Rtmpv6DDsz/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -221,11 +221,9 @@ congress <- vvo %>%
 > collates data from Daily Kos, MEDSL & Wikipedia in a uniform format.
 > **Importantly, package documentation details all data transformation
 > processes from raw data to package table**. So, if you take issue with
-> a data point, check out the documentation and let me know.
-
-> Why election return data are so nebulous from an accessibility
-> standpoint is absolutely beyond me. **This package should not have to
-> exist**.
+> a data point, check out the documentation and let me know. Why
+> election return data are so nebulous from an accessibility standpoint
+> is absolutely beyond me.
 
 ``` r
 library(devtools)
@@ -238,7 +236,12 @@ library(uspols)
 Historical presidential election results
 ----------------------------------------
 
-### V1 Margins of victory since 1956
+### V1 Voting margins in Presidential elections since 1956
+
+> Historical Presidential election results by state [via
+> Wikipedia](https://github.com/jaytimm/uspols#4-wikipedia-presidential-returns-by-state-1864-).
+> Equal-area state geometry via [Daily
+> Kos](https://docs.google.com/spreadsheets/d/1LrBXlqrtSZwyYOkpEEXFwQggvtR0bHHTxs9kq4kjOjw/edit#gid=1278876419).
 
 ``` r
 uspols::xsf_TileOutv10 %>%
@@ -261,8 +264,7 @@ uspols::xsf_TileOutv10 %>%
   scale_fill_distiller(palette = "RdBu", direction=-1) +
   facet_wrap(~year) +
   theme_minimal()+ theme_guide() +
-  labs(title = "Equal-area US State geometry",
-       caption = "Source: DailyKos")
+  labs(title = "Voting margins in Presidential elections since 1956")
 ```
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-11-1.png)
@@ -600,7 +602,7 @@ Four generations of lawmakers
 
 > [Pew
 > Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/)
-> generations.
+> generations:
 
 -   Millenials: 1981-1997
 -   Generation X: 1965 -1980
@@ -789,7 +791,8 @@ Congressional districts and the ACS
 
 > The US Census/American Community Survey (ACS) make counts/estimates
 > available by congressional district. The R package `tidycensus`
-> provides very clean access to census APIs.
+> provides very clean access to census APIs. Via super convenient ACS
+> *Data Profiles*.
 
 ``` r
 variable_list <-  c(bachelors_higher = 'DP02_0068P',
@@ -818,9 +821,11 @@ gen <-  tidycensus::get_acs(geography = 'congressional district',
   select(state_abbrev, district_code, variable, estimate, moe)
 ```
 
-### V13 Profiling New Mexico 2nd district
+### V13 Profiling congressional districts
 
-> A quick look at New Mexico’s 2nd district.
+> **Density plots** for 12 ACS variables per 435 US congressional
+> districts. Details for New Mexico’s 2nd district summarized in plot
+> below as dashed lines.
 
 ``` r
 base_viz <- gen %>%
@@ -850,7 +855,10 @@ base_viz +
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
-### V14 SocioDems and margins of victory
+### V14 ACS variables and margins of victory
+
+> A multi-panel summary of relationships between ACS variables and 2016
+> Trump margins.
 
 ``` r
 gen %>%
@@ -879,19 +887,15 @@ gen %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
-### V15 Some notes on rural America
-
 ------------------------------------------------------------------------
 
-The White working class
------------------------
+America’s White working class
+-----------------------------
 
 > White working class formalized in US Census terms: Population 25 years
 > & older who (1) identify as both White & non-Hispanic and (2) have not
-> obtained a Bachelor’s degree.
-
-> Table C15002: Sex by educational attainment for the population 25
-> years and over.
+> obtained a Bachelor’s degree (or higher). Per Table C15002: **Sex by
+> educational attainment for the population 25 years and over**.
 
 ``` r
 white_ed_vars <- c(white_m_bach = 'C15002H_006',
@@ -905,9 +909,12 @@ white_ed_vars <- c(white_m_bach = 'C15002H_006',
                    all_pop = 'C15002_001')
 ```
 
-> Categories include: \* White with college degree, \* White without
-> college degree, \* Non-White with college degree, and \* Non-White
-> without college degree.
+> Categories include:
+
+-   White & non-Hispanic with college degree,
+-   White & non-Hispanic without college degree,
+-   Non-White and/or Hispanic with college degree, and
+-   Non-White and/or Hispanic college degree.
 
 ``` r
 white_ed <- tidycensus::get_acs(geography = 'congressional district',
@@ -1037,7 +1044,9 @@ ggplot() +
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-41-1.png)
 
-–
+### V17 White working class and rural America
+
+------------------------------------------------------------------------
 
 Lastly
 ------
