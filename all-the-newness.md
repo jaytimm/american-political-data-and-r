@@ -20,29 +20,23 @@ Hopefully **a useful open source & transparent framework** for
 investigating past & future election results and congresses using R. All
 work presented here can be reproduced in its entirety.
 
-``` r
-library(tidyverse)
-```
-
-------------------------------------------------------------------------
-
 -   [American political data & R](#american-political-data-&-r)
-    -   [I. Quick preliminaries](#i.-quick-preliminaries)
+    -   [Quick preliminaries](#quick-preliminaries)
         -   [Some geo-spatial data](#some-geo-spatial-data)
         -   [A simple add-on map theme](#a-simple-add-on-map-theme)
         -   [Some quick definitions](#some-quick-definitions)
-    -   [II. Data sources](#ii.-data-sources)
+    -   [Data sources](#data-sources)
         -   [VoteView](#voteview)
         -   \[uspols`](#uspols`)
-    -   [III. Historical presidential election
-        results](#iii.-historical-presidential-election-results)
-        -   [Margins pf vctory since
-            1956](#margins-pf-vctory-since-1956)
-        -   [Last vote for a Democrat](#last-vote-for-a-democrat)
-        -   [Highest vote share
-            historically](#highest-vote-share-historically)
-    -   [IV. Senate composition: split-tickets &
-        split-delegations](#iv.-senate-composition:-split-tickets-&-split-delegations)
+    -   [Historical presidential election
+        results](#historical-presidential-election-results)
+        -   [V1 Margins pf vctory since
+            1956](#v1-margins-pf-vctory-since-1956)
+        -   [V2 Last vote for a Democrat](#v2-last-vote-for-a-democrat)
+        -   [V3 Highest vote share
+            historically](#v3-highest-vote-share-historically)
+    -   [IV Senate composition: split-tickets &
+        split-delegations](#iv-senate-composition:-split-tickets-&-split-delegations)
         -   [Split delegations](#split-delegations)
         -   [Total split delegations](#total-split-delegations)
         -   [The end of split-ticket
@@ -72,8 +66,12 @@ library(tidyverse)
         -   [A working map](#a-working-map)
     -   [IX. Lastly](#ix.-lastly)
 
-I. Quick preliminaries
-----------------------
+Quick preliminaries
+-------------------
+
+``` r
+library(tidyverse)
+```
 
 ### Some geo-spatial data
 
@@ -170,8 +168,8 @@ states_sf %>%
 
 ------------------------------------------------------------------------
 
-II. Data sources
-----------------
+Data sources
+------------
 
 ### VoteView
 
@@ -186,8 +184,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/Rtmpu5J6Ba/Hall_members.csv"
-    ## [1] "/tmp/Rtmpu5J6Ba/Sall_members.csv"
+    ## [1] "/tmp/RtmpPm3kSX/Hall_members.csv"
+    ## [1] "/tmp/RtmpPm3kSX/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -229,10 +227,10 @@ devtools::install_github("jaytimm/uspols")
 library(uspols) 
 ```
 
-III. Historical presidential election results
----------------------------------------------
+Historical presidential election results
+----------------------------------------
 
-### 1 Margins pf vctory since 1956
+### V1 Margins pf vctory since 1956
 
 ``` r
 uspols::xsf_TileOutv10 %>%
@@ -261,7 +259,7 @@ uspols::xsf_TileOutv10 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
-### 2 Last vote for a Democrat
+### V2 Last vote for a Democrat
 
 ``` r
 clean_prex <-  uspols::uspols_wiki_pres %>%
@@ -314,7 +312,7 @@ uspols::xsf_TileOutv10 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
-### 3 Highest vote share historically
+### V3 Highest vote share historically
 
 ``` r
 vote_share <- clean_prex %>%
@@ -365,8 +363,8 @@ uspols::xsf_TileOutv10 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
-IV. Senate composition: split-tickets & split-delegations
----------------------------------------------------------
+IV Senate composition: split-tickets & split-delegations
+--------------------------------------------------------
 
 ### 4 Split delegations
 
