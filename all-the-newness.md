@@ -8,9 +8,8 @@ American political data & R
 **An R-based guide** to accessing, exploring & visualizing US political
 data utilizing a collection of publicly available resources, including
 election returns for presidential and congressional races, lawmaker
-political ideologies, and congressional district demographics.
-
-Data used in this guide have been collated from [Daily
+political ideologies, and congressional district demographics. Data used
+in this guide have been collated from [Daily
 Kos](https://www.dailykos.com/), [MIT Election Data and Science
 Lab](MIT%20Election%20Data%20and%20Science%20Lab) and the R packages
 [tidycensus](https://walker-data.com/tidycensus/) &
@@ -50,7 +49,8 @@ work presented here can be reproduced in its entirety.
             South](#v7-political-realignment-in-the-south)
         -   [V8 On the evolution of the Southern
             Republican](#v8-on-the-evolution-of-the-southern-republican)
-    -   [Four generations of lawmakers](#four-generations-of-lawmakers)
+    -   [Four generations of American
+        lawmakers](#four-generations-of-american-lawmakers)
         -   [V9 Trends in the average age of House
             members](#v9-trends-in-the-average-age-of-house-members)
         -   [V10 Shifting distributions
@@ -66,8 +66,10 @@ work presented here can be reproduced in its entirety.
         -   [V14 ACS variables and margins of
             victory](#v14-acs-variables-and-margins-of-victory)
     -   [America’s White working class](#america's-white-working-class)
-        -   [V15 White working profiles](#v15-white-working-profiles)
-        -   [V16 A working map](#v16-a-working-map)
+        -   [V15 Race-work class
+            distributions](#v15-race-work-class-distributions)
+        -   [V16 The White working class’
+            America](#v16-the-white-working-class'-america)
         -   [V17 White working class and rural
             America](#v17-white-working-class-and-rural-america)
     -   [Lastly](#lastly)
@@ -190,8 +192,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/Rtmpv6DDsz/Hall_members.csv"
-    ## [1] "/tmp/Rtmpv6DDsz/Sall_members.csv"
+    ## [1] "/tmp/RtmpPM60hR/Hall_members.csv"
+    ## [1] "/tmp/RtmpPM60hR/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -597,8 +599,8 @@ congress_south %>%
 
 ------------------------------------------------------------------------
 
-Four generations of lawmakers
------------------------------
+Four generations of American lawmakers
+--------------------------------------
 
 > [Pew
 > Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/)
@@ -897,6 +899,9 @@ America’s White working class
 > obtained a Bachelor’s degree (or higher). Per Table C15002: **Sex by
 > educational attainment for the population 25 years and over**.
 
+> Note: In previous version of this document, I did not correctly count
+> the White working class.
+
 ``` r
 white_ed_vars <- c(white_m_bach = 'C15002H_006',
                    white_w_bach = 'C15002H_011',
@@ -915,6 +920,11 @@ white_ed_vars <- c(white_m_bach = 'C15002H_006',
 -   White & non-Hispanic without college degree,
 -   Non-White and/or Hispanic with college degree, and
 -   Non-White and/or Hispanic college degree.
+
+> Note: The “and/or Hispanic” piece is slightly confusing here. For most
+> people, Hispanic = Brown = Race; from this perspective, ethnicity (as
+> distinct from race) is not a meaningful distinction. We include it
+> here because it is included in the census.
 
 ``` r
 white_ed <- tidycensus::get_acs(geography = 'congressional district',
@@ -954,7 +964,7 @@ white_ed <- tidycensus::get_acs(geography = 'congressional district',
          district_code, group, per, estimate)
 ```
 
-### V15 White working profiles
+### V15 Race-work class distributions
 
 ``` r
 set.seed(99)
@@ -978,16 +988,18 @@ white_ed %>%
   theme_minimal() +
   facet_wrap(~paste0(state_abbrev, '-', district_code)) +
   theme(legend.position = "none") + 
-  labs(title = "Educational attainment profiles",
+  labs(title = "Race-work class distributions",
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-38-1.png)
 
-### V16 A working map
+### V16 The White working class’ America
+
+> A state-based map in pie charts. Race-work class counts for states
+> based on aggregate of congressional district counts.
 
 ``` r
-## agg to states --
 white_ed2_state <- white_ed %>%
   group_by(state_abbrev, group) %>%
   summarise(estimate = sum(estimate)) %>%
@@ -995,7 +1007,7 @@ white_ed2_state <- white_ed %>%
   ungroup()
 ```
 
-Centroids and things –
+> Calculate centroids for the equal-area state geometry.
 
 ``` r
 cents <- sf::st_centroid(uspols::xsf_TileOutv10) %>%
@@ -1007,8 +1019,6 @@ cents <- sf::st_centroid(uspols::xsf_TileOutv10) %>%
               select(-estimate) %>% 
               spread(group, per)) 
 ```
-
-Real viz, then –
 
 ``` r
 ggplot() +
@@ -1038,7 +1048,7 @@ ggplot() +
         axis.title.y=element_blank(),
         legend.position = 'bottom',
         legend.title=element_blank()) +
-  labs(title = "Educational attainment profiles",
+  labs(title = "Race-work class distributions in America",
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
