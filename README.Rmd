@@ -15,7 +15,7 @@ source("/home/jtimm/jt_work/GitHub/git_projects/render_toc.R")
 
 `r paste0('*Updated: ', Sys.Date(),'*')` 
 
-![](all-the-newness_files/figure-markdown_github/collage1.png)
+![](README_files/figure-markdown_github/collage1.png)
 
 
 **An R-based guide** to accessing, exploring & visualizing US political data utilizing a collection of publicly available resources, including election returns for presidential and congressional races, lawmaker political ideologies, and congressional district demographics.  Data used in this guide have been collated from [Daily Kos](https://www.dailykos.com/), [MIT Election Data and Science Lab](MIT Election Data and Science Lab) and the R packages [tidycensus](https://walker-data.com/tidycensus/) & [Rvoteview](https://github.com/voteview/Rvoteview).
@@ -24,8 +24,7 @@ Hopefully **a useful open source & transparent framework** for investigating pas
 
 
 ```{r echo=FALSE}
-render_toc("/home/jtimm/jt_work/GitHub/git_projects/American-political-data-and-R
-/README.Rmd")
+render_toc("/home/jtimm/jt_work/GitHub/git_projects/American-political-data-and-R/README.Rmd")
 ```
 
 

@@ -3,7 +3,7 @@ American political data & R
 
 *Updated: 2020-10-27*
 
-![](all-the-newness_files/figure-markdown_github/collage1.png)
+![](README_files/figure-markdown_github/collage1.png)
 
 **An R-based guide** to accessing, exploring & visualizing US political
 data utilizing a collection of publicly available resources, including
@@ -192,8 +192,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/RtmpokxIX2/Hall_members.csv"
-    ## [1] "/tmp/RtmpokxIX2/Sall_members.csv"
+    ## [1] "/tmp/RtmpFrs6rK/Hall_members.csv"
+    ## [1] "/tmp/RtmpFrs6rK/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
