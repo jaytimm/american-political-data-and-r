@@ -35,18 +35,7 @@ I. Quick preliminaries
 
 ``` r
 library(sf)
-```
-
-    ## Linking to GEOS 3.8.0, GDAL 3.0.4, PROJ 6.3.1
-
-``` r
 library(tigris)
-```
-
-    ## To enable 
-    ## caching of data, set `options(tigris_use_cache = TRUE)` in your R script or .Rprofile.
-
-``` r
 options(tigris_use_cache = TRUE, tigris_class = "sf")
 
 nonx <- c('78', '69', '66', '72', '60', '15', '02')
@@ -151,8 +140,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/RtmpCMTRk1/Hall_members.csv"
-    ## [1] "/tmp/RtmpCMTRk1/Sall_members.csv"
+    ## [1] "/tmp/RtmpaoMIZu/Hall_members.csv"
+    ## [1] "/tmp/RtmpaoMIZu/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -185,8 +174,8 @@ congress <- vvo %>%
 > a data point, check out the documentation and let me know.
 
 > Why election return data are so nebulous from an accessibility
-> standpoint is absolutely beyond me. This package should not have to
-> exist.
+> standpoint is absolutely beyond me. **This package should not have to
+> exist**.
 
 ``` r
 library(devtools)
@@ -197,7 +186,7 @@ library(uspols)
 III. Historical presidential election results
 ---------------------------------------------
 
-### §1 Margins pf vctory since 1956
+### 1 Margins pf vctory since 1956
 
 ``` r
 uspols::xsf_TileOutv10 %>%
@@ -226,7 +215,7 @@ uspols::xsf_TileOutv10 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
-### §2 Last vote for a Democrat
+### 2 Last vote for a Democrat
 
 ``` r
 clean_prex <-  uspols::uspols_wiki_pres %>%
@@ -279,7 +268,7 @@ uspols::xsf_TileOutv10 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
-### §3 Highest vote share historically
+### 3 Highest vote share historically
 
 ``` r
 vote_share <- clean_prex %>%
@@ -333,7 +322,7 @@ uspols::xsf_TileOutv10 %>%
 IV. Senate composition: split-tickets & split-delegations
 ---------------------------------------------------------
 
-### §4 Split delegations
+### 4 Split delegations
 
 ``` r
 sens <- congress %>%
@@ -387,7 +376,7 @@ uspols::xsf_TileOutv10 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
-### §5 Total split delegations
+### 5 Total split delegations
 
 ``` r
 congress %>%
@@ -413,7 +402,7 @@ congress %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
-### §6 The end of split-ticket voting
+### 6 The end of split-ticket voting
 
 ``` r
 splits <- uspols::uspols_wiki_pres %>% 
@@ -478,7 +467,7 @@ congress_south <- congress %>%
                                        after = 3)) 
 ```
 
-### §7 Political re-alignment in the South
+### 7 Political re-alignment in the South
 
 ``` r
 congress_south %>%
@@ -510,7 +499,7 @@ congress_south %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
-### §8 The birth of the Southern Republican
+### 8 The birth of the Southern Republican
 
 > The first captures ideological variation based in the standard
 > liberal-conservative dvide. The second captures variation based in
@@ -560,7 +549,7 @@ VI. US House: Four generations of lawmakers
 -   Silent: 1928-1945
 -   Greatest: \< 1928
 
-### §9 Average age by party
+### 9 Average age by party
 
 ``` r
 congress %>%
@@ -595,7 +584,7 @@ congress %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
-### §10 Shifting ditributions
+### 10 Shifting ditributions
 
 ``` r
 congress %>%
@@ -619,7 +608,7 @@ congress %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
-### §11 Watergte babies, and other freshman members
+### 11 Watergte babies, and other freshman members
 
 ``` r
 freshmen1 <- congress %>%
@@ -663,7 +652,7 @@ freshmen1 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
-### §12 Millenials & Gen Xers
+### 12 Millenials & Gen Xers
 
 ``` r
 freshmen <- congress %>%
@@ -764,7 +753,7 @@ gen <-  tidycensus::get_acs(geography = 'congressional district',
   select(state_abbrev, district_code, variable, estimate, moe)
 ```
 
-### §13 Profiling New Mexico’s 2nd dsitrict
+### 13 Profiling New Mexico’s 2nd dsitrict
 
 > A quick look at New Mexico’s 2nd district.
 
@@ -796,7 +785,7 @@ base_viz +
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
-### §14 Socio-dem estmates & margins of victory
+### 14 Socio-dem estmates & margins of victory
 
 ``` r
 gen %>%
@@ -880,7 +869,7 @@ white_ed <- tidycensus::get_acs(geography = 'congressional district',
          district_code, group, per, estimate)
 ```
 
-### §15 White working profiles
+### 15 White working profiles
 
 ``` r
 set.seed(99)
@@ -910,7 +899,7 @@ white_ed %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-37-1.png)
 
-### §16 A working map
+### 16 A working map
 
 ``` r
 ## agg to states --
