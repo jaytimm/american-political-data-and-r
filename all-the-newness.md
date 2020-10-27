@@ -27,7 +27,7 @@ work presented here can be reproduced in its entirety.
         -   [Some quick definitions](#some-quick-definitions)
     -   [Data sources](#data-sources)
         -   [VoteView](#voteview)
-        -   \[uspols`](#uspols`)
+        -   [uspols](#uspols)
     -   [Historical presidential election
         results](#historical-presidential-election-results)
         -   [V1 Margins pf vctory since
@@ -35,36 +35,35 @@ work presented here can be reproduced in its entirety.
         -   [V2 Last vote for a Democrat](#v2-last-vote-for-a-democrat)
         -   [V3 Highest vote share
             historically](#v3-highest-vote-share-historically)
-    -   [IV Senate composition: split-tickets &
-        split-delegations](#iv-senate-composition:-split-tickets-&-split-delegations)
-        -   [Split delegations](#split-delegations)
-        -   [Total split delegations](#total-split-delegations)
-        -   [The end of split-ticket
-            voting](#the-end-of-split-ticket-voting)
-    -   [V. US House: historical
-        composition](#v.-us-house:-historical-composition)
-        -   [Political re-alignment in the
-            South](#political-re-alignment-in-the-south)
-        -   [The birth of the Southern
-            Republican](#the-birth-of-the-southern-republican)
-    -   [VI. US House: Four generations of
-        lawmakers](#vi.-us-house:-four-generations-of-lawmakers)
-        -   [Average age by party](#average-age-by-party)
-        -   [Shifting ditributions](#shifting-ditributions)
-        -   [Watergte babies, and other freshman
-            members](#watergte-babies,-and-other-freshman-members)
-        -   [Millenials & Gen Xers](#millenials-&-gen-xers)
-    -   [VII. Congressional districts & the American Communty
-        Survey](#vii.-congressional-districts-&-the-american-communty-survey)
-        -   [Profiling New Mexico’s 2nd
-            dsitrict](#profiling-new-mexico's-2nd-dsitrict)
-        -   [Socio-dem estmates & margins of
-            victory](#socio-dem-estmates-&-margins-of-victory)
-        -   [Some notes on rural America](#some-notes-on-rural-america)
-    -   [VIII. The White working class](#viii.-the-white-working-class)
-        -   [White working profiles](#white-working-profiles)
-        -   [A working map](#a-working-map)
-    -   [IX. Lastly](#ix.-lastly)
+    -   [IV Senate composition](#iv-senate-composition)
+        -   [V4 Split delegations](#v4-split-delegations)
+        -   [V5 Total split delegations](#v5-total-split-delegations)
+        -   [V6 The end of split-ticket
+            voting](#v6-the-end-of-split-ticket-voting)
+    -   [V Historical composition of the
+        House](#v-historical-composition-of-the-house)
+        -   [V7 Political realignment in the
+            South](#v7-political-realignment-in-the-south)
+        -   [V8 The birth of the Southern
+            Republican](#v8-the-birth-of-the-southern-republican)
+    -   [VI Four generations of
+        lawmakers](#vi-four-generations-of-lawmakers)
+        -   [V9 Average age by party](#v9-average-age-by-party)
+        -   [V10 Shifting ditributions](#v10-shifting-ditributions)
+        -   [V11 Watergate babies etc](#v11-watergate-babies-etc)
+        -   [V12 Millenials and Gen Xers](#v12-millenials-and-gen-xers)
+    -   [VII Congressional districts and the American Communty
+        Survey](#vii-congressional-districts-and-the-american-communty-survey)
+        -   [V13 Profiling New Mexico 2nd
+            dsitrict](#v13-profiling-new-mexico-2nd-dsitrict)
+        -   [V14 SocioDems and margins of
+            victory](#v14-sociodems-and-margins-of-victory)
+        -   [V15 Some notes on rural
+            America](#v15-some-notes-on-rural-america)
+    -   [VIII The White working class](#viii-the-white-working-class)
+        -   [V15 White working profiles](#v15-white-working-profiles)
+        -   [V16 A working map](#v16-a-working-map)
+    -   [IX Lastly](#ix-lastly)
 
 Quick preliminaries
 -------------------
@@ -184,8 +183,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/RtmpPm3kSX/Hall_members.csv"
-    ## [1] "/tmp/RtmpPm3kSX/Sall_members.csv"
+    ## [1] "/tmp/Rtmp2gmHrf/Hall_members.csv"
+    ## [1] "/tmp/Rtmp2gmHrf/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -208,7 +207,7 @@ congress <- vvo %>%
                        congress = c(67:116)), by = 'congress') 
 ```
 
-### `uspols`
+### uspols
 
 > The [`uspols` package](https://github.com/jaytimm/uspols) is my
 > attempt at taming publicly available US election data. The package
@@ -363,10 +362,10 @@ uspols::xsf_TileOutv10 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
-IV Senate composition: split-tickets & split-delegations
---------------------------------------------------------
+IV Senate composition
+---------------------
 
-### 4 Split delegations
+### V4 Split delegations
 
 ``` r
 sens <- congress %>%
@@ -420,7 +419,7 @@ uspols::xsf_TileOutv10 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
-### 5 Total split delegations
+### V5 Total split delegations
 
 ``` r
 congress %>%
@@ -446,7 +445,7 @@ congress %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
-### 6 The end of split-ticket voting
+### V6 The end of split-ticket voting
 
 ``` r
 splits <- uspols::uspols_wiki_pres %>% 
@@ -497,8 +496,8 @@ labs(title = "Pres-Senate split-tickets per general election year")
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
-V. US House: historical composition
------------------------------------
+V Historical composition of the House
+-------------------------------------
 
 ``` r
 congress_south <- congress %>% 
@@ -511,7 +510,7 @@ congress_south <- congress %>%
                                        after = 3)) 
 ```
 
-### 7 Political re-alignment in the South
+### V7 Political realignment in the South
 
 ``` r
 congress_south %>%
@@ -543,7 +542,7 @@ congress_south %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
-### 8 The birth of the Southern Republican
+### V8 The birth of the Southern Republican
 
 > The first captures ideological variation based in the standard
 > liberal-conservative dvide. The second captures variation based in
@@ -580,8 +579,8 @@ congress_south %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
-VI. US House: Four generations of lawmakers
--------------------------------------------
+VI Four generations of lawmakers
+--------------------------------
 
 > [Pew
 > Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/)
@@ -593,7 +592,7 @@ VI. US House: Four generations of lawmakers
 -   Silent: 1928-1945
 -   Greatest: \< 1928
 
-### 9 Average age by party
+### V9 Average age by party
 
 ``` r
 congress %>%
@@ -628,7 +627,7 @@ congress %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
-### 10 Shifting ditributions
+### V10 Shifting ditributions
 
 ``` r
 congress %>%
@@ -652,7 +651,7 @@ congress %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
-### 11 Watergte babies, and other freshman members
+### V11 Watergate babies etc
 
 ``` r
 freshmen1 <- congress %>%
@@ -696,7 +695,7 @@ freshmen1 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
-### 12 Millenials & Gen Xers
+### V12 Millenials and Gen Xers
 
 ``` r
 freshmen <- congress %>%
@@ -767,8 +766,8 @@ congress %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
-VII. Congressional districts & the American Communty Survey
------------------------------------------------------------
+VII Congressional districts and the American Communty Survey
+------------------------------------------------------------
 
 ``` r
 variable_list <-  c(bachelors_higher = 'DP02_0068P',
@@ -797,7 +796,7 @@ gen <-  tidycensus::get_acs(geography = 'congressional district',
   select(state_abbrev, district_code, variable, estimate, moe)
 ```
 
-### 13 Profiling New Mexico’s 2nd dsitrict
+### V13 Profiling New Mexico 2nd dsitrict
 
 > A quick look at New Mexico’s 2nd district.
 
@@ -829,7 +828,7 @@ base_viz +
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
-### 14 Socio-dem estmates & margins of victory
+### V14 SocioDems and margins of victory
 
 ``` r
 gen %>%
@@ -858,10 +857,10 @@ gen %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
-### Some notes on rural America
+### V15 Some notes on rural America
 
-VIII. The White working class
------------------------------
+VIII The White working class
+----------------------------
 
 ``` r
 white_ed_vars <- c(white_m_bach = 'C15002H_006',
@@ -913,7 +912,7 @@ white_ed <- tidycensus::get_acs(geography = 'congressional district',
          district_code, group, per, estimate)
 ```
 
-### 15 White working profiles
+### V15 White working profiles
 
 ``` r
 set.seed(99)
@@ -943,7 +942,7 @@ white_ed %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-38-1.png)
 
-### 16 A working map
+### V16 A working map
 
 ``` r
 ## agg to states --
@@ -1003,5 +1002,5 @@ ggplot() +
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-41-1.png)
 
-IX. Lastly
-----------
+IX Lastly
+---------
