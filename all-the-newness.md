@@ -70,9 +70,9 @@ work presented here can be reproduced in its entirety.
             distributions](#v15-race-work-class-distributions)
         -   [V16 The White working class’
             America](#v16-the-white-working-class'-america)
-        -   [V17 White working class and rural
-            America](#v17-white-working-class-and-rural-america)
-    -   [Lastly](#lastly)
+        -   [V17 White working class and rural America and Trump
+            support](#v17-white-working-class-and-rural-america-and-trump-support)
+    -   [A work in progress](#a-work-in-progress)
 
 Quick preliminaries
 -------------------
@@ -192,8 +192,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/RtmpPM60hR/Hall_members.csv"
-    ## [1] "/tmp/RtmpPM60hR/Sall_members.csv"
+    ## [1] "/tmp/Rtmpl3ENqo/Hall_members.csv"
+    ## [1] "/tmp/Rtmpl3ENqo/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -876,14 +876,10 @@ gen %>%
   geom_point(size =1) + #
   geom_smooth(method="loess", se=T, color = 'black', linetype = 3) +
   
-    scale_color_manual(
-    values = colorRampPalette(ggthemes::economist_pal()(6))(12)) +
-  #ggthemes::scale_color_stata()+
+  scale_color_manual(  values = colorRampPalette(ggthemes::economist_pal()(6))(12)) +
   theme_minimal() +
-  theme(legend.position = "none", 
-        plot.title = element_text(size=12))+
+  theme(legend.position = "none")+
   facet_wrap(~variable, scales = 'free_x') +
-  #xlab('Margins') + ylab('DW-Nominate D1') +
   labs(title = "2019 ACS estimates vs. 2016 Trump margins")
 ```
 
@@ -1054,9 +1050,43 @@ ggplot() +
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-41-1.png)
 
-### V17 White working class and rural America
+### V17 White working class and rural America and Trump support
+
+> “Rurality” operationalized as the size/geographic-area of a given
+> congressional district (in log sq meters). As “degreee of rurality.”
+
+``` r
+bp <- white_ed %>% 
+  select(GEOID, state_abbrev, district_code, group, per) %>%
+  filter(group == 'white_working') %>%
+  left_join(uscds %>% select(-district_code), by = 'GEOID') %>%
+  left_join(uspols::uspols_dk_pres %>% filter(year == 2016), 
+            by = c("state_abbrev", "district_code")) %>%
+  filter(CD_AREA < 27) %>%
+  mutate(GEO = ifelse(state_abbrev %in% south, 
+                        'Southern CD', 'Non-southern CD'),
+         Trump_margins = republican - democrat) %>%
+  filter(!is.na(Trump_margins))
+
+bp %>%
+  ggplot(aes(y = per, 
+             x = CD_AREA,
+             shape = GEO,
+             color = Trump_margins))+ 
+  geom_point(size = 2.75) +
+  scale_color_distiller(palette = "RdYlBu",  
+                        limit = max(abs(bp$Trump_margins)) * c(-1, 1)) +
+ 
+  #theme_minimal() +
+  xlab('Congressional district area (log sq meters)') + 
+  ylab('% White working class') +
+  theme(legend.position = "right") +
+  labs(title = "Degree of rurality ~ % White working ~ 2016 Trump margins")
+```
+
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-42-1.png)
 
 ------------------------------------------------------------------------
 
-Lastly
-------
+A work in progress
+------------------
