@@ -99,7 +99,9 @@ states_sf %>%
   ggsflabel::geom_sf_text(aes(label = label),
                           size = 2.25,
                           color='black') +
-  ggthemes::scale_fill_few () + 
+  scale_fill_manual(values = c('#8faabe', 
+                               '#1a476f', 
+                               '#55752f')) +  
   theme_minimal() + 
   theme_guide() +
   theme(panel.background = 
@@ -121,7 +123,7 @@ uspols::xsf_TileOutv10 %>%
               mutate(margins = republican - democrat)) %>% 
   ggplot() + 
   geom_sf(aes(fill = margins),
-           color = 'black', lwd = .15) +
+           color = 'darkgray', lwd = .15) +
   geom_sf(data = uspols::xsf_TileInv10, 
           fill = NA, 
           show.legend = F, 
@@ -254,8 +256,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/RtmpiGI5no/Hall_members.csv"
-    ## [1] "/tmp/RtmpiGI5no/Sall_members.csv"
+    ## [1] "/tmp/RtmpYNPVsc/Hall_members.csv"
+    ## [1] "/tmp/RtmpYNPVsc/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -331,7 +333,7 @@ congress_south %>%
         axis.text.y=element_blank(),
         axis.text.x = element_text(angle = 45, hjust = 1)) +
   
-  labs(title = "congress composition since 1921")
+  labs(title = "House composition since 1921")
 ```
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-15-1.png)
@@ -510,6 +512,48 @@ Identifying freshmen congress members –
 freshmen congress members – *SOPHMORES* – ??
 
 ``` r
+freshmen1 <- congress %>%
+  group_by(icpsr, bioname, party_name) %>%
+  summarize(min = min(year),
+            max = max(year)) %>%
+  group_by(min, party_name) %>%
+  summarise(count = n()) %>%
+  ungroup() %>%
+  filter(min > 1960, party_name != 'other')
+  
+
+labs <- freshmen1 %>%
+  arrange(desc(min)) %>%
+  top_n(4, count) %>%
+  mutate(txt = c('Obama 1st midterm',  
+                 'Clinton 1st midterm', 
+                 '"Watergate babies"', 
+                 'LBJ atop ticket'))
+
+freshmen1 %>%
+  ggplot() +
+  geom_line(aes(x = min + 1, 
+                y = count, 
+                color = party_name),
+            size = 0.65) +
+  
+  geom_text(data = labs,
+            aes(x = min, 
+                y = count, 
+                label = txt),
+            size = 3, nudge_y = 3) +
+  ggthemes::scale_color_stata()+
+  theme_minimal() +
+  theme(legend.position = 'none',
+        axis.title.x=element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_continuous(breaks=seq(1963,2019,2)) +
+  labs(title = "Freshman congress members by party")
+```
+
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-21-1.png)
+
+``` r
 freshmen <- congress %>%
   group_by(icpsr, bioname) %>%
   mutate(n = length(congress)) %>%
@@ -522,44 +566,6 @@ freshmen <- congress %>%
   
   select(icpsr, party_code, Class)
 ```
-
-``` r
-freshmen1 <- congress %>%
-  group_by(icpsr, bioname, party_name) %>%
-  summarize(min = min(year),
-            max = max(year)) %>%
-  group_by(min, party_name) %>%
-  count() %>%
-  ungroup() %>%
-  filter(min > 1960, party_name != 'other')
-  
-
-labs <- freshmen1 %>%
-  arrange(desc(n)) %>%
-  slice(1:4) %>%
-  mutate(txt = c('Obama 1st midterm',  'Clinton 1st midterm', 
-                 '"Watergate babies"', 'LBJ atop ticket'))
-
-freshmen1 %>%
-  ggplot() +
-  geom_line(aes(x = min + 1, 
-                y = n, 
-                color = party_name)) +
-  
-  geom_text(data = labs,
-            aes(x = min, y = n, label = txt),
-            size = 3, nudge_y = 3) +
-  ggthemes::scale_color_stata()+
-  theme_minimal() +
-  theme(legend.position = 'none',
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_x_continuous(breaks=seq(1963,2019,2)) +
-  labs(title = "Freshman congress members by party")
-```
-
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-22-1.png)
-
-CCC
 
 ``` r
 gens <- sometables::pew_generations %>%
@@ -809,6 +815,8 @@ mplot %>%
   scale_fill_distiller(palette = "YlGnBu", 
                        direction = 1, 
                        limit = range(c(mins, maxs))) +
+  
+  
   theme_minimal() + theme_guide() +
   theme(legend.position = 'bottom',
         panel.background = element_rect(fill = '#d5e4eb', 
@@ -832,15 +840,15 @@ white_ed %>%
              fill = group,
              label = gsub('_', '-', toupper(group)),
              subgroup = group))+
-  treemapify::geom_treemap(alpha=.8)+
+  treemapify::geom_treemap(alpha=.65)+
   treemapify::geom_treemap_subgroup_border(color = 'white') +
   treemapify::geom_treemap_text(colour = "black", 
                                 place = "topleft", 
                                 reflow = T,
                                 size = 8) +
   
-  scale_fill_manual(values = c('#7b3294', '#c2a5cf', 
-                               '#008837', '#a6dba0'))+
+  scale_fill_manual(values = c('#8faabe', '#1a476f', 
+                               '#dae2ba', '#55752f')) +
   theme_minimal() +
   facet_wrap(~paste0(state_abbrev, '-', district_code)) +
   theme(legend.position = "none") + 
@@ -858,8 +866,6 @@ white_ed2_state <- white_ed %>%
   mutate(per = round(estimate/sum(estimate) * 100, 1)) %>%
   ungroup()
 ```
-
-    ## `summarise()` regrouping output by 'state_abbrev' (override with `.groups` argument)
 
 Centroids and things –
 
@@ -887,15 +893,16 @@ ggplot() +
                                   group = state_abbrev,
                                   r = .17),
                            cols = colnames(cents)[5:8],
-                           color = 'white') +
+                           color = 'white',
+                           alpha = 0.75) +
   
   ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
                           aes(label = state_abbrev), 
                           size = 3,
                           color='black') +
   
-  scale_fill_manual(values = c('#7b3294', '#c2a5cf', 
-                               '#008837', '#a6dba0'))+
+  scale_fill_manual(values = c('#8faabe', '#1a476f', 
+                               '#dae2ba', '#55752f')) +
   theme_minimal()+
   theme(axis.text.x=element_blank(),
         axis.text.y=element_blank(),
