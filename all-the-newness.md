@@ -30,31 +30,39 @@ work presented here can be reproduced in its entirety.
         -   [uspols](#uspols)
     -   [Historical presidential election
         results](#historical-presidential-election-results)
-        -   [V1 Margins pf vctory since
-            1956](#v1-margins-pf-vctory-since-1956)
-        -   [V2 Last vote for a Democrat](#v2-last-vote-for-a-democrat)
-        -   [V3 Highest vote share
-            historically](#v3-highest-vote-share-historically)
-    -   [Senate composition](#senate-composition)
-        -   [V4 Split delegations](#v4-split-delegations)
-        -   [V5 Total split delegations](#v5-total-split-delegations)
-        -   [V6 The end of split-ticket
-            voting](#v6-the-end-of-split-ticket-voting)
+        -   [V1 Margins of victory since
+            1956](#v1-margins-of-victory-since-1956)
+        -   [V2 When each state last voted for a Democratic presidential
+            nominee](#v2-when-each-state-last-voted-for-a-democratic-presidential-nominee)
+        -   [V3 Presidential elections and vote shares and crosses of
+            gold](#v3-presidential-elections-and-vote-shares-and-crosses-of-gold)
+    -   [Historical composition of the
+        Senate](#historical-composition-of-the-senate)
+        -   [V4 Split delegations and shifting
+            ideologies](#v4-split-delegations-and-shifting-ideologies)
+        -   [V5 Split delegations on the wane
+            again](#v5-split-delegations-on-the-wane-again)
+        -   [V6 The end of split-ticket voting for
+            now](#v6-the-end-of-split-ticket-voting-for-now)
     -   [Historical composition of the
         House](#historical-composition-of-the-house)
         -   [V7 Political realignment in the
             South](#v7-political-realignment-in-the-south)
-        -   [V8 The birth of the Southern
-            Republican](#v8-the-birth-of-the-southern-republican)
+        -   [V8 On the evolution of the Southern
+            Republican](#v8-on-the-evolution-of-the-southern-republican)
     -   [Four generations of lawmakers](#four-generations-of-lawmakers)
-        -   [V9 Average age by party](#v9-average-age-by-party)
-        -   [V10 Shifting ditributions](#v10-shifting-ditributions)
-        -   [V11 Watergate babies etc](#v11-watergate-babies-etc)
-        -   [V12 Millenials and Gen Xers](#v12-millenials-and-gen-xers)
-    -   [Congressional districts and the American Communty
-        Survey](#congressional-districts-and-the-american-communty-survey)
+        -   [V9 Trends in the average age of House
+            members](#v9-trends-in-the-average-age-of-house-members)
+        -   [V10 Shifting distributions
+            maybe](#v10-shifting-distributions-maybe)
+        -   [V11 Watergate babies and vestiges of
+            Obama](#v11-watergate-babies-and-vestiges-of-obama)
+        -   [V12 Introducing Millenials and Gen
+            Xers](#v12-introducing-millenials-and-gen-xers)
+    -   [Congressional districts and the
+        ACS](#congressional-districts-and-the-acs)
         -   [V13 Profiling New Mexico 2nd
-            dsitrict](#v13-profiling-new-mexico-2nd-dsitrict)
+            district](#v13-profiling-new-mexico-2nd-district)
         -   [V14 SocioDems and margins of
             victory](#v14-sociodems-and-margins-of-victory)
         -   [V15 Some notes on rural
@@ -182,8 +190,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/RtmphVUvQi/Hall_members.csv"
-    ## [1] "/tmp/RtmphVUvQi/Sall_members.csv"
+    ## [1] "/tmp/RtmpFuJnTA/Hall_members.csv"
+    ## [1] "/tmp/RtmpFuJnTA/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -225,10 +233,12 @@ devtools::install_github("jaytimm/uspols")
 library(uspols) 
 ```
 
+------------------------------------------------------------------------
+
 Historical presidential election results
 ----------------------------------------
 
-### V1 Margins pf vctory since 1956
+### V1 Margins of victory since 1956
 
 ``` r
 uspols::xsf_TileOutv10 %>%
@@ -257,7 +267,7 @@ uspols::xsf_TileOutv10 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
-### V2 Last vote for a Democrat
+### V2 When each state last voted for a Democratic presidential nominee
 
 ``` r
 clean_prex <-  uspols::uspols_wiki_pres %>%
@@ -276,8 +286,7 @@ last_dem <- clean_prex %>%
 ```
 
 > **Nine US states** have not voted for a Democratic Presidential
-> candidate since LBJ. So, roughly 1/5 of US States haven’t supported a
-> Democrat since LBJ –
+> candidate since LBJ.
 
 ``` r
 new1 <- uspols::xsf_TileInv10 %>% 
@@ -305,12 +314,16 @@ uspols::xsf_TileOutv10 %>%
   theme_guide() + 
   theme(legend.position = 'none') +
   ggthemes::scale_fill_economist()+
-  labs(title = "Last vote for a Democratic Presidential candidate")
+  labs(title = "When each state last voted for a Democratic presidential nominee")
 ```
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
-### V3 Highest vote share historically
+### V3 Presidential elections and vote shares and crosses of gold
+
+> The Deep South’s collective enthusiasm for FDR in the 30’s has been
+> matched only by the Mountain West’s enthusiasm for William Jennings
+> Bryant in the election of 1896. Just to say.
 
 ``` r
 vote_share <- clean_prex %>%
@@ -321,12 +334,6 @@ vote_share <- clean_prex %>%
   ungroup() %>%
   mutate(label = paste0(year, ' - ', winner))
 ```
-
-> The Deep South’s collective enthusiasm for FDR in the 30’s matched
-> only by the Mountain West’s enthusiasm for William Jennings Bryant.
-
-> No US president has been more … in time and place than FDR during the
-> 1930’s in the Deep South.
 
 ``` r
 new <- uspols::xsf_TileInv10 %>% 
@@ -356,15 +363,18 @@ uspols::xsf_TileOutv10 %>%
   
   theme_minimal() + theme_guide() + 
   theme(legend.position = 'none') +
-  labs(title = "Largest vote share by state since 1864")
+  labs(title = "Largest vote share for Presidential nominee",
+  subtitle = "By state since 1864")
 ```
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
-Senate composition
-------------------
+------------------------------------------------------------------------
 
-### V4 Split delegations
+Historical composition of the Senate
+------------------------------------
+
+### V4 Split delegations and shifting ideologies
 
 ``` r
 sens <- congress %>%
@@ -418,7 +428,7 @@ uspols::xsf_TileOutv10 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
-### V5 Total split delegations
+### V5 Split delegations on the wane again
 
 ``` r
 congress %>%
@@ -444,7 +454,7 @@ congress %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
-### V6 The end of split-ticket voting
+### V6 The end of split-ticket voting for now
 
 ``` r
 splits <- uspols::uspols_wiki_pres %>% 
@@ -495,6 +505,8 @@ labs(title = "Pres-Senate split-tickets per general election year")
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
+------------------------------------------------------------------------
+
 Historical composition of the House
 -----------------------------------
 
@@ -541,14 +553,16 @@ congress_south %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
-### V8 The birth of the Southern Republican
+### V8 On the evolution of the Southern Republican
 
-> The first captures ideological variation based in the standard
-> liberal-conservative dvide. The second captures variation based in
+> **DW-NOMINATE ideal points in two dimensions**. The first dimension
+> captures ideological variation based in the standard
+> liberal-conservative divide. The second captures variation based in
 > social conservatism that crosscuts political affiliation.
 
 ``` r
 congress_south %>%
+  mutate(year = year + 1) %>%
   filter (congress %in% c(84, 88, 92, 
                           96, 100, 104, 
                           108, 112, 116)) %>%
@@ -573,17 +587,20 @@ congress_south %>%
   theme_minimal() +
   theme(legend.title=element_blank(),
         legend.position = 'bottom') +
-  labs(title="DW-Nominate ideology scores for the 111th US congress")
+  labs(title="The evolution of the Southern Republican",
+       subtitle = 'In two dimensions: from 1955 to 2019')
 ```
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-24-1.png)
+
+------------------------------------------------------------------------
 
 Four generations of lawmakers
 -----------------------------
 
 > [Pew
 > Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/)
-> uses the following set of birth-year ranges to delineate generations.
+> generations.
 
 -   Millenials: 1981-1997
 -   Generation X: 1965 -1980
@@ -591,7 +608,7 @@ Four generations of lawmakers
 -   Silent: 1928-1945
 -   Greatest: \< 1928
 
-### V9 Average age by party
+### V9 Trends in the average age of House members
 
 ``` r
 congress %>%
@@ -626,7 +643,7 @@ congress %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
-### V10 Shifting ditributions
+### V10 Shifting distributions maybe
 
 ``` r
 congress %>%
@@ -650,7 +667,7 @@ congress %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
-### V11 Watergate babies etc
+### V11 Watergate babies and vestiges of Obama
 
 ``` r
 freshmen1 <- congress %>%
@@ -694,7 +711,7 @@ freshmen1 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
-### V12 Millenials and Gen Xers
+### V12 Introducing Millenials and Gen Xers
 
 ``` r
 freshmen <- congress %>%
@@ -722,8 +739,8 @@ congress %>%
           congress == 116) %>% 
   mutate(age = year - born,
          party_code = ifelse(party_code == '100', 
-                             'congress Democrats', 
-                             'congress Republicans')) %>%
+                             'House Democrats', 
+                             'House Republicans')) %>%
   left_join(freshmen %>% select(-party_code), by = "icpsr") %>%
   
   ## 100 == democrat --
@@ -765,8 +782,14 @@ congress %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
-Congressional districts and the American Communty Survey
---------------------------------------------------------
+------------------------------------------------------------------------
+
+Congressional districts and the ACS
+-----------------------------------
+
+> The US Census/American Community Survey (ACS) make counts/estimates
+> available by congressional district. The R package `tidycensus`
+> provides very clean access to census APIs.
 
 ``` r
 variable_list <-  c(bachelors_higher = 'DP02_0068P',
@@ -795,7 +818,7 @@ gen <-  tidycensus::get_acs(geography = 'congressional district',
   select(state_abbrev, district_code, variable, estimate, moe)
 ```
 
-### V13 Profiling New Mexico 2nd dsitrict
+### V13 Profiling New Mexico 2nd district
 
 > A quick look at New Mexico’s 2nd district.
 
@@ -858,8 +881,17 @@ gen %>%
 
 ### V15 Some notes on rural America
 
+------------------------------------------------------------------------
+
 The White working class
 -----------------------
+
+> White working class formalized in US Census terms: Population 25 years
+> & older who (1) identify as both White & non-Hispanic and (2) have not
+> obtained a Bachelor’s degree.
+
+> Table C15002: Sex by educational attainment for the population 25
+> years and over.
 
 ``` r
 white_ed_vars <- c(white_m_bach = 'C15002H_006',
@@ -872,6 +904,10 @@ white_ed_vars <- c(white_m_bach = 'C15002H_006',
                    all_m_xgrad = 'C15002_009',
                    all_pop = 'C15002_001')
 ```
+
+> Categories include: \* White with college degree, \* White without
+> college degree, \* Non-White with college degree, and \* Non-White
+> without college degree.
 
 ``` r
 white_ed <- tidycensus::get_acs(geography = 'congressional district',
@@ -1000,6 +1036,8 @@ ggplot() +
 ```
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-41-1.png)
+
+–
 
 Lastly
 ------
