@@ -26,6 +26,52 @@ library(tidyverse)
 
 ------------------------------------------------------------------------
 
+-   [American political data & R](#american-political-data-&-r)
+    -   [I. Quick preliminaries](#i.-quick-preliminaries)
+        -   [Some geo-spatial data](#some-geo-spatial-data)
+        -   [A simple add-on map theme](#a-simple-add-on-map-theme)
+        -   [Some quick definitions](#some-quick-definitions)
+    -   [II. Data sources](#ii.-data-sources)
+        -   [VoteView](#voteview)
+        -   \[uspols`](#uspols`)
+    -   [III. Historical presidential election
+        results](#iii.-historical-presidential-election-results)
+        -   [Margins pf vctory since
+            1956](#margins-pf-vctory-since-1956)
+        -   [Last vote for a Democrat](#last-vote-for-a-democrat)
+        -   [Highest vote share
+            historically](#highest-vote-share-historically)
+    -   [IV. Senate composition: split-tickets &
+        split-delegations](#iv.-senate-composition:-split-tickets-&-split-delegations)
+        -   [Split delegations](#split-delegations)
+        -   [Total split delegations](#total-split-delegations)
+        -   [The end of split-ticket
+            voting](#the-end-of-split-ticket-voting)
+    -   [V. US House: historical
+        composition](#v.-us-house:-historical-composition)
+        -   [Political re-alignment in the
+            South](#political-re-alignment-in-the-south)
+        -   [The birth of the Southern
+            Republican](#the-birth-of-the-southern-republican)
+    -   [VI. US House: Four generations of
+        lawmakers](#vi.-us-house:-four-generations-of-lawmakers)
+        -   [Average age by party](#average-age-by-party)
+        -   [Shifting ditributions](#shifting-ditributions)
+        -   [Watergte babies, and other freshman
+            members](#watergte-babies,-and-other-freshman-members)
+        -   [Millenials & Gen Xers](#millenials-&-gen-xers)
+    -   [VII. Congressional districts & the American Communty
+        Survey](#vii.-congressional-districts-&-the-american-communty-survey)
+        -   [Profiling New Mexico’s 2nd
+            dsitrict](#profiling-new-mexico's-2nd-dsitrict)
+        -   [Socio-dem estmates & margins of
+            victory](#socio-dem-estmates-&-margins-of-victory)
+        -   [Some notes on rural America](#some-notes-on-rural-america)
+    -   [VIII. The White working class](#viii.-the-white-working-class)
+        -   [White working profiles](#white-working-profiles)
+        -   [A working map](#a-working-map)
+    -   [IX. Lastly](#ix.-lastly)
+
 I. Quick preliminaries
 ----------------------
 
@@ -120,7 +166,7 @@ states_sf %>%
   facet_wrap(~type, ncol = 1) 
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
 ------------------------------------------------------------------------
 
@@ -140,8 +186,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/RtmpaoMIZu/Hall_members.csv"
-    ## [1] "/tmp/RtmpaoMIZu/Sall_members.csv"
+    ## [1] "/tmp/Rtmpu5J6Ba/Hall_members.csv"
+    ## [1] "/tmp/Rtmpu5J6Ba/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -213,7 +259,7 @@ uspols::xsf_TileOutv10 %>%
        caption = "Source: DailyKos")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
 ### 2 Last vote for a Democrat
 
@@ -266,7 +312,7 @@ uspols::xsf_TileOutv10 %>%
   labs(title = "Last vote for a Democratic Presidential candidate")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
 ### 3 Highest vote share historically
 
@@ -317,7 +363,7 @@ uspols::xsf_TileOutv10 %>%
   labs(title = "Largest vote share by state since 1864")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-15-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
 IV. Senate composition: split-tickets & split-delegations
 ---------------------------------------------------------
@@ -362,7 +408,7 @@ uspols::xsf_TileOutv10 %>%
   ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
                           aes(label = state_abbrev), 
                           size = 1.5,
-                          color = 'white') +
+                          color = 'black') +
   
   ggthemes::scale_fill_stata()+
   theme_minimal() + 
@@ -374,7 +420,7 @@ uspols::xsf_TileOutv10 %>%
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-17-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 ### 5 Total split delegations
 
@@ -400,7 +446,7 @@ congress %>%
        caption = 'Data sources: VoteView')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 ### 6 The end of split-ticket voting
 
@@ -451,7 +497,7 @@ uspols::xsf_TileOutv10 %>%
 labs(title = "Pres-Senate split-tickets per general election year")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 V. US House: historical composition
 -----------------------------------
@@ -497,7 +543,7 @@ congress_south %>%
   labs(title = "House composition since 1921")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-22-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
 ### 8 The birth of the Southern Republican
 
@@ -534,7 +580,7 @@ congress_south %>%
   labs(title="DW-Nominate ideology scores for the 111th US congress")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
 VI. US House: Four generations of lawmakers
 -------------------------------------------
@@ -582,7 +628,7 @@ congress %>%
   labs(title = "Average age of congress members by party") 
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-24-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
 ### 10 Shifting ditributions
 
@@ -606,7 +652,7 @@ congress %>%
   labs(title="Age distributions in the House since 2009, by party")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-25-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
 ### 11 Watergte babies, and other freshman members
 
@@ -650,7 +696,7 @@ freshmen1 %>%
   labs(title = "Freshman House members by party")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-26-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 ### 12 Millenials & Gen Xers
 
@@ -721,7 +767,7 @@ congress %>%
   labs(title = "Age distribution of the 116th House by party")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
 VII. Congressional districts & the American Communty Survey
 -----------------------------------------------------------
@@ -783,7 +829,7 @@ base_viz +
        subtitle = "New Mexico's 2nd District")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-33-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 ### 14 Socio-dem estmates & margins of victory
 
@@ -812,7 +858,7 @@ gen %>%
   labs(title = "2019 ACS estimates vs. 2016 Trump margins")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-34-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
 ### Some notes on rural America
 
@@ -897,7 +943,7 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-37-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-38-1.png)
 
 ### 16 A working map
 
@@ -957,7 +1003,7 @@ ggplot() +
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-40-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-41-1.png)
 
 IX. Lastly
 ----------
