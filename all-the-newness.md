@@ -1,11 +1,23 @@
 American political data & R
 ===========================
 
-An open-source guide to … (apdr)
-
 *Updated: 2020-10-27*
 
 ![](all-the-newness_files/figure-markdown_github/collage1.png)
+
+An R-based guide to accessing, exploring & visualizing US political data
+utilizing a collection of open government resources, including
+presidential election returns (2008-2016 by congressional district),
+lawmaker biographies & political ideologies, and congressional district
+demographics.
+
+Data used in this guide have been collated from The Daily Kos,
+CivilServiceUSA, and the R packages tidycensus & Rvoteview.
+
+Hopefully a useful open source & transparent framework for investigating
+past & future election results and congresses using R. All work
+presented here can be reproduced in its entirety. A developing resource.
+Open government data.
 
 ``` r
 library(tidyverse)
@@ -133,8 +145,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/RtmpFXbOoJ/Hall_members.csv"
-    ## [1] "/tmp/RtmpFXbOoJ/Sall_members.csv"
+    ## [1] "/tmp/Rtmp1WcZxL/Hall_members.csv"
+    ## [1] "/tmp/Rtmp1WcZxL/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -298,11 +310,80 @@ Senate composition: split-tickets & split-delegations
 
 ### Split delegations
 
+``` r
+sens <- congress %>%
+  mutate(party_name = as.factor(party_name)) %>%
+  mutate(party_name = forcats::fct_relevel(party_name, 
+                                       'other', 
+                                        after = 2)) %>%
+
+  filter(congress %in% c(74, 78, 82,
+                         86, 92, 98, 
+                         104, 110, 116),
+         chamber == 'Senate') %>%
+  arrange (state_abbrev, party_name) %>%
+  group_by(year, congress, state_abbrev) %>%
+  mutate(layer = row_number())%>%
+  #rename(State = state_abbrev) %>%
+  ungroup() %>%
+  select(year, congress, state_abbrev, party_name, layer)
+```
+
+``` r
+uspols::xsf_TileOutv10 %>%
+  left_join(sens %>% filter (layer == 2)) %>%
+  ggplot() + 
+  geom_sf(aes(fill = party_name),
+          color = 'white', 
+          lwd = 0.2,
+          alpha = .85) + 
+  geom_sf(data = uspols::xsf_TileInv10 %>%
+            left_join(sens %>% filter (layer == 1)), 
+          aes(fill = party_name),
+          alpha = .7) +
+  
+  ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
+                          aes(label = state_abbrev), 
+                          size = 1.75,
+                          color = 'white') +
+  
+  ggthemes::scale_fill_stata()+
+  theme_minimal() + 
+  theme_guide() +
+  theme(legend.position = 'none') +
+  
+  facet_wrap(~(year+1)+congress) +
+  labs(title = "US Senate Composition by State & Party in 6 congressional snapshots",
+       caption = 'Data sources: Daily Kos & VoteView')
+```
+
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-15-1.png)
+
+``` r
+congress %>%
+  filter(congress > 74, chamber == 'Senate') %>%
+  group_by(year, congress, state_abbrev) %>%
+  summarize(splits = length(unique(party_code))) %>%
+  filter(splits == 2) %>%
+  group_by(year, congress) %>%
+  summarize(n=n())%>%
+  ggplot() +
+  geom_line(aes(x = year, 
+                y= n), 
+            size = 1.5, 
+            color= 'steelblue') +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1),
+        axis.title.x=element_blank()) +
+  scale_x_continuous(breaks=seq(1935, 2019, 4)) +
+  
+  labs(title = "Split Senate delegations since 1935",
+       caption = 'Data sources: VoteView')
+```
+
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-16-1.png)
+
 ### The end of split-ticket voting
-
-<a href="https://www.vox.com/policy-and-politics/2016/11/17/13666192/voting-congress-presidency" class="uri">https://www.vox.com/policy-and-politics/2016/11/17/13666192/voting-congress-presidency</a>
-
-*I think we could do this with VoteView – * ?? and go back all the way –
 
 ``` r
 splits <- uspols::uspols_wiki_pres %>% 
@@ -351,7 +432,7 @@ uspols::xsf_TileOutv10 %>%
 labs(title = "Pres-Senate split-tickets per general election year")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-15-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 US House: historical composition
 --------------------------------
@@ -397,7 +478,7 @@ congress_south %>%
   labs(title = "House composition since 1921")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-17-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 ### The birth of the Southern Republican
 
@@ -434,7 +515,7 @@ congress_south %>%
   labs(title="DW-Nominate ideology scores for the 111th US congress")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 US House: Four generations of lawmakers
 ---------------------------------------
@@ -476,18 +557,20 @@ congress %>%
   ggthemes::scale_color_stata()+
   theme_minimal() +
   theme(legend.position = 'none',
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
+        axis.text.x = element_text(angle = 90, hjust = 1),
+        axis.title.x=element_blank()) +
   scale_x_continuous(breaks=seq(1963, 2019, 2)) +
   labs(title = "Average age of congress members by party") 
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
 ### Shifting ditributions
 
 ``` r
 congress %>%
-  mutate(age = year - born) %>%
+  mutate(age = year - born,
+         year = year + 1) %>%
   filter (party_code %in% c('100', '200'), year > 2007) %>% 
   ## 100 == democrat --
   ggplot(aes(age, 
@@ -501,10 +584,10 @@ congress %>%
   geom_density(alpha = 0.6, color = 'gray') +
   facet_wrap(~year, nrow = 2)+
 
-  labs(title="Age distributions in the congress since 2008, by party")
+  labs(title="Age distributions in the House since 2009, by party")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
 ### Watergte babies, and other freshman members
 
@@ -543,12 +626,12 @@ freshmen1 %>%
   theme_minimal() +
   theme(legend.position = 'none',
         axis.title.x=element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
+        axis.text.x = element_text(angle = 90, hjust = 1)) +
   scale_x_continuous(breaks=seq(1963,2019,2)) +
-  labs(title = "Freshman congress members by party")
+  labs(title = "Freshman House members by party")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
 ### Millenials & Gen Xers
 
@@ -616,11 +699,10 @@ congress %>%
         axis.text.y=element_blank()) +
   #ylim (0, .5) +
   
-  labs(title = "Age distribution of congress members by party",
-       subtitle = '116th congress')
+  labs(title = "Age distribution of the 116th House by party")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-24-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 Congressional districts & the American Communty Survey
 ------------------------------------------------------
@@ -682,7 +764,7 @@ base_viz +
        subtitle = "New Mexico's 2nd District")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-28-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
 ### Socio-dem estmates & margins of victory
 
@@ -711,7 +793,7 @@ gen %>%
   labs(title = "2019 ACS estimates vs. 2016 Trump margins")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 ### Some notes on rural America
 
@@ -796,7 +878,7 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-32-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
 ### A working map
 
@@ -856,7 +938,7 @@ ggplot() +
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-35-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-38-1.png)
 
 Lastly
 ------
