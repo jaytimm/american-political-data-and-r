@@ -35,35 +35,34 @@ work presented here can be reproduced in its entirety.
         -   [V2 Last vote for a Democrat](#v2-last-vote-for-a-democrat)
         -   [V3 Highest vote share
             historically](#v3-highest-vote-share-historically)
-    -   [IV Senate composition](#iv-senate-composition)
+    -   [Senate composition](#senate-composition)
         -   [V4 Split delegations](#v4-split-delegations)
         -   [V5 Total split delegations](#v5-total-split-delegations)
         -   [V6 The end of split-ticket
             voting](#v6-the-end-of-split-ticket-voting)
-    -   [V Historical composition of the
-        House](#v-historical-composition-of-the-house)
+    -   [Historical composition of the
+        House](#historical-composition-of-the-house)
         -   [V7 Political realignment in the
             South](#v7-political-realignment-in-the-south)
         -   [V8 The birth of the Southern
             Republican](#v8-the-birth-of-the-southern-republican)
-    -   [VI Four generations of
-        lawmakers](#vi-four-generations-of-lawmakers)
+    -   [Four generations of lawmakers](#four-generations-of-lawmakers)
         -   [V9 Average age by party](#v9-average-age-by-party)
         -   [V10 Shifting ditributions](#v10-shifting-ditributions)
         -   [V11 Watergate babies etc](#v11-watergate-babies-etc)
         -   [V12 Millenials and Gen Xers](#v12-millenials-and-gen-xers)
-    -   [VII Congressional districts and the American Communty
-        Survey](#vii-congressional-districts-and-the-american-communty-survey)
+    -   [Congressional districts and the American Communty
+        Survey](#congressional-districts-and-the-american-communty-survey)
         -   [V13 Profiling New Mexico 2nd
             dsitrict](#v13-profiling-new-mexico-2nd-dsitrict)
         -   [V14 SocioDems and margins of
             victory](#v14-sociodems-and-margins-of-victory)
         -   [V15 Some notes on rural
             America](#v15-some-notes-on-rural-america)
-    -   [VIII The White working class](#viii-the-white-working-class)
+    -   [The White working class](#the-white-working-class)
         -   [V15 White working profiles](#v15-white-working-profiles)
         -   [V16 A working map](#v16-a-working-map)
-    -   [IX Lastly](#ix-lastly)
+    -   [Lastly](#lastly)
 
 Quick preliminaries
 -------------------
@@ -183,8 +182,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/Rtmp2gmHrf/Hall_members.csv"
-    ## [1] "/tmp/Rtmp2gmHrf/Sall_members.csv"
+    ## [1] "/tmp/RtmphVUvQi/Hall_members.csv"
+    ## [1] "/tmp/RtmphVUvQi/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -362,8 +361,8 @@ uspols::xsf_TileOutv10 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
-IV Senate composition
----------------------
+Senate composition
+------------------
 
 ### V4 Split delegations
 
@@ -405,7 +404,7 @@ uspols::xsf_TileOutv10 %>%
   ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
                           aes(label = state_abbrev), 
                           size = 1.5,
-                          color = 'black') +
+                          color = 'white') +
   
   ggthemes::scale_fill_stata()+
   theme_minimal() + 
@@ -496,8 +495,8 @@ labs(title = "Pres-Senate split-tickets per general election year")
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
-V Historical composition of the House
--------------------------------------
+Historical composition of the House
+-----------------------------------
 
 ``` r
 congress_south <- congress %>% 
@@ -579,8 +578,8 @@ congress_south %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
-VI Four generations of lawmakers
---------------------------------
+Four generations of lawmakers
+-----------------------------
 
 > [Pew
 > Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/)
@@ -766,8 +765,8 @@ congress %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
-VII Congressional districts and the American Communty Survey
-------------------------------------------------------------
+Congressional districts and the American Communty Survey
+--------------------------------------------------------
 
 ``` r
 variable_list <-  c(bachelors_higher = 'DP02_0068P',
@@ -859,8 +858,8 @@ gen %>%
 
 ### V15 Some notes on rural America
 
-VIII The White working class
-----------------------------
+The White working class
+-----------------------
 
 ``` r
 white_ed_vars <- c(white_m_bach = 'C15002H_006',
@@ -1002,5 +1001,5 @@ ggplot() +
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-41-1.png)
 
-IX Lastly
----------
+Lastly
+------
