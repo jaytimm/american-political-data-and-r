@@ -145,8 +145,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/Rtmp1WcZxL/Hall_members.csv"
-    ## [1] "/tmp/Rtmp1WcZxL/Sall_members.csv"
+    ## [1] "/tmp/RtmpB2UT7N/Hall_members.csv"
+    ## [1] "/tmp/RtmpB2UT7N/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -172,7 +172,7 @@ congress <- vvo %>%
 Historical presidential election results
 ----------------------------------------
 
-### Margins pf vctory since 1956
+### §1 Margins pf vctory since 1956
 
 ``` r
 uspols::xsf_TileOutv10 %>%
@@ -201,7 +201,7 @@ uspols::xsf_TileOutv10 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-8-1.png)
 
-### Last vote for a Democrat
+### §2 Last vote for a Democrat
 
 ``` r
 clean_prex <-  uspols::uspols_wiki_pres %>%
@@ -254,7 +254,7 @@ uspols::xsf_TileOutv10 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
-### Highest vote share historically
+### §3 Highest vote share historically
 
 ``` r
 vote_share <- clean_prex %>%
@@ -308,7 +308,7 @@ uspols::xsf_TileOutv10 %>%
 Senate composition: split-tickets & split-delegations
 -----------------------------------------------------
 
-### Split delegations
+### §4 Split delegations
 
 ``` r
 sens <- congress %>%
@@ -337,9 +337,12 @@ uspols::xsf_TileOutv10 %>%
           color = 'white', 
           lwd = 0.2,
           alpha = .85) + 
+  
   geom_sf(data = uspols::xsf_TileInv10 %>%
             left_join(sens %>% filter (layer == 1)), 
           aes(fill = party_name),
+          color = 'white', 
+          lwd = 0.2,
           alpha = .7) +
   
   ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
@@ -353,11 +356,13 @@ uspols::xsf_TileOutv10 %>%
   theme(legend.position = 'none') +
   
   facet_wrap(~(year+1)+congress) +
-  labs(title = "US Senate Composition by State & Party in 6 congressional snapshots",
+  labs(title = "Senate composition by state since 1935",
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-15-1.png)
+
+### §5 Total split delegations
 
 ``` r
 congress %>%
@@ -383,7 +388,7 @@ congress %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
-### The end of split-ticket voting
+### §6 The end of split-ticket voting
 
 ``` r
 splits <- uspols::uspols_wiki_pres %>% 
@@ -448,7 +453,7 @@ congress_south <- congress %>%
                                        after = 3)) 
 ```
 
-### Political re-alignment in the South
+### §7 Political re-alignment in the South
 
 ``` r
 congress_south %>%
@@ -480,7 +485,7 @@ congress_south %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
-### The birth of the Southern Republican
+### §8 The birth of the Southern Republican
 
 > The first captures ideological variation based in the standard
 > liberal-conservative dvide. The second captures variation based in
@@ -530,7 +535,7 @@ US House: Four generations of lawmakers
 -   Silent: 1928-1945
 -   Greatest: \< 1928
 
-### Average age by party
+### §9 Average age by party
 
 ``` r
 congress %>%
@@ -565,7 +570,7 @@ congress %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
-### Shifting ditributions
+### §10 Shifting ditributions
 
 ``` r
 congress %>%
@@ -589,7 +594,7 @@ congress %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
-### Watergte babies, and other freshman members
+### §11 Watergte babies, and other freshman members
 
 ``` r
 freshmen1 <- congress %>%
@@ -633,7 +638,7 @@ freshmen1 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
-### Millenials & Gen Xers
+### §12 Millenials & Gen Xers
 
 ``` r
 freshmen <- congress %>%
@@ -734,7 +739,7 @@ gen <-  tidycensus::get_acs(geography = 'congressional district',
   select(state_abbrev, district_code, variable, estimate, moe)
 ```
 
-### Profiling New Mexico’s 2nd dsitrict
+### §13 Profiling New Mexico’s 2nd dsitrict
 
 > A quick look at New Mexico’s 2nd district.
 
@@ -766,7 +771,7 @@ base_viz +
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
-### Socio-dem estmates & margins of victory
+### §14 Socio-dem estmates & margins of victory
 
 ``` r
 gen %>%
@@ -850,7 +855,7 @@ white_ed <- tidycensus::get_acs(geography = 'congressional district',
          district_code, group, per, estimate)
 ```
 
-### White working profiles
+### §15 White working profiles
 
 ``` r
 set.seed(99)
@@ -880,7 +885,7 @@ white_ed %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
-### A working map
+### §16 A working map
 
 ``` r
 ## agg to states --
