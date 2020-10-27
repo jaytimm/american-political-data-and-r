@@ -62,6 +62,8 @@ laea <- sf::st_crs("+proj=laea +lat_0=30 +lon_0=-95")
 Some quick definitions
 ----------------------
 
+*A congress - year crosswalk* — !!
+
 Away down south in Dixie
 
 > Per VoteView definition: The South = Dixie + Kentucky + Oklahoma
@@ -92,7 +94,8 @@ states_sf %>%
   
   ggplot() + 
   geom_sf(aes(fill = val),
-           color = 'white', size = .15) +
+          color = 'white', size = .15,
+          alpha = 0.65) +
   ggsflabel::geom_sf_text(aes(label = label),
                           size = 2.25,
                           color='black') +
@@ -118,7 +121,7 @@ uspols::xsf_TileOutv10 %>%
               mutate(margins = republican - democrat)) %>% 
   ggplot() + 
   geom_sf(aes(fill = margins),
-           color = 'black', lwd = .25) +
+           color = 'black', lwd = .15) +
   geom_sf(data = uspols::xsf_TileInv10, 
           fill = NA, 
           show.legend = F, 
@@ -127,7 +130,7 @@ uspols::xsf_TileOutv10 %>%
   
   ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
                           aes(label = state_abbrev),
-                          size = 1.25,
+                          size = 1.75,
                           color='black') +
   scale_fill_distiller(palette = "RdBu", direction=-1) +
   facet_wrap(~year) +
@@ -173,7 +176,7 @@ uspols::xsf_TileOutv10 %>%
   ggplot() + 
   geom_sf(aes(fill = winner),
           color = 'white' , 
-          alpha = .85) + 
+          alpha = .65) + 
   
   ggsflabel::geom_sf_text(data = new1,
                           aes(label = new1$label), 
@@ -192,7 +195,7 @@ uspols::xsf_TileOutv10 %>%
 ### Highest vote share historically
 
 ``` r
-vote_share <- uspols::uspols_wiki_pres %>%
+vote_share <- clean_prex %>%
   select(-party_win) %>%
   gather(key = 'party', value = 'per', democrat:republican) %>%
   group_by(state_abbrev) %>%
@@ -224,7 +227,7 @@ uspols::xsf_TileOutv10 %>%
   ggplot() + 
   geom_sf(aes(fill = winner),
           color = 'white' , 
-          alpha = .85) + 
+          alpha = .65) + 
   
   ggsflabel::geom_sf_text(data = new,
                           aes(label = new$label), 
@@ -240,20 +243,22 @@ uspols::xsf_TileOutv10 %>%
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
-### Rvoteview: House composition
+### Rvoteview: congress composition
 
 AND – historical composition from \#1 –
 
 ``` r
-vvo <- Rvoteview::download_metadata(type = 'members', 
-                                    chamber = 'house') %>%
-  filter(congress > 66 & chamber != 'President')
+vvo <- lapply(c('house', 'senate'), function(x) {
+              Rvoteview::download_metadata(type = 'members', 
+                                    chamber = x) %>%
+    filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/RtmpyrXegZ/Hall_members.csv"
+    ## [1] "/tmp/RtmpiGI5no/Hall_members.csv"
+    ## [1] "/tmp/RtmpiGI5no/Sall_members.csv"
 
 ``` r
-house <- vvo %>%
+congress <- vvo %>%
   bind_rows() %>%
     mutate(x = length(unique(district_code))) %>%
     ungroup() %>%
@@ -281,18 +286,18 @@ house <- vvo %>%
 > political ideology scores for all lawmakers in the history of the US
 > Congress. Data can be used to investigate congressional composition by
 > party affiliation over time, the aggregate political ideologies of
-> both houses over time, and the ideologies of individual lawmakers. And
-> any number of other roll call-based analyses. The R package
+> both congresss over time, and the ideologies of individual lawmakers.
+> And any number of other roll call-based analyses. The R package
 > `Rvoteview` provides access to these data.
 
 #### 2.1 Congressional composition by political affiliation
 
-> A summary of House compositions for the last fifty congresses, ie,
+> A summary of congress compositions for the last fifty congresses, ie,
 > last 100 years. Until fairly recently, a Democratic stronghold.
 
 ``` r
-house_south <- house %>% 
-  filter(party_code %in% c(100, 200)) %>%
+congress_south <- congress %>% 
+  filter(party_code %in% c(100, 200), chamber == 'House') %>%
   mutate(Member = as.factor(paste0(party_name, ', ', southerner))) %>%
   
   ## re-factor 
@@ -302,7 +307,7 @@ house_south <- house %>%
 ```
 
 ``` r
-house_south %>%
+congress_south %>%
   group_by(year, Member) %>%
   summarize(n = n()) %>%
   mutate(n = n/sum(n)) %>%
@@ -326,7 +331,7 @@ house_south %>%
         axis.text.y=element_blank(),
         axis.text.x = element_text(angle = 45, hjust = 1)) +
   
-  labs(title = "House composition since 1921")
+  labs(title = "congress composition since 1921")
 ```
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-15-1.png)
@@ -346,11 +351,11 @@ house_south %>%
 > [this](https://voteview.com/parties/all) VoteView visualization
 > illustrating the growing ideological divide between major political
 > parties in the US. The gray line reflects overall median ideology
-> scores in the House, and roughly approximates party control of the
-> House historically.
+> scores in the congress, and roughly approximates party control of the
+> congress historically.
 
 ``` r
-house_south %>%
+congress_south %>%
   filter (congress %in% c(84, 88, 92, 
                           96, 100, 104, 
                           108, 112, 116)) %>%
@@ -375,12 +380,14 @@ house_south %>%
   theme_minimal() +
   theme(legend.title=element_blank(),
         legend.position = 'bottom') +
-  labs(title="DW-Nominate ideology scores for the 111th US House")
+  labs(title="DW-Nominate ideology scores for the 111th US congress")
 ```
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
 ### The end of split-ticket voting
+
+<a href="https://www.vox.com/policy-and-politics/2016/11/17/13666192/voting-congress-presidency" class="uri">https://www.vox.com/policy-and-politics/2016/11/17/13666192/voting-congress-presidency</a>
 
 *I think we could do this with VoteView – * ?? and go back all the way –
 
@@ -413,12 +420,14 @@ uspols::xsf_TileOutv10 %>%
 
   ggplot() + 
   geom_sf(aes(fill = split1),
-           color = 'black', lwd = .25) +
+          color = 'black', 
+          lwd = .25,
+          alpha = 0.65) +
 
   ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
                           aes(label = state_abbrev),
                           size = 1.75,
-                          color = 'white') +
+                          color = 'black') +
 
   ggthemes::scale_fill_economist () + 
   facet_wrap(~year + class) +
@@ -444,7 +453,7 @@ Four generations of lawmakers
 -   Greatest: \< 1928
 
 ``` r
-house %>%
+congress %>%
   mutate(age = year - born) %>%
   filter (party_code %in% c('100', '200'), year > 1960) %>%
   group_by(party_name, year) %>%
@@ -470,13 +479,13 @@ house %>%
   theme(legend.position = 'none',
         axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_x_continuous(breaks=seq(1962,2018,2)) +
-  labs(title = "Average age of house members by party") 
+  labs(title = "Average age of congress members by party") 
 ```
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 ``` r
-house %>%
+congress %>%
   mutate(age = year - born) %>%
   filter (party_code %in% c('100', '200'), year > 2007) %>% 
   ## 100 == democrat --
@@ -491,21 +500,21 @@ house %>%
   geom_density(alpha = 0.6, color = 'gray') +
   facet_wrap(~year, nrow = 2)+
 
-  labs(title="Age distributions in the House since 2008, by party")
+  labs(title="Age distributions in the congress since 2008, by party")
 ```
 
 ![](all-the-newness_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
-Identifying freshmen house members –
+Identifying freshmen congress members –
 
-freshmen house members – *SOPHMORES* – ??
+freshmen congress members – *SOPHMORES* – ??
 
 ``` r
-freshmen <- house %>%
+freshmen <- congress %>%
   group_by(icpsr, bioname) %>%
   mutate(n = length(congress)) %>%
   ungroup() %>%
-  filter(congress == 116) %>%
+  filter(congress == 116) %>% # only correct here -- not older congresses
   
   mutate (Class = case_when (n == 1 ~ 'Freshmen',
                              n == 2 ~ 'Sophmores',
@@ -513,6 +522,42 @@ freshmen <- house %>%
   
   select(icpsr, party_code, Class)
 ```
+
+``` r
+freshmen1 <- congress %>%
+  group_by(icpsr, bioname, party_name) %>%
+  summarize(min = min(year),
+            max = max(year)) %>%
+  group_by(min, party_name) %>%
+  count() %>%
+  ungroup() %>%
+  filter(min > 1960, party_name != 'other')
+  
+
+labs <- freshmen1 %>%
+  arrange(desc(n)) %>%
+  slice(1:4) %>%
+  mutate(txt = c('Obama 1st midterm',  'Clinton 1st midterm', 
+                 '"Watergate babies"', 'LBJ atop ticket'))
+
+freshmen1 %>%
+  ggplot() +
+  geom_line(aes(x = min + 1, 
+                y = n, 
+                color = party_name)) +
+  
+  geom_text(data = labs,
+            aes(x = min, y = n, label = txt),
+            size = 3, nudge_y = 3) +
+  ggthemes::scale_color_stata()+
+  theme_minimal() +
+  theme(legend.position = 'none',
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_continuous(breaks=seq(1963,2019,2)) +
+  labs(title = "Freshman congress members by party")
+```
+
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
 CCC
 
@@ -523,13 +568,13 @@ gens <- sometables::pew_generations %>%
 ```
 
 ``` r
-house %>%
+congress %>%
   filter (party_code %in% c('100', '200'), 
           congress == 116) %>% 
   mutate(age = year - born,
          party_code = ifelse(party_code == '100', 
-                             'House Democrats', 
-                             'House Republicans')) %>%
+                             'congress Democrats', 
+                             'congress Republicans')) %>%
   left_join(freshmen %>% select(-party_code), by = "icpsr") %>%
   
   ## 100 == democrat --
@@ -566,11 +611,11 @@ house %>%
         axis.text.y=element_blank()) +
   #ylim (0, .5) +
   
-  labs(title = "Age distribution of house members by party",
-       subtitle = '116th House')
+  labs(title = "Age distribution of congress members by party",
+       subtitle = '116th congress')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
 Profiling congressional districts
 ---------------------------------
@@ -631,7 +676,7 @@ base_viz +
        subtitle = "New Mexico's 2nd District")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-26-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 Some notes on rural America
 ---------------------------
@@ -661,7 +706,7 @@ gen %>%
   labs(title = "2019 ACS estimates vs. 2016 Trump margins")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-27-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-28-1.png)
 
 The White working class
 -----------------------
@@ -676,7 +721,9 @@ white_ed_vars <- c(white_m_bach = 'C15002H_006',
                    all_m_xbach = 'C15002_008',
                    all_m_xgrad = 'C15002_009',
                    all_pop = 'C15002_001')
+```
 
+``` r
 white_ed <- tidycensus::get_acs(geography = 'congressional district',
                             variables = white_ed_vars,
                             year = 2019,
@@ -769,7 +816,7 @@ mplot %>%
   labs(title = "The American White Working Class")
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-30-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 ### White working profiles
 
@@ -801,18 +848,68 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-31-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-33-1.png)
+
+``` r
+## agg to states --
+white_ed2_state <- white_ed %>%
+  group_by(state_abbrev, group) %>%
+  summarise(estimate = sum(estimate)) %>%
+  mutate(per = round(estimate/sum(estimate) * 100, 1)) %>%
+  ungroup()
+```
+
+    ## `summarise()` regrouping output by 'state_abbrev' (override with `.groups` argument)
+
+Centroids and things –
+
+``` r
+cents <- sf::st_centroid(uspols::xsf_TileOutv10) %>%
+  sf::st_coordinates() %>%
+  data.frame() %>%
+  bind_cols(state_abbrev = uspols::xsf_TileOutv10$state_abbrev,
+            FIPS = uspols::xsf_TileOutv10$FIPS) %>%
+  left_join(white_ed2_state %>% 
+              select(-estimate) %>% 
+              spread(group, per)) 
+```
+
+Real viz, then –
+
+``` r
+ggplot() +
+  geom_sf(data = uspols::xsf_TileOutv10,
+          color = 'gray') +
+  
+  scatterpie::geom_scatterpie(data = cents,
+                              aes(x = X, 
+                                  y = Y, 
+                                  group = state_abbrev,
+                                  r = .17),
+                           cols = colnames(cents)[5:8],
+                           color = 'white') +
+  
+  ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
+                          aes(label = state_abbrev), 
+                          size = 3,
+                          color='black') +
+  
+  scale_fill_manual(values = c('#7b3294', '#c2a5cf', 
+                               '#008837', '#a6dba0'))+
+  theme_minimal()+
+  theme(axis.text.x=element_blank(),
+        axis.text.y=element_blank(),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        legend.position = 'bottom',
+        legend.title=element_blank()) +
+  labs(title = "Educational attainment profiles",
+       caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
+```
+
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-36-1.png)
 
 ### Swing states & white working class
 
 White working class voters in swing states – and other American
 happenings –
-
-References
-----------
-
-Barber, M., & McCarty, N. (2015). Causes and consequences of
-polarization. *Political negotiation: A handbook*, 37, 39-43.
-
-McCarty, Nolan, Keith T Poole, and Howard Rosenthal. 2016. *Polarized
-America: The Dance of Ideology and Unequal Riches*. mit Press.
