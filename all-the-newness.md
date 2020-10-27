@@ -132,7 +132,7 @@ uspols::xsf_TileOutv10 %>%
   
   ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
                           aes(label = state_abbrev),
-                          size = 1.75,
+                          size = 1.5,
                           color='black') +
   scale_fill_distiller(palette = "RdBu", direction=-1) +
   facet_wrap(~year) +
@@ -256,8 +256,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/RtmpYNPVsc/Hall_members.csv"
-    ## [1] "/tmp/RtmpYNPVsc/Sall_members.csv"
+    ## [1] "/tmp/RtmpzSEjML/Hall_members.csv"
+    ## [1] "/tmp/RtmpzSEjML/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -431,7 +431,8 @@ uspols::xsf_TileOutv10 %>%
                           size = 1.75,
                           color = 'black') +
 
-  ggthemes::scale_fill_economist () + 
+  scale_fill_manual(values = c('#8faabe', '#55752f', 
+                               '#dae2ba')) + #, 
   facet_wrap(~year + class) +
   theme_minimal() + 
   theme_guide() +
@@ -464,12 +465,12 @@ congress %>%
                          age, NULL)) %>%
   
   ggplot() +
-  geom_line(aes(x = year, 
+  geom_line(aes(x = year + 1, 
                 y = age, 
                 color = party_name), 
-            size = .65) +
+            size = .8) +
   
-    ggrepel::geom_text_repel(aes(x = year, 
+    ggrepel::geom_text_repel(aes(x = year + 1, 
                                  y = age, 
                                  label = label),
                              size= 3.25,
@@ -480,7 +481,7 @@ congress %>%
   theme_minimal() +
   theme(legend.position = 'none',
         axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_x_continuous(breaks=seq(1962,2018,2)) +
+  scale_x_continuous(breaks=seq(1963, 2019, 2)) +
   labs(title = "Average age of congress members by party") 
 ```
 
@@ -535,7 +536,7 @@ freshmen1 %>%
   geom_line(aes(x = min + 1, 
                 y = count, 
                 color = party_name),
-            size = 0.65) +
+            size = 0.8) +
   
   geom_text(data = labs,
             aes(x = min, 
@@ -788,47 +789,7 @@ white_ed %>%
 | white\_college      | 53,172,694 |  23.4|
 | white\_working      | 91,059,837 |  40.1|
 
-White working map — via equal-area –
-
-``` r
-mplot <- uscds %>%
-  filter(!state_code %in% nonx) %>%
-  left_join(white_ed %>%
-              filter(group == 'white_working'), 
-            by = c('state_code', 'district_code')) %>%
-    mutate(qt = cut(per, 
-                    quantile(per, 
-                             probs = 0:4/4), 
-                             include.lowest = TRUE),
-           rank = as.integer(qt))
-
-mins <- min(white_ed$per); maxs <- max(white_ed$per)
-
-# scale_colour_gradient(limit=range(c(d$z1,d$z2)))
-
-mplot %>% 
-  sf::st_transform(laea) %>%
-  ggplot() + 
-  geom_sf(aes(fill = per),
-           color = 'white', size = .15) +
-  
-  scale_fill_distiller(palette = "YlGnBu", 
-                       direction = 1, 
-                       limit = range(c(mins, maxs))) +
-  
-  
-  theme_minimal() + theme_guide() +
-  theme(legend.position = 'bottom',
-        panel.background = element_rect(fill = '#d5e4eb', 
-                                        color = NA)) +
-  labs(title = "The American White Working Class")
-```
-
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-32-1.png)
-
 ### White working profiles
-
-> Culture wars, identity politics, etc.
 
 ``` r
 set.seed(99)
@@ -856,7 +817,7 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-33-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 ``` r
 ## agg to states --
@@ -914,9 +875,36 @@ ggplot() +
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](all-the-newness_files/figure-markdown_github/unnamed-chunk-36-1.png)
+![](all-the-newness_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
 ### Swing states & white working class
 
 White working class voters in swing states – and other American
 happenings –
+
+``` r
+p <- congress_south %>%
+  filter (year > 1911, chamber == 'House') %>%
+
+  ggplot(aes(x = nominate_dim1, 
+             y = nominate_dim2) ) +
+  
+          # annotate("path",
+          #      x=cos(seq(0,2*pi,length.out=300)),
+          #      y=sin(seq(0,2*pi,length.out=300)),
+          #      color='gray',
+          #      size = .25) +
+  
+  geom_point(aes(color = Member), 
+             size= 2.25,
+             shape = 17) + 
+  
+  scale_color_manual(values = c('#1a476f', '#8faabe',
+                                '#e19463', '#913a40')) +
+  
+  #facet_wrap(~year + congress) +
+  theme_minimal() +
+  theme(legend.title=element_blank(),
+        legend.position = 'bottom') +
+  labs(title="DW-Nominate ideology scores for the 111th US congress")
+```
