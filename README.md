@@ -55,8 +55,9 @@ html version of this guide can be downloaded
         House](#historical-composition-of-the-house)
         -   [V7 Political realignment in the
             South](#v7-political-realignment-in-the-south)
-        -   [V8 On the evolution of the Southern
-            Republican](#v8-on-the-evolution-of-the-southern-republican)
+        -   [V8a On the evolution of the Southern
+            Republican](#v8a-on-the-evolution-of-the-southern-republican)
+        -   [V8b A GIF](#v8b-a-gif)
     -   [Four generations of American
         lawmakers](#four-generations-of-american-lawmakers)
         -   [V9 Trends in the average age of House
@@ -80,7 +81,7 @@ html version of this guide can be downloaded
             America](#v16-the-white-working-class'-america)
         -   [V17 White working class and rural
             America](#v17-white-working-class-and-rural-america)
-    -   [Summary](#summary)
+    -   [Fin](#fin)
 
 Quick preliminaries
 -------------------
@@ -113,13 +114,9 @@ states <- states_sf %>%
 ``` r
 uscds <- tigris::congressional_districts(cb = TRUE) %>%
   select(GEOID) %>%
-  mutate(CD_AREA = round(log(as.numeric(
-    gsub(' m^2]', '', sf::st_area(.)))), 2)) %>%
-  # calculate cd area --
-  
   mutate(state_code = substr(GEOID, 1, 2),
          district_code = substr(GEOID, 3, 4)) 
-
+  
 laea <- sf::st_crs("+proj=laea +lat_0=30 +lon_0=-95") 
 ```
 
@@ -200,8 +197,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/RtmpQQ5bLs/Hall_members.csv"
-    ## [1] "/tmp/RtmpQQ5bLs/Sall_members.csv"
+    ## [1] "/tmp/RtmpXiTdBd/Hall_members.csv"
+    ## [1] "/tmp/RtmpXiTdBd/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -566,7 +563,7 @@ congress_south %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
-### V8 On the evolution of the Southern Republican
+### V8a On the evolution of the Southern Republican
 
 > **DW-NOMINATE ideal points in two dimensions**. The first dimension
 > captures ideological variation based in the standard
@@ -605,6 +602,45 @@ congress_south %>%
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
+
+### V8b A GIF
+
+``` r
+anim <-  congress_south %>%
+  ggplot(aes(x = nokken_poole_dim1, 
+             y = nokken_poole_dim2) ) +
+  
+          annotate("path",
+               x=cos(seq(0,2*pi,length.out=300)),
+               y=sin(seq(0,2*pi,length.out=300)),
+               color='gray',
+               size = .25) +
+  
+  geom_point(aes(color = Member), 
+             size= 2.25,
+             shape = 17) + 
+  
+  scale_color_manual(values = c('#1a476f', '#8faabe',
+                                '#e19463', '#913a40')) +
+  
+  theme_minimal() +
+  theme(legend.title=element_blank(),
+        legend.position = 'bottom') + 
+  
+  labs(title = "Congress: {frame_time}")  +
+  gganimate::transition_time(as.integer(congress)) +
+  gganimate::ease_aes('linear')
+
+gganimate::animate(anim, 
+                   fps = 4, 
+                   nframes = 50,
+                   height = 400,
+                   width = 550)
+
+# gganimate::anim_save("ideologies.gif")
+```
+
+![Farmers Market Finder Demo](ideologies.gif)
 
 ------------------------------------------------------------------------
 
@@ -654,7 +690,7 @@ congress %>%
   labs(title = "Average age of congress members by party") 
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 ### V10 Shifting distributions maybe
 
@@ -678,7 +714,7 @@ congress %>%
   labs(title="Age distributions in the House since 2009, by party")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-28-1.png)
 
 ### V11 Watergate babies and vestiges of Obama
 
@@ -722,7 +758,7 @@ freshmen1 %>%
   labs(title = "Freshman House members by party")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-28-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-29-1.png)
 
 ### V12 Introducing Millenials and Gen Xers
 
@@ -793,7 +829,7 @@ congress %>%
   labs(title = "Age distribution of the 116th House by party")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-31-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 ------------------------------------------------------------------------
 
@@ -864,7 +900,7 @@ base_viz +
        subtitle = "New Mexico's 2nd District")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-36-1.png)
 
 ### V14 ACS variables and margins of victory
 
@@ -892,7 +928,7 @@ gen %>%
   labs(title = "2019 ACS estimates vs. 2016 Trump margins")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-36-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
 
 ------------------------------------------------------------------------
 
@@ -997,7 +1033,7 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-40-1.png)
 
 ### V16 The White working class’ America
 
@@ -1057,12 +1093,18 @@ ggplot() +
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-42-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-43-1.png)
 
 ### V17 White working class and rural America
 
 > Degree of “rurality” operationalized as the size/geographic-area of a
 > given congressional district (in log sq meters).
+
+``` r
+uscds <- uscds %>%
+  mutate(CD_AREA = round(log(as.numeric(
+    gsub(' m^2]', '', sf::st_area(.)))), 2))
+```
 
 ``` r
 bp <- white_ed %>% 
@@ -1093,11 +1135,9 @@ bp %>%
   labs(title = "Degree of rurality ~ % White working ~ 2016 Trump margins")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-43-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-45-1.png)
 
 ------------------------------------------------------------------------
 
-Summary
--------
-
-![Farmers Market Finder Demo](ideologies.gif)
+Fin
+---

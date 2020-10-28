@@ -96,13 +96,9 @@ states <- states_sf %>%
 ```{r message=FALSE, warning=FALSE}
 uscds <- tigris::congressional_districts(cb = TRUE) %>%
   select(GEOID) %>%
-  mutate(CD_AREA = round(log(as.numeric(
-    gsub(' m^2]', '', sf::st_area(.)))), 2)) %>%
-  # calculate cd area --
-  
   mutate(state_code = substr(GEOID, 1, 2),
          district_code = substr(GEOID, 3, 4)) 
-
+  
 laea <- sf::st_crs("+proj=laea +lat_0=30 +lon_0=-95") 
 ```
 
@@ -556,7 +552,7 @@ congress_south %>%
 
 
 
-### V8 On the evolution of the Southern Republican
+### V8a On the evolution of the Southern Republican
 
 > **DW-NOMINATE ideal points in two dimensions**. The first dimension captures ideological variation based in the standard liberal-conservative divide. The second captures variation based in social conservatism that crosscuts political affiliation.  
 
@@ -592,6 +588,46 @@ congress_south %>%
        subtitle = 'In two dimensions: from 1955 to 2019')
 ```
 
+
+
+
+### V8b A GIF
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+anim <-  congress_south %>%
+  ggplot(aes(x = nokken_poole_dim1, 
+             y = nokken_poole_dim2) ) +
+  
+          annotate("path",
+               x=cos(seq(0,2*pi,length.out=300)),
+               y=sin(seq(0,2*pi,length.out=300)),
+               color='gray',
+               size = .25) +
+  
+  geom_point(aes(color = Member), 
+             size= 2.25,
+             shape = 17) + 
+  
+  scale_color_manual(values = c('#1a476f', '#8faabe',
+                                '#e19463', '#913a40')) +
+  
+  theme_minimal() +
+  theme(legend.title=element_blank(),
+        legend.position = 'bottom') + 
+  
+  labs(title = "Congress: {frame_time}")  +
+  gganimate::transition_time(as.integer(congress)) +
+  gganimate::ease_aes('linear')
+
+gganimate::animate(anim, 
+                   fps = 4, 
+                   nframes = 50,
+                   height = 400,
+                   width = 550)
+
+# gganimate::anim_save("ideologies.gif")
+```
+![Farmers Market Finder Demo](ideologies.gif)
 
 
 ---
@@ -1062,6 +1098,14 @@ ggplot() +
 
 > Degree of "rurality" operationalized as the size/geographic-area of a given congressional district (in log sq meters).
 
+```{r}
+uscds <- uscds %>%
+  mutate(CD_AREA = round(log(as.numeric(
+    gsub(' m^2]', '', sf::st_area(.)))), 2))
+```
+
+
+
 ```{r fig.height=6}
 bp <- white_ed %>% 
   select(GEOID, state_abbrev, district_code, group, per) %>%
@@ -1096,7 +1140,6 @@ bp %>%
 
 
 
-## Summary
+## Fin
 
 
-![Farmers Market Finder Demo](ideologies.gif)
