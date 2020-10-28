@@ -18,9 +18,12 @@ source("/home/jtimm/jt_work/GitHub/git_projects/render_toc.R")
 ![](README_files/figure-markdown_github/collage1.png)
 
 
-**An R-based guide** to accessing, exploring & visualizing US political data utilizing a collection of publicly available resources, including election returns for presidential and congressional races, lawmaker political ideologies, and congressional district demographics.  Data used in this guide have been collated from [Daily Kos](https://www.dailykos.com/), [MIT Election Data and Science Lab](MIT Election Data and Science Lab) and the R packages [tidycensus](https://walker-data.com/tidycensus/) & [Rvoteview](https://github.com/voteview/Rvoteview).
+**An R-based guide** to accessing, exploring & visualizing US political data via a collection of publicly available resources, including election returns for presidential and congressional races, political ideology scores for US lawmakers, and census-based characterizations of US congressional districts.  
 
-Hopefully **a useful open source & transparent framework** for investigating past & future election results and congresses using R. All work presented here can be reproduced in its entirety.
+Election returns used in this guide have been collated from [Daily Kos](https://www.dailykos.com/), [MIT Election Data and Science Lab](MIT Election Data and Science Lab) and Wikipedia; the R packages [Rvoteview](https://github.com/voteview/Rvoteview) & [tidycensus](https://walker-data.com/tidycensus/) are used extensively to characterize lawmakers/voting behavior and district demographics, respectively. 
+
+Hopefully **a useful open source & transparent framework** for investigating past & future election results and congresses using R. All work presented here can be reproduced in its entirety.  A stand-alone html version of this guide can be downloaded [here](https://github.com/jaytimm/American-political-data-and-R/blob/master/apdr-jtimm.html).  
+
 
 
 ```{r echo=FALSE}
@@ -360,7 +363,7 @@ sens <- congress %>%
 
 
 
-```{r fig.height=7, message=FALSE, warning=FALSE}
+```{r fig.height=7.5, message=FALSE, warning=FALSE}
 uspols::xsf_TileOutv10 %>%
   left_join(sens %>% filter (layer == 2)) %>%
   ggplot() + 
@@ -378,7 +381,7 @@ uspols::xsf_TileOutv10 %>%
   
   ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
                           aes(label = state_abbrev), 
-                          size = 1.5,
+                          size = 1.55,
                           color = 'white') +
   
   ggthemes::scale_fill_stata()+
@@ -1029,7 +1032,7 @@ ggplot() +
 
 
 
-### V17 White working class and rural America and Trump support
+### V17 White working class and rural America
 
 > Degree of "rurality" operationalized as the size/geographic-area of a given congressional district (in log sq meters).
 
@@ -1067,49 +1070,4 @@ bp %>%
 
 
 
-## A work in progress
-
-
-
-```{r eval=FALSE, include=FALSE}
-p <- congress_south %>%
-  filter (year > 1911, chamber == 'House') %>%
-
-  ggplot(aes(x = nominate_dim1, 
-             y = nominate_dim2) ) +
-  
-          # annotate("path",
-          #      x=cos(seq(0,2*pi,length.out=300)),
-          #      y=sin(seq(0,2*pi,length.out=300)),
-          #      color='gray',
-          #      size = .25) +
-  
-  geom_point(aes(color = Member), 
-             size= 2.25,
-             shape = 17) + 
-  
-  scale_color_manual(values = c('#1a476f', '#8faabe',
-                                '#e19463', '#913a40')) +
-  
-  #facet_wrap(~year + congress) +
-  theme_minimal() +
-  theme(legend.title=element_blank(),
-        legend.position = 'bottom') +
-  labs(title="DW-Nominate ideology scores for the 111th US congress")
-```
-
-
-
-```{r eval=FALSE, include=FALSE}
-p1 <- p + gganimate::transition_time(as.integer(congress)) +
-  labs(title = "Year: {frame_time}")
-gganimate::animate(p1, fps = 1)
-```
-
-
-
-
-
-
-
-
+## Summary

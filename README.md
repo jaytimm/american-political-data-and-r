@@ -6,18 +6,24 @@ American political data & R
 ![](README_files/figure-markdown_github/collage1.png)
 
 **An R-based guide** to accessing, exploring & visualizing US political
-data utilizing a collection of publicly available resources, including
-election returns for presidential and congressional races, lawmaker
-political ideologies, and congressional district demographics. Data used
-in this guide have been collated from [Daily
+data via a collection of publicly available resources, including
+election returns for presidential and congressional races, political
+ideology scores for US lawmakers, and census-based characterizations of
+US congressional districts.
+
+Election returns used in this guide have been collated from [Daily
 Kos](https://www.dailykos.com/), [MIT Election Data and Science
-Lab](MIT%20Election%20Data%20and%20Science%20Lab) and the R packages
-[tidycensus](https://walker-data.com/tidycensus/) &
-[Rvoteview](https://github.com/voteview/Rvoteview).
+Lab](MIT%20Election%20Data%20and%20Science%20Lab) and Wikipedia; the R
+packages [Rvoteview](https://github.com/voteview/Rvoteview) &
+[tidycensus](https://walker-data.com/tidycensus/) are used extensively
+to characterize lawmakers/voting behavior and district demographics,
+respectively.
 
 Hopefully **a useful open source & transparent framework** for
 investigating past & future election results and congresses using R. All
-work presented here can be reproduced in its entirety.
+work presented here can be reproduced in its entirety. A stand-alone
+html version of this guide can be downloaded
+[here](https://github.com/jaytimm/American-political-data-and-R/blob/master/apdr-jtimm.html).
 
 -   [American political data & R](#american-political-data-&-r)
     -   [Quick preliminaries](#quick-preliminaries)
@@ -70,9 +76,9 @@ work presented here can be reproduced in its entirety.
             distributions](#v15-race-work-class-distributions)
         -   [V16 The White working class’
             America](#v16-the-white-working-class'-america)
-        -   [V17 White working class and rural America and Trump
-            support](#v17-white-working-class-and-rural-america-and-trump-support)
-    -   [A work in progress](#a-work-in-progress)
+        -   [V17 White working class and rural
+            America](#v17-white-working-class-and-rural-america)
+    -   [Summary](#summary)
 
 Quick preliminaries
 -------------------
@@ -192,8 +198,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/RtmpFrs6rK/Hall_members.csv"
-    ## [1] "/tmp/RtmpFrs6rK/Sall_members.csv"
+    ## [1] "/tmp/Rtmpv7VfSK/Hall_members.csv"
+    ## [1] "/tmp/Rtmpv7VfSK/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -418,7 +424,7 @@ uspols::xsf_TileOutv10 %>%
   
   ggsflabel::geom_sf_text(data = uspols::xsf_TileInv10,
                           aes(label = state_abbrev), 
-                          size = 1.5,
+                          size = 1.55,
                           color = 'white') +
   
   ggthemes::scale_fill_stata()+
@@ -1051,7 +1057,7 @@ ggplot() +
 
 ![](README_files/figure-markdown_github/unnamed-chunk-41-1.png)
 
-### V17 White working class and rural America and Trump support
+### V17 White working class and rural America
 
 > Degree of “rurality” operationalized as the size/geographic-area of a
 > given congressional district (in log sq meters).
@@ -1089,5 +1095,5 @@ bp %>%
 
 ------------------------------------------------------------------------
 
-A work in progress
-------------------
+Summary
+-------
