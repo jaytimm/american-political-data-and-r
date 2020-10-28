@@ -5,6 +5,8 @@ American political data & R
 
 ![](README_files/figure-markdown_github/collage1.png)
 
+<br>
+
 **An R-based guide** to accessing, exploring & visualizing US political
 data via a collection of publicly available resources, including
 election returns for presidential and congressional races, political
@@ -23,7 +25,7 @@ Hopefully **a useful open source & transparent framework** for
 investigating past & future election results and congresses using R. All
 work presented here can be reproduced in its entirety. A stand-alone
 html version of this guide can be downloaded
-[here](https://github.com/jaytimm/American-political-data-and-R/blob/master/apdr-jtimm.html).
+[here](https://github.com/jaytimm/American-political-data-and-R/blob/master/README.html).
 
 -   [American political data & R](#american-political-data-&-r)
     -   [Quick preliminaries](#quick-preliminaries)
@@ -178,7 +180,7 @@ states_sf %>%
   facet_wrap(~type, ncol = 1) 
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
 ------------------------------------------------------------------------
 
@@ -198,8 +200,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/Rtmpv7VfSK/Hall_members.csv"
-    ## [1] "/tmp/Rtmpv7VfSK/Sall_members.csv"
+    ## [1] "/tmp/RtmpiuA0jb/Hall_members.csv"
+    ## [1] "/tmp/RtmpiuA0jb/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -276,7 +278,7 @@ uspols::xsf_TileOutv10 %>%
   labs(title = "Voting margins in Presidential elections since 1956")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-11-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
 ### V2 When each state last voted for a Democratic presidential nominee
 
@@ -328,7 +330,7 @@ uspols::xsf_TileOutv10 %>%
   labs(title = "When each state last voted for a Democratic presidential nominee")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-15-1.png)
 
 ### V3 Presidential elections and vote shares and crosses of gold
 
@@ -378,7 +380,7 @@ uspols::xsf_TileOutv10 %>%
   subtitle = "By state since 1864")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 ------------------------------------------------------------------------
 
@@ -437,7 +439,7 @@ uspols::xsf_TileOutv10 %>%
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 ### V5 Split delegations on the wane again
 
@@ -463,7 +465,7 @@ congress %>%
        caption = 'Data sources: VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 ### V6 The end of split-ticket voting for now
 
@@ -514,7 +516,7 @@ uspols::xsf_TileOutv10 %>%
 labs(title = "Pres-Senate split-tickets per general election year")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
 ------------------------------------------------------------------------
 
@@ -562,7 +564,7 @@ congress_south %>%
   labs(title = "House composition since 1921")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
 ### V8 On the evolution of the Southern Republican
 
@@ -602,7 +604,7 @@ congress_south %>%
        subtitle = 'In two dimensions: from 1955 to 2019')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-24-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
 ------------------------------------------------------------------------
 
@@ -652,7 +654,7 @@ congress %>%
   labs(title = "Average age of congress members by party") 
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
 ### V10 Shifting distributions maybe
 
@@ -676,7 +678,7 @@ congress %>%
   labs(title="Age distributions in the House since 2009, by party")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 ### V11 Watergate babies and vestiges of Obama
 
@@ -720,7 +722,7 @@ freshmen1 %>%
   labs(title = "Freshman House members by party")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-28-1.png)
 
 ### V12 Introducing Millenials and Gen Xers
 
@@ -791,7 +793,7 @@ congress %>%
   labs(title = "Age distribution of the 116th House by party")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-30-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
 ------------------------------------------------------------------------
 
@@ -862,7 +864,7 @@ base_viz +
        subtitle = "New Mexico's 2nd District")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
 ### V14 ACS variables and margins of victory
 
@@ -890,7 +892,7 @@ gen %>%
   labs(title = "2019 ACS estimates vs. 2016 Trump margins")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-36-1.png)
 
 ------------------------------------------------------------------------
 
@@ -995,7 +997,7 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-38-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 ### V16 The White working class’ America
 
@@ -1055,7 +1057,7 @@ ggplot() +
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-41-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-42-1.png)
 
 ### V17 White working class and rural America
 
@@ -1091,7 +1093,7 @@ bp %>%
   labs(title = "Degree of rurality ~ % White working ~ 2016 Trump margins")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-42-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-43-1.png)
 
 ------------------------------------------------------------------------
 
