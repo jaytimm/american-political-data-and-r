@@ -200,8 +200,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > 66 & chamber != 'President') })
 ```
 
-    ## [1] "/tmp/RtmpiuA0jb/Hall_members.csv"
-    ## [1] "/tmp/RtmpiuA0jb/Sall_members.csv"
+    ## [1] "/tmp/RtmpQQ5bLs/Hall_members.csv"
+    ## [1] "/tmp/RtmpQQ5bLs/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -1099,3 +1099,5 @@ bp %>%
 
 Summary
 -------
+
+![Farmers Market Finder Demo](ideologies.gif)
