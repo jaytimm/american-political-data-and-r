@@ -207,8 +207,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > con & chamber != 'President') }) #66
 ```
 
-    ## [1] "/tmp/RtmpdB5RrS/Hall_members.csv"
-    ## [1] "/tmp/RtmpdB5RrS/Sall_members.csv"
+    ## [1] "/tmp/Rtmp9IOJky/Hall_members.csv"
+    ## [1] "/tmp/Rtmp9IOJky/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -525,19 +525,29 @@ labs(title = "Pres-Senate split-tickets per general election year")
 
 ### Republican Senators and a minority of Americans
 
+> Yearly populations by state scraped from [FRED Economic
+> Data](https://fred.stlouisfed.org/release?rid=118), and made avaliable
+> as a table in the `sometables` package.
+
 ``` r
 library(devtools)
 devtools::install_github("jaytimm/sometables")
 library(tables) 
 ```
 
+> Senate seats held by Republicans via VoteView; population of states
+> represented by Reublican senators via FRED.
+
 ``` r
 yy <- congress %>%
   mutate(year = year + 1) %>%
   filter(chamber == 'Senate') %>%
+  
+  ## hand edit 
   filter(!(congress == '107' & 
              state_abbrev == 'VT' & 
              party_name == 'other')) %>%
+  
   group_by(year, state_abbrev, party_name) %>%
   summarize (n = n()) %>%
   group_by(year, state_abbrev) %>%
