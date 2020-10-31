@@ -207,8 +207,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > con & chamber != 'President') }) #66
 ```
 
-    ## [1] "/tmp/RtmpUb0FtL/Hall_members.csv"
-    ## [1] "/tmp/RtmpUb0FtL/Sall_members.csv"
+    ## [1] "/tmp/Rtmp8SUgsE/Hall_members.csv"
+    ## [1] "/tmp/Rtmp8SUgsE/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -280,7 +280,7 @@ uspols::xsf_TileOutv10 %>%
   scale_fill_distiller(palette = "RdBu", direction=-1) +
   facet_wrap(~year) +
   theme_minimal()+ theme_guide() +
-  labs(title = "Voting margins in Presidential elections since 1956")
+  labs(title = "Voting margins in Presidential elections since 1972")
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-13-1.png)
