@@ -1,7 +1,7 @@
 American political data & R
 ===========================
 
-*Updated: 2020-10-30*
+*Updated: 2020-10-31*
 
 ![](README_files/figure-markdown_github/collage1.png)
 
@@ -207,8 +207,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > con & chamber != 'President') }) #66
 ```
 
-    ## [1] "/tmp/Rtmp9IOJky/Hall_members.csv"
-    ## [1] "/tmp/Rtmp9IOJky/Sall_members.csv"
+    ## [1] "/tmp/RtmpUb0FtL/Hall_members.csv"
+    ## [1] "/tmp/RtmpUb0FtL/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -261,7 +261,7 @@ Historical presidential election results
 ``` r
 uspols::xsf_TileOutv10 %>%
   left_join(uspols::uspols_wiki_pres %>%
-              filter(year > 1955) %>%
+              filter(year > 1971) %>%
               mutate(margins = republican - democrat)) %>% 
   ggplot() +  
   geom_sf(aes(fill = margins),
