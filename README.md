@@ -38,7 +38,7 @@ html version of this guide can be downloaded
     -   [Historical presidential election
         results](#historical-presidential-election-results)
         -   [Voting margins in Presidential elections since
-            1956](#voting-margins-in-presidential-elections-since-1956)
+            1972](#voting-margins-in-presidential-elections-since-1972)
         -   [When each state last voted for a Democratic presidential
             nominee](#when-each-state-last-voted-for-a-democratic-presidential-nominee)
         -   [Presidential elections and vote shares and crosses of
@@ -207,8 +207,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > con & chamber != 'President') }) #66
 ```
 
-    ## [1] "/tmp/Rtmpo40qXu/Hall_members.csv"
-    ## [1] "/tmp/Rtmpo40qXu/Sall_members.csv"
+    ## [1] "/tmp/RtmpYB83LZ/Hall_members.csv"
+    ## [1] "/tmp/RtmpYB83LZ/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -251,7 +251,7 @@ library(uspols)
 Historical presidential election results
 ----------------------------------------
 
-### Voting margins in Presidential elections since 1956
+### Voting margins in Presidential elections since 1972
 
 > Historical Presidential election results by state [via
 > Wikipedia](https://github.com/jaytimm/uspols#4-wikipedia-presidential-returns-by-state-1864-).
