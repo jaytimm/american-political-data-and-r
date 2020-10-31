@@ -207,8 +207,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > con & chamber != 'President') }) #66
 ```
 
-    ## [1] "/tmp/Rtmp8aT386/Hall_members.csv"
-    ## [1] "/tmp/Rtmp8aT386/Sall_members.csv"
+    ## [1] "/tmp/RtmpnWh79B/Hall_members.csv"
+    ## [1] "/tmp/RtmpnWh79B/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -281,11 +281,11 @@ mp %>%
   
   #scale_fill_distiller(palette = "RdBu", direction=-1) +
   
-  scale_color_distiller(palette = "RdYlBu",  
+  scale_fill_distiller(palette = "RdYlBu",  
                         limit = max(abs(mp$margins)) * c(-1, 1)) +
   
   
-  facet_wrap(~year, ncol = 3) +
+  facet_wrap(~year, ncol = 4) +
   theme_minimal()+ theme_guide() +
   labs(title = "Voting margins in Presidential elections since 1972")
 ```
