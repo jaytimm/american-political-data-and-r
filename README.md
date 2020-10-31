@@ -207,8 +207,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > con & chamber != 'President') }) #66
 ```
 
-    ## [1] "/tmp/RtmpnWh79B/Hall_members.csv"
-    ## [1] "/tmp/RtmpnWh79B/Sall_members.csv"
+    ## [1] "/tmp/RtmpdhklDb/Hall_members.csv"
+    ## [1] "/tmp/RtmpdhklDb/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -279,11 +279,8 @@ mp %>%
                           size = 1.5,
                           color='black') +
   
-  #scale_fill_distiller(palette = "RdBu", direction=-1) +
-  
-  scale_fill_distiller(palette = "RdYlBu",  
+  scale_fill_distiller(palette = "RdBu",  
                         limit = max(abs(mp$margins)) * c(-1, 1)) +
-  
   
   facet_wrap(~year, ncol = 4) +
   theme_minimal()+ theme_guide() +
