@@ -207,8 +207,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > con & chamber != 'President') }) #66
 ```
 
-    ## [1] "/tmp/Rtmp8SUgsE/Hall_members.csv"
-    ## [1] "/tmp/Rtmp8SUgsE/Sall_members.csv"
+    ## [1] "/tmp/Rtmp8aT386/Hall_members.csv"
+    ## [1] "/tmp/Rtmp8aT386/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -259,10 +259,12 @@ Historical presidential election results
 > Kos](https://docs.google.com/spreadsheets/d/1LrBXlqrtSZwyYOkpEEXFwQggvtR0bHHTxs9kq4kjOjw/edit#gid=1278876419).
 
 ``` r
-uspols::xsf_TileOutv10 %>%
+mp <- uspols::xsf_TileOutv10 %>%
   left_join(uspols::uspols_wiki_pres %>%
               filter(year > 1971) %>%
-              mutate(margins = republican - democrat)) %>% 
+              mutate(margins = republican - democrat)) 
+
+mp %>% 
   ggplot() +  
   geom_sf(aes(fill = margins),
            color = 'darkgray', lwd = .15) +
@@ -277,8 +279,13 @@ uspols::xsf_TileOutv10 %>%
                           size = 1.5,
                           color='black') +
   
-  scale_fill_distiller(palette = "RdBu", direction=-1) +
-  facet_wrap(~year) +
+  #scale_fill_distiller(palette = "RdBu", direction=-1) +
+  
+  scale_color_distiller(palette = "RdYlBu",  
+                        limit = max(abs(mp$margins)) * c(-1, 1)) +
+  
+  
+  facet_wrap(~year, ncol = 3) +
   theme_minimal()+ theme_guide() +
   labs(title = "Voting margins in Presidential elections since 1972")
 ```
