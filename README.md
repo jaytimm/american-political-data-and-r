@@ -209,8 +209,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > con & chamber != 'President') }) #66
 ```
 
-    ## [1] "/tmp/RtmptxKQy9/Hall_members.csv"
-    ## [1] "/tmp/RtmptxKQy9/Sall_members.csv"
+    ## [1] "/tmp/RtmpILQ1G4/Hall_members.csv"
+    ## [1] "/tmp/RtmpILQ1G4/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -431,8 +431,7 @@ sens2 <- sens %>%
 
 ``` r
 uspols::xsf_TileOutv10 %>%
-  left_join(sens2 %>% filter(layer == 2,
-                             year > 1934)) %>%
+  left_join(sens2 %>% filter(layer == 2)) %>%
   ggplot() + 
   geom_sf(aes(fill = party_name),
           color = 'white', 
@@ -440,8 +439,7 @@ uspols::xsf_TileOutv10 %>%
           alpha = .85) + 
   
   geom_sf(data = uspols::xsf_TileInv10 %>%
-            left_join(sens2 %>% filter (layer == 1, 
-                                        year > 1934)), 
+            left_join(sens2 %>% filter (layer == 1)), 
           aes(fill = party_name),
           color = 'white', 
           lwd = 0.2,
@@ -457,8 +455,8 @@ uspols::xsf_TileOutv10 %>%
   theme_guide() +
   theme(legend.position = 'bottom') +
   
-  facet_wrap(~year + congress, nrow = 2) +
-  labs(title = "Senate composition by state since 1947",
+  facet_wrap(~year + congress) +
+  labs(title = "Senate composition by state since 1923",
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 

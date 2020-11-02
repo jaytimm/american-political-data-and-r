@@ -411,10 +411,9 @@ sens2 <- sens %>%
 
 
 
-```{r fig.height=7.5, message=FALSE, warning=FALSE}
+```{r fig.height=8, fig.width=12, message=FALSE, warning=FALSE}
 uspols::xsf_TileOutv10 %>%
-  left_join(sens2 %>% filter(layer == 2,
-                             year > 1934)) %>%
+  left_join(sens2 %>% filter(layer == 2)) %>%
   ggplot() + 
   geom_sf(aes(fill = party_name),
           color = 'white', 
@@ -422,8 +421,7 @@ uspols::xsf_TileOutv10 %>%
           alpha = .85) + 
   
   geom_sf(data = uspols::xsf_TileInv10 %>%
-            left_join(sens2 %>% filter (layer == 1, 
-                                        year > 1934)), 
+            left_join(sens2 %>% filter (layer == 1)), 
           aes(fill = party_name),
           color = 'white', 
           lwd = 0.2,
@@ -439,8 +437,8 @@ uspols::xsf_TileOutv10 %>%
   theme_guide() +
   theme(legend.position = 'bottom') +
   
-  facet_wrap(~year + congress, nrow = 2) +
-  labs(title = "Senate composition by state since 1947",
+  facet_wrap(~year + congress) +
+  labs(title = "Senate composition by state since 1923",
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
