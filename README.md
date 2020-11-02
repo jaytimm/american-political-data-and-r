@@ -1,7 +1,7 @@
 American political data & R
 ===========================
 
-*Updated: 2020-10-31*
+*Updated: 2020-11-02*
 
 ![](README_files/figure-markdown_github/collage1.png)
 
@@ -45,10 +45,12 @@ html version of this guide can be downloaded
             gold](#presidential-elections-and-vote-shares-and-crosses-of-gold)
     -   [Historical composition of the
         Senate](#historical-composition-of-the-senate)
-        -   [Split delegations and shifting
-            ideologies](#split-delegations-and-shifting-ideologies)
-        -   [Split delegations on the wane
-            again](#split-delegations-on-the-wane-again)
+        -   [Split Senate delegations and shifting
+            ideologies](#split-senate-delegations-and-shifting-ideologies)
+        -   [Split Senate delegations on the wane
+            again](#split-senate-delegations-on-the-wane-again)
+        -   [US Senate delegations, by party
+            affiliations](#us-senate-delegations,-by-party-affiliations)
         -   [The end of split-ticket voting for
             now](#the-end-of-split-ticket-voting-for-now)
         -   [Republican Senators and a minority of
@@ -207,8 +209,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > con & chamber != 'President') }) #66
 ```
 
-    ## [1] "/tmp/RtmpYB83LZ/Hall_members.csv"
-    ## [1] "/tmp/RtmpYB83LZ/Sall_members.csv"
+    ## [1] "/tmp/Rtmp4hdw6v/Hall_members.csv"
+    ## [1] "/tmp/Rtmp4hdw6v/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -396,30 +398,39 @@ uspols::xsf_TileOutv10 %>%
 Historical composition of the Senate
 ------------------------------------
 
-### Split delegations and shifting ideologies
+### Split Senate delegations and shifting ideologies
+
+> A **Senate delegation** for a given state is said to be **split** when
+> comprised of Senators from different parties, eg, one Republican and
+> one Democrat – as is the case with, eg, West Virginia in the (present)
+> 116th Congress.
 
 ``` r
 sens <- congress %>%
+  filter(chamber == 'Senate') %>%
   mutate(party_name = as.factor(party_name)) %>%
   mutate(party_name = forcats::fct_relevel(party_name, 
                                        'other', 
                                         after = 2)) %>%
-
-  filter(congress %in% c(74, 78, 82,
-                         86, 92, 98, 
-                         104, 110, 116),
-         chamber == 'Senate') %>%
-  arrange (state_abbrev, party_name) %>%
+  mutate(year = year + 1) %>%
   group_by(year, congress, state_abbrev) %>%
   mutate(layer = row_number())%>%
-  #rename(State = state_abbrev) %>%
+  slice(1:2) %>%
   ungroup() %>%
+  arrange (year, state_abbrev, party_name) %>%
   select(year, congress, state_abbrev, party_name, layer)
 ```
 
 ``` r
+sens2 <- sens %>%
+  filter(congress %in% c(68, 74, 80,
+                         86, 92, 98, 
+                         104, 110, 116))
+```
+
+``` r
 uspols::xsf_TileOutv10 %>%
-  left_join(sens %>% filter (layer == 2)) %>%
+  left_join(sens2 %>% filter(layer == 2)) %>%
   ggplot() + 
   geom_sf(aes(fill = party_name),
           color = 'white', 
@@ -427,7 +438,7 @@ uspols::xsf_TileOutv10 %>%
           alpha = .85) + 
   
   geom_sf(data = uspols::xsf_TileInv10 %>%
-            left_join(sens %>% filter (layer == 1)), 
+            left_join(sens2 %>% filter (layer == 1)), 
           aes(fill = party_name),
           color = 'white', 
           lwd = 0.2,
@@ -441,49 +452,95 @@ uspols::xsf_TileOutv10 %>%
   ggthemes::scale_fill_stata()+
   theme_minimal() + 
   theme_guide() +
-  theme(legend.position = 'none') +
+  theme(legend.position = 'bottom') +
   
-  facet_wrap(~(year+1)+congress) +
-  labs(title = "Senate composition by state since 1935",
+  facet_wrap(~year + congress) +
+  labs(title = "Senate composition by state since 1923",
        caption = 'Data sources: Daily Kos & VoteView')
-```
-
-![](README_files/figure-markdown_github/unnamed-chunk-20-1.png)
-
-### Split delegations on the wane again
-
-``` r
-congress %>%
-  filter(congress > 74, chamber == 'Senate') %>%
-  group_by(year, congress, state_abbrev) %>%
-  summarize(splits = length(unique(party_code))) %>%
-  filter(splits == 2) %>%
-  group_by(year, congress) %>%
-  summarize(n=n())%>%
-  ggplot() +
-  geom_line(aes(x = year, 
-                y= n), 
-            size = 1.5, 
-            color= 'steelblue') +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1),
-        axis.title.x=element_blank()) +
-  scale_x_continuous(breaks=seq(1935, 2019, 4)) +
-  
-  labs(title = "Split Senate delegations since 1935",
-       caption = 'Data sources: VoteView')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
-### The end of split-ticket voting for now
+### Split Senate delegations on the wane again
 
 ``` r
-splits <- uspols::uspols_wiki_pres %>% 
+split_senate <- sens %>%
+  group_by(year, congress, state_abbrev) %>%
+  summarize(splits = length(unique(party_name)),
+            parts = paste0(party_name, collapse = '-')) %>%
+  mutate(parts = ifelse(splits == 2, 'Split', paste0('Both ', gsub('-.*$', '', parts)))) 
+
+split_senate$parts <- factor(split_senate$parts, 
+                             levels = c('Both Democrat', 
+                                        'Split',
+                                        'Both Republican', 
+                                        'Both other')) 
+```
+
+``` r
+split_senate %>%
+  filter(splits == 2) %>%
+  group_by(year, congress) %>%
+  summarize(n = n()) %>%
+  ggplot() +
+  geom_bar(aes(x = year, 
+               y = n), 
+           color = 'white',
+           fill = 'steelblue',
+           stat = 'identity') +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1),
+        axis.title.x=element_blank()) +
+  scale_x_continuous(breaks = seq(1915, 2019, 4)) +
+  labs(title = "Split Senate delegations since 1915")
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
+
+### US Senate delegations, by party affiliations
+
+``` r
+split_pal <- c('#395f81', '#ead8c3', '#9e5055', '#b0bcc1')
+
+split_senate %>%
+  group_by(year, congress, parts) %>%
+  summarize(n = n()) %>%
+
+  ggplot(aes(x = year, 
+             y = n, 
+             fill = parts))+
+  geom_bar(alpha = 0.85, 
+           color = 'gray', 
+           lwd = .25,
+           stat = 'identity') +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  theme(legend.position = "bottom",
+        legend.title=element_blank())+
+  scale_fill_manual(values = split_pal) +
+  scale_x_continuous(breaks = seq(1915, 2019, 4)) +
+  xlab('') +
+  ggtitle('US Senate delegations, by party affiliations')
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-24-1.png)
+
+### The end of split-ticket voting for now
+
+> Split-ticket voting is when a voter casts votes for candidates of
+> different parties across multiple offices in a given election.
+> Split-ticket voting contrasts with straight-ticket voting. Here, we
+> consider one instance of split-ticket voting: President-Senator splits
+> at the state-level.
+
+``` r
+splits <- uspols::uspols_wiki_pres %>% ###
+  
   rename(party_pres = party_win) %>%
   filter(year >= 1976) %>%
   select(year, state_abbrev, party_pres) %>%
-  inner_join(uspols::uspols_medsl_senate, 
+  
+  inner_join(uspols::uspols_medsl_senate, ###
          by = c('year', 'state_abbrev')) %>%
   mutate(split = ifelse(party_pres != party_win, 1, 0)) %>%
   complete(year, state_abbrev) 
@@ -525,7 +582,7 @@ uspols::xsf_TileOutv10 %>%
 labs(title = "Pres-Senate split-tickets per general election year")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
 ### Republican Senators and a minority of Americans
 
@@ -543,28 +600,12 @@ library(tables)
 > represented by Reublican senators via FRED.
 
 ``` r
-yy <- congress %>%
-  mutate(year = year + 1) %>%
-  filter(chamber == 'Senate') %>%
-  
-  ## hand edit 
-  filter(!(congress == '107' & 
-             state_abbrev == 'VT' & 
-             party_name == 'other')) %>%
-  
-  group_by(year, state_abbrev, party_name) %>%
-  summarize (n = n()) %>%
-  group_by(year, state_abbrev) %>%
-  mutate(ps = length(unique(party_name))) %>%
-  mutate(n = ifelse(ps == 1, 2, 1)) %>%
+wpops <- sens %>% #yy %>%
   left_join(sometables::pop_us_states, 
-            by = c('year', 'state_abbrev')) %>%
-  select(-ps) %>%
-  ungroup()
-
-yy1 <- yy %>%
+            by = c('year', 'state_abbrev')) %>% #yy %>%
   group_by(year, party_name) %>%
-  summarize(n = sum(n),
+  summarize(n = n(),
+            #n = sum(n),
             pop = sum(pop)) %>%
   group_by(year) %>%
   mutate(Senate_share = round(n/sum(n) * 100, 1),
@@ -579,7 +620,7 @@ yy1 <- yy %>%
 > Repbulican senator.
 
 ``` r
-yy1 %>%
+wpops %>%
   ggplot() +
   geom_rect(aes(xmin = 2015, 
                 xmax = 2019,
@@ -596,14 +637,14 @@ yy1 %>%
   theme_minimal() +
   theme(legend.position = 'bottom',
         axis.text.x = element_text(angle = 90),
-        axis.title.x=element_blank(),
-        legend.title=element_blank()) +
+        axis.title.x = element_blank(),
+        legend.title = element_blank()) +
   
-  scale_x_continuous(breaks = seq(min(yy1$year), max(yy1$year), 4)) +
+  scale_x_continuous(breaks = seq(min(wpops$year), max(wpops$year), 4)) +
   labs(subtitle = "Republican Senate share v. Share Americans represented by Republican senator") 
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-29-1.png)
 
 ------------------------------------------------------------------------
 
@@ -651,7 +692,7 @@ congress_south %>%
   labs(title = "House composition since 1921")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-28-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
 ### On the evolution of the Southern Republican
 
@@ -691,7 +732,7 @@ congress_south %>%
        subtitle = 'In two dimensions: from 1955 to 2019')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 ### A GIF
 
@@ -780,7 +821,7 @@ congress %>%
   labs(title = "Average age of congress members by party") 
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-31-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 ### Shifting distributions maybe
 
@@ -804,7 +845,7 @@ congress %>%
   labs(title="Age distributions in the House since 2009, by party")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
 ### Watergate babies and vestiges of Obama
 
@@ -848,7 +889,7 @@ freshmen1 %>%
   labs(title = "Freshman House members by party")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-36-1.png)
 
 ### Introducing Millenials and Gen Xers
 
@@ -919,7 +960,7 @@ congress %>%
   labs(title = "Age distribution of the 116th House by party")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-36-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 ------------------------------------------------------------------------
 
@@ -990,7 +1031,7 @@ base_viz +
        subtitle = "New Mexico's 2nd District")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-40-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-43-1.png)
 
 ### ACS variables and margins of victory
 
@@ -1018,7 +1059,7 @@ gen %>%
   labs(title = "2019 ACS estimates vs. 2016 Trump margins")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-41-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-44-1.png)
 
 ------------------------------------------------------------------------
 
@@ -1123,7 +1164,7 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-44-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-47-1.png)
 
 ### The White working class’ America
 
@@ -1183,7 +1224,7 @@ ggplot() +
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-47-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-50-1.png)
 
 ### White working class and rural America
 
@@ -1225,7 +1266,7 @@ bp %>%
   labs(title = "Degree of rurality ~ % White working ~ 2016 Trump margins")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-49-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-52-1.png)
 
 ------------------------------------------------------------------------
 
