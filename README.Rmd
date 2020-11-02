@@ -479,7 +479,7 @@ split_senate %>%
 ```
 
 
-### US Senate delegations, by party affiliations
+### US Senate delegations by party composition
 
 ```{r fig.height=6, message=FALSE, warning=FALSE}
 split_pal <- c('#395f81', '#ead8c3', '#9e5055', '#b0bcc1')

@@ -49,8 +49,8 @@ html version of this guide can be downloaded
             ideologies](#split-senate-delegations-and-shifting-ideologies)
         -   [Split Senate delegations on the wane
             again](#split-senate-delegations-on-the-wane-again)
-        -   [US Senate delegations, by party
-            affiliations](#us-senate-delegations,-by-party-affiliations)
+        -   [US Senate delegations by party
+            composition](#us-senate-delegations-by-party-composition)
         -   [The end of split-ticket voting for
             now](#the-end-of-split-ticket-voting-for-now)
         -   [Republican Senators and a minority of
@@ -209,8 +209,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > con & chamber != 'President') }) #66
 ```
 
-    ## [1] "/tmp/Rtmp4hdw6v/Hall_members.csv"
-    ## [1] "/tmp/Rtmp4hdw6v/Sall_members.csv"
+    ## [1] "/tmp/RtmpzKIdbe/Hall_members.csv"
+    ## [1] "/tmp/RtmpzKIdbe/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -497,7 +497,7 @@ split_senate %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
-### US Senate delegations, by party affiliations
+### US Senate delegations by party composition
 
 ``` r
 split_pal <- c('#395f81', '#ead8c3', '#9e5055', '#b0bcc1')
