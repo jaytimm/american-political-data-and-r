@@ -209,8 +209,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > con & chamber != 'President') }) #66
 ```
 
-    ## [1] "/tmp/RtmpzKIdbe/Hall_members.csv"
-    ## [1] "/tmp/RtmpzKIdbe/Sall_members.csv"
+    ## [1] "/tmp/Rtmpb9OwwA/Hall_members.csv"
+    ## [1] "/tmp/Rtmpb9OwwA/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -468,7 +468,10 @@ split_senate <- sens %>%
   group_by(year, congress, state_abbrev) %>%
   summarize(splits = length(unique(party_name)),
             parts = paste0(party_name, collapse = '-')) %>%
-  mutate(parts = ifelse(splits == 2, 'Split', paste0('Both ', gsub('-.*$', '', parts)))) 
+  mutate(parts = ifelse(splits == 2, 
+                        'Split', 
+                        paste0('Both ', 
+                               gsub('-.*$', '', parts)))) 
 
 split_senate$parts <- factor(split_senate$parts, 
                              levels = c('Both Democrat', 
@@ -520,7 +523,7 @@ split_senate %>%
   scale_fill_manual(values = split_pal) +
   scale_x_continuous(breaks = seq(1915, 2019, 4)) +
   xlab('') +
-  ggtitle('US Senate delegations, by party affiliations')
+  ggtitle('US Senate delegations, by party composition')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-24-1.png)
