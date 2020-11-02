@@ -411,7 +411,7 @@ sens2 <- sens %>%
 
 
 
-```{r fig.height=8, fig.width=12, message=FALSE, warning=FALSE}
+```{r fig.height=8, message=FALSE, warning=FALSE}
 uspols::xsf_TileOutv10 %>%
   left_join(sens2 %>% filter(layer == 2)) %>%
   ggplot() + 
