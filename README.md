@@ -209,8 +209,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > con & chamber != 'President') }) #66
 ```
 
-    ## [1] "/tmp/RtmphVxBtn/Hall_members.csv"
-    ## [1] "/tmp/RtmphVxBtn/Sall_members.csv"
+    ## [1] "/tmp/Rtmp9PudXI/Hall_members.csv"
+    ## [1] "/tmp/Rtmp9PudXI/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -681,7 +681,8 @@ congress_south %>%
   
   geom_hline(yintercept = 0.5, color = 'white', linetype = 2) +
 
-  scale_x_continuous(breaks=seq(1921,2018,4)) +
+  scale_x_continuous(breaks=seq(min(congress_south$year+1),
+                                max(congress_south$year+ 1), 4)) +
   scale_fill_manual(values = c('#1a476f', '#8faabe',
                                 '#e19463', '#913a40')) +
   
@@ -693,7 +694,7 @@ congress_south %>%
         axis.text.y=element_blank(),
         axis.text.x = element_text(angle = 90, hjust = 1)) +
   
-  labs(title = "House composition since 1921")
+  labs(title = "House composition since 1915")
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-31-1.png)
