@@ -532,7 +532,7 @@ splits <- uspols::uspols_wiki_pres %>% ###
 
 
 
-```{r fig.height=8.5, message=FALSE, warning=FALSE}
+```{r fig.height=9.5, message=FALSE, warning=FALSE}
 year <- seq(from = 1976, to = 2016, by = 2)
 class <- paste0('Class-', c(rep(1:3,7)))
 df <- data.frame(year, class)
