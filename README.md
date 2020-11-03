@@ -209,8 +209,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > con & chamber != 'President') }) #66
 ```
 
-    ## [1] "/tmp/RtmpyqbsmC/Hall_members.csv"
-    ## [1] "/tmp/RtmpyqbsmC/Sall_members.csv"
+    ## [1] "/tmp/RtmphaMl6P/Hall_members.csv"
+    ## [1] "/tmp/RtmphaMl6P/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -559,6 +559,7 @@ df <- data.frame(year, class)
 uspols::xsf_TileOutv10 %>%
   left_join(splits, by = 'state_abbrev') %>%
   left_join(df, by = 'year') %>%
+  filter(year > 1980) %>% # cleaner viz
   
   mutate (split1 = case_when (split == 0 ~ 'Straight-ticket',
                              split == 1 ~ 'Split-ticket',
@@ -579,7 +580,7 @@ uspols::xsf_TileOutv10 %>%
 
   scale_fill_manual(values = c('#8faabe', '#55752f', 
                                '#dae2ba')) + #, 
-  facet_wrap(~year + class, ncol = 3) +
+  facet_wrap(~year + class) +
   theme_minimal() + 
   theme_guide() +
   theme(legend.position = 'bottom') +
