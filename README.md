@@ -13,7 +13,7 @@ election returns for presidential and congressional races, political
 ideology scores for US lawmakers, and census-based characterizations of
 US congressional districts.
 
-Election returns used in this guide have been collated from [Daily
+Election returns have been collated from [Daily
 Kos](https://www.dailykos.com/), [MIT Election Data and Science
 Lab](MIT%20Election%20Data%20and%20Science%20Lab) and Wikipedia; the R
 packages [Rvoteview](https://github.com/voteview/Rvoteview) &
@@ -209,8 +209,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > con & chamber != 'President') }) #66
 ```
 
-    ## [1] "/tmp/RtmphaMl6P/Hall_members.csv"
-    ## [1] "/tmp/RtmphaMl6P/Sall_members.csv"
+    ## [1] "/tmp/RtmpS4aMJR/Hall_members.csv"
+    ## [1] "/tmp/RtmpS4aMJR/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%

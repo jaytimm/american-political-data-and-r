@@ -5,6 +5,8 @@ output:
 ---
   
 # American political data & R
+  
+  
 
 ```{r eval=FALSE, include=FALSE}
 
@@ -48,7 +50,7 @@ source("/home/jtimm/jt_work/GitHub/git_projects/render_toc.R")
 
 **An R-based guide** to accessing, exploring & visualizing US political data via a collection of publicly available resources, including election returns for presidential and congressional races, political ideology scores for US lawmakers, and census-based characterizations of US congressional districts.  
 
-Election returns used in this guide have been collated from [Daily Kos](https://www.dailykos.com/), [MIT Election Data and Science Lab](MIT Election Data and Science Lab) and Wikipedia; the R packages [Rvoteview](https://github.com/voteview/Rvoteview) & [tidycensus](https://walker-data.com/tidycensus/) are used extensively to characterize lawmakers/voting behavior and district demographics, respectively. 
+Election returns have been collated from [Daily Kos](https://www.dailykos.com/), [MIT Election Data and Science Lab](MIT Election Data and Science Lab) and Wikipedia; the R packages [Rvoteview](https://github.com/voteview/Rvoteview) & [tidycensus](https://walker-data.com/tidycensus/) are used extensively to characterize lawmakers/voting behavior and district demographics, respectively. 
 
 Hopefully **a useful open source & transparent framework** for investigating past & future election results and congresses using R. All work presented here can be reproduced in its entirety.  A stand-alone html version of this guide can be downloaded [here](https://github.com/jaytimm/American-political-data-and-R/blob/master/README.html).  
 
