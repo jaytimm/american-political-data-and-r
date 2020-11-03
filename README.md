@@ -209,8 +209,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > con & chamber != 'President') }) #66
 ```
 
-    ## [1] "/tmp/Rtmp9PudXI/Hall_members.csv"
-    ## [1] "/tmp/Rtmp9PudXI/Sall_members.csv"
+    ## [1] "/tmp/RtmpjSbR2h/Hall_members.csv"
+    ## [1] "/tmp/RtmpjSbR2h/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -579,7 +579,7 @@ uspols::xsf_TileOutv10 %>%
 
   scale_fill_manual(values = c('#8faabe', '#55752f', 
                                '#dae2ba')) + #, 
-  facet_wrap(~year + class) +
+  facet_wrap(~year + class, ncol = 3) +
   theme_minimal() + 
   theme_guide() +
   theme(legend.position = 'bottom') +
