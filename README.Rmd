@@ -374,6 +374,69 @@ uspols::xsf_TileOutv10 %>%
 ```
 
 
+
+### Fall of the Blue Wall - 2016
+
+> A county-level perspective on 
+
+```{r message=FALSE, warning=FALSE}
+pops <- tidycensus::get_acs(geography = 'county',
+                            variables = 'DP05_0001',
+                            year = 2018,
+                            survey = 'acs5', 
+                            geometry = T) %>%
+  filter(!grepl(paste0('^', nonx, collapse ='|'), GEOID)) %>%
+  sf::st_transform(laea)
+```
+
+
+> Romeny margins in 2012 - Trump margins in 2016 --
+
+```{r message=FALSE, warning=FALSE}
+deltas <- uspols::medsl_pres_county %>% ## address this
+  filter(!is.na(GEOID)) %>%
+  filter(year %in% c(2012, 2016)) %>%
+  mutate(year = paste0('X', year),
+         margins = republican - democrat) %>%
+  select(GEOID, year, margins) %>%
+  spread(year, margins) %>%
+  mutate(delta = X2016 - X2012)
+
+pops_deltas <- deltas %>%
+  left_join(pops, by = 'GEOID')
+```
+
+
+
+```{r fig.height=6, message=FALSE, warning=FALSE}
+points <-  sf::st_centroid(pops) %>%
+  left_join(deltas, by = 'GEOID')
+
+pops %>%
+  ggplot() + 
+  geom_sf(#aes(fill = 'white'), 
+    fill = 'lightgray',
+          color = 'gray',
+          size = .25) + 
+  
+  geom_sf(data = points,
+          aes(size = estimate,
+              color = delta)) + #, alpha = .5
+  
+  scale_color_distiller(palette = "RdBu",  
+                        limit = max(abs(points$delta)) * c(-1, 1)) +
+  
+  theme_minimal() +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        legend.position = 'bottom') +
+  labs(title = 'The Fall of the Blue Wall (ca. 2016)')
+```
+
+
+
 ---
 
 

@@ -1,7 +1,7 @@
 American political data & R
 ===========================
 
-*Updated: 2020-11-02*
+*Updated: 2020-11-09*
 
 ![](README_files/figure-markdown_github/collage1.png)
 
@@ -43,6 +43,8 @@ html version of this guide can be downloaded
             nominee](#when-each-state-last-voted-for-a-democratic-presidential-nominee)
         -   [Presidential elections and vote shares and crosses of
             gold](#presidential-elections-and-vote-shares-and-crosses-of-gold)
+        -   [Fall of the Blue Wall -
+            2016](#fall-of-the-blue-wall---2016)
     -   [Historical composition of the
         Senate](#historical-composition-of-the-senate)
         -   [Split Senate delegations and shifting
@@ -209,8 +211,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > con & chamber != 'President') }) #66
 ```
 
-    ## [1] "/tmp/RtmpS4aMJR/Hall_members.csv"
-    ## [1] "/tmp/RtmpS4aMJR/Sall_members.csv"
+    ## [1] "/tmp/RtmpRP9Wdt/Hall_members.csv"
+    ## [1] "/tmp/RtmpRP9Wdt/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -393,6 +395,65 @@ uspols::xsf_TileOutv10 %>%
 
 ![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
+### Fall of the Blue Wall - 2016
+
+> A county-level perspective on
+
+``` r
+pops <- tidycensus::get_acs(geography = 'county',
+                            variables = 'DP05_0001',
+                            year = 2018,
+                            survey = 'acs5', 
+                            geometry = T) %>%
+  filter(!grepl(paste0('^', nonx, collapse ='|'), GEOID)) %>%
+  sf::st_transform(laea)
+```
+
+> Romeny margins in 2012 - Trump margins in 2016 –
+
+``` r
+deltas <- uspols::medsl_pres_county %>% ## address this
+  filter(!is.na(GEOID)) %>%
+  filter(year %in% c(2012, 2016)) %>%
+  mutate(year = paste0('X', year),
+         margins = republican - democrat) %>%
+  select(GEOID, year, margins) %>%
+  spread(year, margins) %>%
+  mutate(delta = X2016 - X2012)
+
+pops_deltas <- deltas %>%
+  left_join(pops, by = 'GEOID')
+```
+
+``` r
+points <-  sf::st_centroid(pops) %>%
+  left_join(deltas, by = 'GEOID')
+
+pops %>%
+  ggplot() + 
+  geom_sf(#aes(fill = 'white'), 
+    fill = 'lightgray',
+          color = 'gray',
+          size = .25) + 
+  
+  geom_sf(data = points,
+          aes(size = estimate,
+              color = delta)) + #, alpha = .5
+  
+  scale_color_distiller(palette = "RdBu",  
+                        limit = max(abs(points$delta)) * c(-1, 1)) +
+  
+  theme_minimal() +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        legend.position = 'bottom') +
+  labs(title = 'The Fall of the Blue Wall (ca. 2016)')
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-21-1.png)
+
 ------------------------------------------------------------------------
 
 Historical composition of the Senate
@@ -460,7 +521,7 @@ uspols::xsf_TileOutv10 %>%
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
 ### Split Senate delegations on the wane again
 
@@ -499,7 +560,7 @@ split_senate %>%
   labs(title = "Split Senate delegations since 1915")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
 
 ### US Senate delegations by party composition
 
@@ -527,7 +588,7 @@ split_senate %>%
   ggtitle('US Senate delegations, by party composition')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-24-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 ### The end of split-ticket voting for now
 
@@ -587,7 +648,7 @@ uspols::xsf_TileOutv10 %>%
 labs(title = "Pres-Senate split-tickets per general election year")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-29-1.png)
 
 ### Republican Senators and a minority of Americans
 
@@ -649,7 +710,7 @@ wpops %>%
   labs(subtitle = "Republican Senate share v. Share Americans represented by Republican senator") 
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 ------------------------------------------------------------------------
 
@@ -698,7 +759,7 @@ congress_south %>%
   labs(title = "House composition since 1915")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-31-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 ### On the evolution of the Southern Republican
 
@@ -738,7 +799,7 @@ congress_south %>%
        subtitle = 'In two dimensions: from 1955 to 2019')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
 ### A GIF
 
@@ -827,7 +888,7 @@ congress %>%
   labs(title = "Average age of congress members by party") 
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
 
 ### Shifting distributions maybe
 
@@ -851,7 +912,7 @@ congress %>%
   labs(title="Age distributions in the House since 2009, by party")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-38-1.png)
 
 ### Watergate babies and vestiges of Obama
 
@@ -895,7 +956,7 @@ freshmen1 %>%
   labs(title = "Freshman House members by party")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-36-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 ### Introducing Millenials and Gen Xers
 
@@ -966,7 +1027,7 @@ congress %>%
   labs(title = "Age distribution of the 116th House by party")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-42-1.png)
 
 ------------------------------------------------------------------------
 
@@ -1037,7 +1098,7 @@ base_viz +
        subtitle = "New Mexico's 2nd District")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-43-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-46-1.png)
 
 ### ACS variables and margins of victory
 
@@ -1065,7 +1126,7 @@ gen %>%
   labs(title = "2019 ACS estimates vs. 2016 Trump margins")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-44-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-47-1.png)
 
 ------------------------------------------------------------------------
 
@@ -1170,7 +1231,7 @@ white_ed %>%
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-47-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-50-1.png)
 
 ### The White working class’ America
 
@@ -1230,7 +1291,7 @@ ggplot() +
        caption = 'Source: ACS 1-Year estimates, 2019, Table C15002')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-50-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-53-1.png)
 
 ### White working class and rural America
 
@@ -1272,7 +1333,7 @@ bp %>%
   labs(title = "Degree of rurality ~ % White working ~ 2016 Trump margins")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-52-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-55-1.png)
 
 ------------------------------------------------------------------------
 
