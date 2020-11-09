@@ -377,6 +377,8 @@ uspols::xsf_TileOutv10 %>%
 
 ### Fall of the Blue Wall - 2016
 
+> And the disdain of Utah.
+
 ```{r message=FALSE, warning=FALSE}
 counties <- tigris::counties(cb = TRUE) %>% 
   filter(!STATEFP %in% nonx) %>%

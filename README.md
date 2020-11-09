@@ -211,8 +211,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > con & chamber != 'President') }) #66
 ```
 
-    ## [1] "/tmp/Rtmp5Pr0EQ/Hall_members.csv"
-    ## [1] "/tmp/Rtmp5Pr0EQ/Sall_members.csv"
+    ## [1] "/tmp/RtmptThkYl/Hall_members.csv"
+    ## [1] "/tmp/RtmptThkYl/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -396,6 +396,8 @@ uspols::xsf_TileOutv10 %>%
 ![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 ### Fall of the Blue Wall - 2016
+
+> And the disdain of Utah.
 
 ``` r
 counties <- tigris::counties(cb = TRUE) %>% 
