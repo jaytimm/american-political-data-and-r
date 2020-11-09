@@ -211,8 +211,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(congress > con & chamber != 'President') }) #66
 ```
 
-    ## [1] "/tmp/RtmpRP9Wdt/Hall_members.csv"
-    ## [1] "/tmp/RtmpRP9Wdt/Sall_members.csv"
+    ## [1] "/tmp/Rtmp4FHCzs/Hall_members.csv"
+    ## [1] "/tmp/Rtmp4FHCzs/Sall_members.csv"
 
 ``` r
 congress <- vvo %>%
@@ -397,19 +397,15 @@ uspols::xsf_TileOutv10 %>%
 
 ### Fall of the Blue Wall - 2016
 
-> A county-level perspective on
+> A county-level perspective:
 
 ``` r
-pops <- tidycensus::get_acs(geography = 'county',
-                            variables = 'DP05_0001',
-                            year = 2018,
-                            survey = 'acs5', 
-                            geometry = T) %>%
-  filter(!grepl(paste0('^', nonx, collapse ='|'), GEOID)) %>%
+counties <- tigris::counties(cb = TRUE) %>% 
+  filter(!STATEFP %in% nonx) %>%
   sf::st_transform(laea)
 ```
 
-> Romeny margins in 2012 - Trump margins in 2016 –
+> Trump margins in 2016 *minus* Romney margins in 2012.
 
 ``` r
 deltas <- uspols::medsl_pres_county %>% ## address this
@@ -420,28 +416,19 @@ deltas <- uspols::medsl_pres_county %>% ## address this
   select(GEOID, year, margins) %>%
   spread(year, margins) %>%
   mutate(delta = X2016 - X2012)
-
-pops_deltas <- deltas %>%
-  left_join(pops, by = 'GEOID')
 ```
 
 ``` r
-points <-  sf::st_centroid(pops) %>%
-  left_join(deltas, by = 'GEOID')
-
-pops %>%
-  ggplot() + 
-  geom_sf(#aes(fill = 'white'), 
-    fill = 'lightgray',
+counties %>%
+  left_join(deltas, by = 'GEOID') %>%
+  ggplot() +
+  
+  geom_sf(aes(fill = delta),
           color = 'gray',
           size = .25) + 
   
-  geom_sf(data = points,
-          aes(size = estimate,
-              color = delta)) + #, alpha = .5
-  
-  scale_color_distiller(palette = "RdBu",  
-                        limit = max(abs(points$delta)) * c(-1, 1)) +
+  scale_fill_distiller(palette = "RdYlBu",  
+                        limit = max(abs(deltas$delta)) * c(-1, 1)) +
   
   theme_minimal() +
   theme(axis.title.x=element_blank(),
