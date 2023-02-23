@@ -596,7 +596,7 @@ PresElectionResults::xsf_TileOutv10 |>
 
 ### Split Senate delegations on the wane again
 
-> the lowest they have been in the last 100 years -- 
+> With three more in danger come 2024 -- Montanta, West Virginia, and Ohio.
 
 ```{r message=FALSE, warning=FALSE}
 split_senate <- sens |>
@@ -872,6 +872,7 @@ sens00 |>
             size = 1) +
   ggthemes::scale_color_stata() +
   theme_minimal() +
+  theme(legend.position = 'top') +
   ggtitle('Generational profiles in the US Senate')
 ```
 

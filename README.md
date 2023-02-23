@@ -184,8 +184,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(chamber != 'President') }) 
 ```
 
-    ## [1] "/tmp/RtmpSPGbpo/Hall_members.csv"
-    ## [1] "/tmp/RtmpSPGbpo/Sall_members.csv"
+    ## [1] "/tmp/RtmpqG4MHj/Hall_members.csv"
+    ## [1] "/tmp/RtmpqG4MHj/Sall_members.csv"
 
 ``` r
 congress00 <- vvo |>
@@ -571,7 +571,8 @@ PresElectionResults::xsf_TileOutv10 |>
 
 ### Split Senate delegations on the wane again
 
-> the lowest they have been in the last 100 years –
+> With three more in danger come 2024 – Montanta, West Virginia, and
+> Ohio.
 
 ``` r
 split_senate <- sens |>
@@ -865,6 +866,7 @@ sens00 |>
             size = 1) +
   ggthemes::scale_color_stata() +
   theme_minimal() +
+  theme(legend.position = 'top') +
   ggtitle('Generational profiles in the US Senate')
 ```
 
