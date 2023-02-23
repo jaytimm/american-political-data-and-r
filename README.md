@@ -7,14 +7,20 @@
 <br>
 
 **An R-based guide** to accessing, exploring & visualizing US political
-data via a collection of publicly available resources. Winter 2023
-version.
+data via a collection of publicly available resources.
 
 Election returns have been collated from [Daily
 Kos](https://www.dailykos.com/), [MIT Election Data and Science
 Lab](MIT%20Election%20Data%20and%20Science%20Lab) and Wikipedia; the R
 package [Rvoteview](https://github.com/voteview/Rvoteview) is used
 extensively to characterize lawmakers and congress.
+
+**Winter 2023 version**. Most plots have been updated, some added, some
+abandoned. I have removed all census based examples this time around.
+And focused more on national-level Presidential election results, as
+well as generational control in congress. Previous versions are
+available
+[here](https://github.com/jaytimm/american-political-data-and-r/tree/master/versions).
 
 Hopefully **a useful open source & transparent framework** for
 investigating past & future election results and congresses using R. All
@@ -184,8 +190,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(chamber != 'President') }) 
 ```
 
-    ## [1] "/tmp/Rtmp1VzgJb/Hall_members.csv"
-    ## [1] "/tmp/Rtmp1VzgJb/Sall_members.csv"
+    ## [1] "/tmp/RtmpfANRpt/Hall_members.csv"
+    ## [1] "/tmp/RtmpfANRpt/Sall_members.csv"
 
 ``` r
 congress00 <- vvo |>

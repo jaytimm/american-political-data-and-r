@@ -46,10 +46,11 @@ source("/home/jtimm/pCloudDrive/GitHub/git-projects/render_toc.r")
 
 <br>
 
-**An R-based guide** to accessing, exploring & visualizing US political data via a collection of publicly available resources.  Winter 2023 version.
+**An R-based guide** to accessing, exploring & visualizing US political data via a collection of publicly available resources.  
 
 Election returns have been collated from [Daily Kos](https://www.dailykos.com/), [MIT Election Data and Science Lab](MIT Election Data and Science Lab) and Wikipedia; the R package [Rvoteview](https://github.com/voteview/Rvoteview) is used extensively to characterize lawmakers and congress.
 
+**Winter 2023 version**.  Most plots have been updated, some added, some abandoned.  I have removed all census based examples this time around.  And focused more on national-level Presidential election results, as well as generational control in congress.  Previous versions are available [here](https://github.com/jaytimm/american-political-data-and-r/tree/master/versions).  
 
 Hopefully **a useful open source & transparent framework** for investigating past & future election results and congresses using R. All work presented here can be reproduced in its entirety.  
 
