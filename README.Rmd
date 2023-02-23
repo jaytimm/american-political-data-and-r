@@ -229,7 +229,7 @@ leg_dets0 <- read.csv((url(leg_dets)), stringsAsFactors = FALSE) |>
 > National popular and electoral presidential election results made available at [britannica.com](https://www.britannica.com/topic/United-States-Presidential-Election-Results-1788863).
 
 
-### National popular vote: more competitive races of late? 
+### National popular vote is becoming more competitive 
 
 ```{r fig.height=5.5, message=FALSE, warning=FALSE}
 library(ggplot2)
@@ -271,7 +271,7 @@ pres1 |>
 
 
 
-### National popular vote and electoral landslides
+### National popular vote and electoral landslides in the 20th century
 
 ```{r fig.height=5.5}
 PresElectionResults::pres_results |>
@@ -809,7 +809,7 @@ congress_south |>
 ---
 
 
-## American Senators: a generational perspective
+## Fourteen generations of American Senators
 
 > [Pew Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/) generations & [Strauss-Howe](https://en.wikipedia.org/wiki/Strauss%E2%80%93Howe_generational_theory) generations
 

@@ -31,10 +31,10 @@ work presented here can be reproduced in its entirety.
         -   [Legislator details](#legislator-details)
     -   [Historical presidential election
         results](#historical-presidential-election-results)
-        -   [National popular vote: more competitive races of
-            late?](#national-popular-vote:-more-competitive-races-of-late?)
-        -   [National popular vote and electoral
-            landslides](#national-popular-vote-and-electoral-landslides)
+        -   [National popular vote is becoming more
+            competitive](#national-popular-vote-is-becoming-more-competitive)
+        -   [National popular vote and electoral landslides in the 20th
+            century](#national-popular-vote-and-electoral-landslides-in-the-20th-century)
         -   [Voting margins in Presidential elections by state since
             1976](#voting-margins-in-presidential-elections-by-state-since-1976)
         -   [When each state last voted for a Democratic presidential
@@ -59,8 +59,8 @@ work presented here can be reproduced in its entirety.
             South](#political-realignment-in-the-south)
         -   [On the evolution of the Southern
             Republican](#on-the-evolution-of-the-southern-republican)
-    -   [American Senators: a generational
-        perspective](#american-senators:-a-generational-perspective)
+    -   [Fourteen generations of American
+        Senators](#fourteen-generations-of-american-senators)
         -   [Generational control in the
             Senate](#generational-control-in-the-senate)
         -   [Profiling control over generational
@@ -184,8 +184,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(chamber != 'President') }) 
 ```
 
-    ## [1] "/tmp/RtmpyzYN5W/Hall_members.csv"
-    ## [1] "/tmp/RtmpyzYN5W/Sall_members.csv"
+    ## [1] "/tmp/Rtmp1VzgJb/Hall_members.csv"
+    ## [1] "/tmp/Rtmp1VzgJb/Sall_members.csv"
 
 ``` r
 congress00 <- vvo |>
@@ -242,7 +242,7 @@ leg_dets0 <- read.csv((url(leg_dets)), stringsAsFactors = FALSE) |>
 > available at
 > [britannica.com](https://www.britannica.com/topic/United-States-Presidential-Election-Results-1788863).
 
-### National popular vote: more competitive races of late?
+### National popular vote is becoming more competitive
 
 ``` r
 library(ggplot2)
@@ -282,7 +282,7 @@ pres1 |>
 
 ![](README_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
-### National popular vote and electoral landslides
+### National popular vote and electoral landslides in the 20th century
 
 ``` r
 PresElectionResults::pres_results |>
@@ -781,7 +781,7 @@ congress_south |>
 
 ------------------------------------------------------------------------
 
-## American Senators: a generational perspective
+## Fourteen generations of American Senators
 
 > [Pew
 > Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/)
