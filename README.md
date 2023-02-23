@@ -184,8 +184,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(chamber != 'President') }) 
 ```
 
-    ## [1] "/tmp/RtmpqG4MHj/Hall_members.csv"
-    ## [1] "/tmp/RtmpqG4MHj/Sall_members.csv"
+    ## [1] "/tmp/RtmpyzYN5W/Hall_members.csv"
+    ## [1] "/tmp/RtmpyzYN5W/Sall_members.csv"
 
 ``` r
 congress00 <- vvo |>
@@ -866,7 +866,8 @@ sens00 |>
             size = 1) +
   ggthemes::scale_color_stata() +
   theme_minimal() +
-  theme(legend.position = 'top') +
+  theme(legend.position = 'top',
+        legend.title=element_blank()) +
   ggtitle('Generational profiles in the US Senate')
 ```
 

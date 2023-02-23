@@ -872,7 +872,8 @@ sens00 |>
             size = 1) +
   ggthemes::scale_color_stata() +
   theme_minimal() +
-  theme(legend.position = 'top') +
+  theme(legend.position = 'top',
+        legend.title=element_blank()) +
   ggtitle('Generational profiles in the US Senate')
 ```
 
