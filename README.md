@@ -163,7 +163,7 @@ states_sf |>
   ggtitle('Dixie + Kentucky + Oklahoma')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
 ------------------------------------------------------------------------
 
@@ -190,8 +190,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(chamber != 'President') }) 
 ```
 
-    ## [1] "/tmp/Rtmpv79Rqu/Hall_members.csv"
-    ## [1] "/tmp/Rtmpv79Rqu/Sall_members.csv"
+    ## [1] "/tmp/RtmpuiWHHM/Hall_members.csv"
+    ## [1] "/tmp/RtmpuiWHHM/Sall_members.csv"
 
 ``` r
 congress00 <- vvo |>
@@ -286,7 +286,7 @@ pres1 |>
        subtitle = '1868 to 2020')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
 ### National popular vote and electoral landslides in the 20th century
 
@@ -315,7 +315,7 @@ PresElectionResults::pres_results |>
        subtitle = '1828 to 2020')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
 ### Voting margins in Presidential elections by state since 1976
 
@@ -352,7 +352,7 @@ mp |>
   labs(title = "Voting margins in Presidential elections since 1976")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 ### When each state last voted for a Democratic presidential nominee
 
@@ -402,7 +402,7 @@ PresElectionResults::xsf_TileOutv10 |>
   labs(title = "When each state last voted for a Democratic presidential nominee")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-17-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
 ### Presidential elections and vote shares by state
 
@@ -447,7 +447,7 @@ PresElectionResults::xsf_TileOutv10 |>
   subtitle = "By state since 1864")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 ### Presidential elections and the disappearance of competitive counties
 
@@ -504,7 +504,7 @@ p1 <- counties |>
   labs(title = '2000')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
 ------------------------------------------------------------------------
 
@@ -573,7 +573,7 @@ PresElectionResults::xsf_TileOutv10 |>
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-26-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
 ### Split Senate delegations on the wane again
 
@@ -616,7 +616,7 @@ split_senate |>
   labs(title = "Split Senate delegations since 1919")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-28-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 ### US Senate delegations by party composition
 
@@ -644,7 +644,7 @@ split_senate |>
   ggtitle('US Senate delegations, by party composition')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-28-1.png)
 
 ### Republican Senators and a minority of Americans
 
@@ -697,7 +697,7 @@ wpops |>
   labs(subtitle = "Republican Senate share v. Share Americans represented by Republican senator") 
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-31-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
 ------------------------------------------------------------------------
 
@@ -743,7 +743,7 @@ congress_south |>
   labs(title = "House composition since 1919")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 ### On the evolution of the Southern Republican
 
@@ -783,7 +783,7 @@ congress_south |>
        subtitle = 'In two dimensions: from 1959 to 2023')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
 ------------------------------------------------------------------------
 
@@ -798,7 +798,7 @@ congress_south |>
 ``` r
 gens <- read.csv('https://raw.githubusercontent.com/jaytimm/AmericanGenerations/main/data/pew-plus-strauss-generations.csv') |>
   mutate(order = row_number()) |>
-  filter(order > 4)
+  filter(order %in% c(5:19))
 
 gens |> knitr::kable()
 ```
@@ -820,9 +820,10 @@ gens |> knitr::kable()
 | Gen X          |  1965 | 1980 | pew     |    17 |
 | Millenials     |  1981 | 1996 | pew     |    18 |
 | Gen Z          |  1997 | 2012 | pew     |    19 |
-| Post-Z         |  2013 | 2028 | pew     |    20 |
 
 ### Generational control in the Senate
+
+> Each column represents a congress; each tile represents a Senator.
 
 ``` r
 sens00 <- sens
@@ -849,7 +850,7 @@ sens00 |>
   ggtitle('Generational control of the Senate')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-36-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
 ### Profiling control over generational lifespans
 
@@ -877,7 +878,7 @@ sens00 |>
   ggtitle('Generational profiles in the US Senate')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-36-1.png)
 
 ## Age, generations & freshman classes in the House
 
@@ -916,7 +917,7 @@ congress |>
   labs(title = "Average age of congress members by party") 
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-38-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
 
 ### Introducing Generation Z
 
@@ -985,7 +986,7 @@ congress |>
   labs(title = "Age distribution of the 118th House by party, generation & class")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-40-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 ### First-timers in the House
 
@@ -1025,11 +1026,12 @@ freshmen1 |>
   theme(legend.position = 'none',
         axis.title.x=element_blank(),
         axis.text.x = element_text(angle = 90, hjust = 1)) +
-  scale_x_continuous(breaks=seq(1967,2023,2)) +
+  
+  scale_x_continuous(breaks=seq(1961,2023,2)) +
   labs(title = "Freshman House members by party")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-41-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-40-1.png)
 
 ------------------------------------------------------------------------
 
@@ -1051,6 +1053,7 @@ class1 <- states |> filter(!state_code %in% nonx[1:5]) |>
                         '\n',
                         bmar
                         ))) |>
+  mutate(party = ifelse(is.na(party), 'x-Class I', party)) |>
   mutate(party = as.factor(party)) |>
   mutate(party = forcats::fct_relevel(party, 
                                        'Independent', 
@@ -1066,7 +1069,7 @@ PresElectionResults::xsf_TileOutv10 |>
   left_join(class1, by ='state_abbrev') |>
   ggplot() + 
   geom_sf(aes(fill = party),
-          color = 'gray' , 
+          color = 'darkgray' , 
           alpha = .65) + 
   
   geom_sf_text(data = new2,
@@ -1083,7 +1086,7 @@ PresElectionResults::xsf_TileOutv10 |>
        subtitle = 'With 2020 Biden margins')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-43-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-42-1.png)
 
 ### Vulnerable Republican House Members
 
@@ -1094,31 +1097,32 @@ vrs <- PresElectionResults::pres_by_cd |>
   filter(house_rep_party == 'republican',
          party_win == 'democrat') |>
   left_join(freshmen) |>
-  mutate(Biden_Margin = democrat - republican) |>
-  select(1:4, 11:12) |> arrange(-Biden_Margin)
+  mutate(Biden_Margin = democrat - republican,
+         district = paste0(state_abbrev, '-', district_code)) |>
+  select(1, 13, 4, 11:12) |> arrange(-Biden_Margin)
  
 vrs |> knitr::kable()
 ```
 
-| icpsr | state_abbrev | district_code | house_rep           | Class       | Biden_Margin |
-|------:|:-----------|:------------|:-----------------|:-----------|-----------:|
-| 22313 | NY           | 04            | Anthony D’Esposito  | Freshman    |         14.6 |
-| 21307 | CA           | 22            | David Valadao       | Upper-class |         13.0 |
-| 21988 | CA           | 27            | Mike Garcia         | Upper-class |         12.4 |
-| 22317 | CA           | 13            | John Duarte         | Freshman    |         10.9 |
-| 22340 | NY           | 17            | Mike Lawler         | Freshman    |         10.1 |
-| 22308 | OR           | 05            | Lori Chavez-DeRemer | Freshman    |          8.8 |
-| 22362 | NY           | 03            | George Santos       | Freshman    |          8.2 |
-| 22372 | NY           | 22            | Brandon Williams    | Freshman    |          7.4 |
-| 21701 | NE           | 02            | Don Bacon           | Upper-class |          6.4 |
-| 22152 | CA           | 45            | Michelle Steel      | Sophmore    |          6.1 |
-| 22351 | NY           | 19            | Marc Molinaro       | Freshman    |          4.6 |
-| 21718 | PA           | 01            | Brian Fitzpatrick   | Upper-class |          4.6 |
-| 22334 | NJ           | 07            | Tom Kean Jr.        | Freshman    |          3.8 |
-| 22129 | CA           | 40            | Young Kim           | Sophmore    |          1.9 |
-| 22335 | VA           | 02            | Jen Kiggans         | Freshman    |          1.9 |
-| 21105 | AZ           | 01            | David Schweikert    | Upper-class |          1.5 |
-| 22337 | NY           | 01            | Nick LaLota         | Freshman    |          0.2 |
-| 22309 | AZ           | 06            | Juan Ciscomani      | Freshman    |          0.1 |
+| icpsr | district | house_rep           | Class       | Biden_Margin |
+|------:|:---------|:--------------------|:------------|-------------:|
+| 22313 | NY-04    | Anthony D’Esposito  | Freshman    |         14.6 |
+| 21307 | CA-22    | David Valadao       | Upper-class |         13.0 |
+| 21988 | CA-27    | Mike Garcia         | Upper-class |         12.4 |
+| 22317 | CA-13    | John Duarte         | Freshman    |         10.9 |
+| 22340 | NY-17    | Mike Lawler         | Freshman    |         10.1 |
+| 22308 | OR-05    | Lori Chavez-DeRemer | Freshman    |          8.8 |
+| 22362 | NY-03    | George Santos       | Freshman    |          8.2 |
+| 22372 | NY-22    | Brandon Williams    | Freshman    |          7.4 |
+| 21701 | NE-02    | Don Bacon           | Upper-class |          6.4 |
+| 22152 | CA-45    | Michelle Steel      | Sophmore    |          6.1 |
+| 22351 | NY-19    | Marc Molinaro       | Freshman    |          4.6 |
+| 21718 | PA-01    | Brian Fitzpatrick   | Upper-class |          4.6 |
+| 22334 | NJ-07    | Tom Kean Jr.        | Freshman    |          3.8 |
+| 22129 | CA-40    | Young Kim           | Sophmore    |          1.9 |
+| 22335 | VA-02    | Jen Kiggans         | Freshman    |          1.9 |
+| 21105 | AZ-01    | David Schweikert    | Upper-class |          1.5 |
+| 22337 | NY-01    | Nick LaLota         | Freshman    |          0.2 |
+| 22309 | AZ-06    | Juan Ciscomani      | Freshman    |          0.1 |
 
 ## Fin

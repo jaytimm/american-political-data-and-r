@@ -5,32 +5,6 @@ output:
 ---
   
 # American political data & R
-  
-```{r eval=FALSE, include=FALSE}
-
----
-output:
-  md_document:
-    variant: markdown_github
----
-  
-# American political data & R
-  
-  
-  
----
-title: "American politcal data and R"
-author: "Jason Timm, PhD"
-output:
-  html_document:
-    toc: true
-    toc_float: true
----
-
-url: [jtimm.net](https://www.jtimm.net/) | git: [jaytimm](https://github.com/jaytimm) | twitter: [DrJayTimm](https://twitter.com/DrJayTimm)
-
-<br>
-```
 
 
 ```{r setup, include=FALSE}
@@ -818,7 +792,7 @@ congress_south |>
 ```{r}
 gens <- read.csv('https://raw.githubusercontent.com/jaytimm/AmericanGenerations/main/data/pew-plus-strauss-generations.csv') |>
   mutate(order = row_number()) |>
-  filter(order > 4)
+  filter(order %in% c(5:19))
 
 gens |> knitr::kable()
 ```
@@ -826,6 +800,8 @@ gens |> knitr::kable()
 
 
 ### Generational control in the Senate
+
+> Each column represents a congress; each tile represents a Senator.
 
 ```{r fig.height=9, message=FALSE, warning=FALSE}
 sens00 <- sens
@@ -1030,7 +1006,8 @@ freshmen1 |>
   theme(legend.position = 'none',
         axis.title.x=element_blank(),
         axis.text.x = element_text(angle = 90, hjust = 1)) +
-  scale_x_continuous(breaks=seq(1967,2023,2)) +
+  
+  scale_x_continuous(breaks=seq(1961,2023,2)) +
   labs(title = "Freshman House members by party")
 
 ```
@@ -1056,6 +1033,7 @@ class1 <- states |> filter(!state_code %in% nonx[1:5]) |>
                         '\n',
                         bmar
                         ))) |>
+  mutate(party = ifelse(is.na(party), 'x-Class I', party)) |>
   mutate(party = as.factor(party)) |>
   mutate(party = forcats::fct_relevel(party, 
                                        'Independent', 
@@ -1073,7 +1051,7 @@ PresElectionResults::xsf_TileOutv10 |>
   left_join(class1, by ='state_abbrev') |>
   ggplot() + 
   geom_sf(aes(fill = party),
-          color = 'gray' , 
+          color = 'darkgray' , 
           alpha = .65) + 
   
   geom_sf_text(data = new2,
@@ -1102,8 +1080,9 @@ vrs <- PresElectionResults::pres_by_cd |>
   filter(house_rep_party == 'republican',
          party_win == 'democrat') |>
   left_join(freshmen) |>
-  mutate(Biden_Margin = democrat - republican) |>
-  select(1:4, 11:12) |> arrange(-Biden_Margin)
+  mutate(Biden_Margin = democrat - republican,
+         district = paste0(state_abbrev, '-', district_code)) |>
+  select(1, 13, 4, 11:12) |> arrange(-Biden_Margin)
  
 vrs |> knitr::kable()
 ```
