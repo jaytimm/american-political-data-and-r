@@ -442,7 +442,7 @@ PresElectionResults::xsf_TileOutv10 |>
 
 
 
-### Presidential elections and the loss of competitive counties 
+### Presidential elections and the disappearance of competitive counties 
 
 ```{r message=FALSE, warning=FALSE}
 counties <- tigris::counties(cb = TRUE) |> 
@@ -589,7 +589,7 @@ PresElectionResults::xsf_TileOutv10 |>
   theme(legend.position = 'bottom') +
   
   facet_wrap(~year + congress) +
-  labs(title = "Senate composition by state since 1923",
+  labs(title = "Senate composition by state since 1927",
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
@@ -856,9 +856,9 @@ sens00 |>
 
 ### Profiling control over generational lifespans
 
-> The Transendental generation's run in the Senate lasted just over 40 years; at its peak (in 1859), members of this generation represented ~ 95% of the Senate.  
+> The Transendental generation's run in the Senate lasted just over 40 years; at its peak (in 1859), members of this generation comprised ~ 95% of the Senate.  
 
-```{r fig.height=6}
+```{r fig.height=7}
 sens00 |>
   count(year, generation) |>
   group_by(generation) |>
@@ -1105,9 +1105,7 @@ vrs <- PresElectionResults::pres_by_cd |>
   mutate(Biden_Margin = democrat - republican) |>
   select(1:4, 11:12) |> arrange(-Biden_Margin)
  
-library(formattable)
-formattable::formattable(vrs, 
-                         list(Biden_Margin = color_bar("#6987a1")))
+vrs |> knitr::kable()
 ```
 
 

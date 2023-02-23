@@ -47,8 +47,8 @@ work presented here can be reproduced in its entirety.
             nominee](#when-each-state-last-voted-for-a-democratic-presidential-nominee)
         -   [Presidential elections and vote shares by
             state](#presidential-elections-and-vote-shares-by-state)
-        -   [Presidential elections and the loss of competitive
-            counties](#presidential-elections-and-the-loss-of-competitive-counties)
+        -   [Presidential elections and the disappearance of competitive
+            counties](#presidential-elections-and-the-disappearance-of-competitive-counties)
     -   [Historical composition of the
         Senate](#historical-composition-of-the-senate)
         -   [Split Senate delegations and shifting
@@ -190,8 +190,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(chamber != 'President') }) 
 ```
 
-    ## [1] "/tmp/RtmpfANRpt/Hall_members.csv"
-    ## [1] "/tmp/RtmpfANRpt/Sall_members.csv"
+    ## [1] "/tmp/Rtmpv79Rqu/Hall_members.csv"
+    ## [1] "/tmp/Rtmpv79Rqu/Sall_members.csv"
 
 ``` r
 congress00 <- vvo |>
@@ -449,7 +449,7 @@ PresElectionResults::xsf_TileOutv10 |>
 
 ![](README_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
-### Presidential elections and the loss of competitive counties
+### Presidential elections and the disappearance of competitive counties
 
 ``` r
 counties <- tigris::counties(cb = TRUE) |> 
@@ -569,7 +569,7 @@ PresElectionResults::xsf_TileOutv10 |>
   theme(legend.position = 'bottom') +
   
   facet_wrap(~year + congress) +
-  labs(title = "Senate composition by state since 1923",
+  labs(title = "Senate composition by state since 1927",
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
@@ -854,8 +854,8 @@ sens00 |>
 ### Profiling control over generational lifespans
 
 > The Transendental generation’s run in the Senate lasted just over 40
-> years; at its peak (in 1859), members of this generation represented
-> \~ 95% of the Senate.
+> years; at its peak (in 1859), members of this generation comprised \~
+> 95% of the Senate.
 
 ``` r
 sens00 |>
@@ -1097,414 +1097,28 @@ vrs <- PresElectionResults::pres_by_cd |>
   mutate(Biden_Margin = democrat - republican) |>
   select(1:4, 11:12) |> arrange(-Biden_Margin)
  
-library(formattable)
-formattable::formattable(vrs, 
-                         list(Biden_Margin = color_bar("#6987a1")))
+vrs |> knitr::kable()
 ```
 
-<table class="table table-condensed">
-<thead>
-<tr>
-<th style="text-align:right;">
-icpsr
-</th>
-<th style="text-align:right;">
-state_abbrev
-</th>
-<th style="text-align:right;">
-district_code
-</th>
-<th style="text-align:right;">
-house_rep
-</th>
-<th style="text-align:right;">
-Class
-</th>
-<th style="text-align:right;">
-Biden_Margin
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-22313
-</td>
-<td style="text-align:right;">
-NY
-</td>
-<td style="text-align:right;">
-04
-</td>
-<td style="text-align:right;">
-Anthony D’Esposito
-</td>
-<td style="text-align:right;">
-Freshman
-</td>
-<td style="text-align:right;">
-<span
-style="display: inline-block; direction: rtl; unicode-bidi: plaintext; border-radius: 4px; padding-right: 2px; background-color: #6987a1; width: 100.00%">14.6</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-21307
-</td>
-<td style="text-align:right;">
-CA
-</td>
-<td style="text-align:right;">
-22
-</td>
-<td style="text-align:right;">
-David Valadao
-</td>
-<td style="text-align:right;">
-Upper-class
-</td>
-<td style="text-align:right;">
-<span
-style="display: inline-block; direction: rtl; unicode-bidi: plaintext; border-radius: 4px; padding-right: 2px; background-color: #6987a1; width: 89.04%">13.0</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-21988
-</td>
-<td style="text-align:right;">
-CA
-</td>
-<td style="text-align:right;">
-27
-</td>
-<td style="text-align:right;">
-Mike Garcia
-</td>
-<td style="text-align:right;">
-Upper-class
-</td>
-<td style="text-align:right;">
-<span
-style="display: inline-block; direction: rtl; unicode-bidi: plaintext; border-radius: 4px; padding-right: 2px; background-color: #6987a1; width: 84.93%">12.4</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-22317
-</td>
-<td style="text-align:right;">
-CA
-</td>
-<td style="text-align:right;">
-13
-</td>
-<td style="text-align:right;">
-John Duarte
-</td>
-<td style="text-align:right;">
-Freshman
-</td>
-<td style="text-align:right;">
-<span
-style="display: inline-block; direction: rtl; unicode-bidi: plaintext; border-radius: 4px; padding-right: 2px; background-color: #6987a1; width: 74.66%">10.9</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-22340
-</td>
-<td style="text-align:right;">
-NY
-</td>
-<td style="text-align:right;">
-17
-</td>
-<td style="text-align:right;">
-Mike Lawler
-</td>
-<td style="text-align:right;">
-Freshman
-</td>
-<td style="text-align:right;">
-<span
-style="display: inline-block; direction: rtl; unicode-bidi: plaintext; border-radius: 4px; padding-right: 2px; background-color: #6987a1; width: 69.18%">10.1</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-22308
-</td>
-<td style="text-align:right;">
-OR
-</td>
-<td style="text-align:right;">
-05
-</td>
-<td style="text-align:right;">
-Lori Chavez-DeRemer
-</td>
-<td style="text-align:right;">
-Freshman
-</td>
-<td style="text-align:right;">
-<span
-style="display: inline-block; direction: rtl; unicode-bidi: plaintext; border-radius: 4px; padding-right: 2px; background-color: #6987a1; width: 60.27%">8.8</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-22362
-</td>
-<td style="text-align:right;">
-NY
-</td>
-<td style="text-align:right;">
-03
-</td>
-<td style="text-align:right;">
-George Santos
-</td>
-<td style="text-align:right;">
-Freshman
-</td>
-<td style="text-align:right;">
-<span
-style="display: inline-block; direction: rtl; unicode-bidi: plaintext; border-radius: 4px; padding-right: 2px; background-color: #6987a1; width: 56.16%">8.2</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-22372
-</td>
-<td style="text-align:right;">
-NY
-</td>
-<td style="text-align:right;">
-22
-</td>
-<td style="text-align:right;">
-Brandon Williams
-</td>
-<td style="text-align:right;">
-Freshman
-</td>
-<td style="text-align:right;">
-<span
-style="display: inline-block; direction: rtl; unicode-bidi: plaintext; border-radius: 4px; padding-right: 2px; background-color: #6987a1; width: 50.68%">7.4</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-21701
-</td>
-<td style="text-align:right;">
-NE
-</td>
-<td style="text-align:right;">
-02
-</td>
-<td style="text-align:right;">
-Don Bacon
-</td>
-<td style="text-align:right;">
-Upper-class
-</td>
-<td style="text-align:right;">
-<span
-style="display: inline-block; direction: rtl; unicode-bidi: plaintext; border-radius: 4px; padding-right: 2px; background-color: #6987a1; width: 43.84%">6.4</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-22152
-</td>
-<td style="text-align:right;">
-CA
-</td>
-<td style="text-align:right;">
-45
-</td>
-<td style="text-align:right;">
-Michelle Steel
-</td>
-<td style="text-align:right;">
-Sophmore
-</td>
-<td style="text-align:right;">
-<span
-style="display: inline-block; direction: rtl; unicode-bidi: plaintext; border-radius: 4px; padding-right: 2px; background-color: #6987a1; width: 41.78%">6.1</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-22351
-</td>
-<td style="text-align:right;">
-NY
-</td>
-<td style="text-align:right;">
-19
-</td>
-<td style="text-align:right;">
-Marc Molinaro
-</td>
-<td style="text-align:right;">
-Freshman
-</td>
-<td style="text-align:right;">
-<span
-style="display: inline-block; direction: rtl; unicode-bidi: plaintext; border-radius: 4px; padding-right: 2px; background-color: #6987a1; width: 31.51%">4.6</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-21718
-</td>
-<td style="text-align:right;">
-PA
-</td>
-<td style="text-align:right;">
-01
-</td>
-<td style="text-align:right;">
-Brian Fitzpatrick
-</td>
-<td style="text-align:right;">
-Upper-class
-</td>
-<td style="text-align:right;">
-<span
-style="display: inline-block; direction: rtl; unicode-bidi: plaintext; border-radius: 4px; padding-right: 2px; background-color: #6987a1; width: 31.51%">4.6</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-22334
-</td>
-<td style="text-align:right;">
-NJ
-</td>
-<td style="text-align:right;">
-07
-</td>
-<td style="text-align:right;">
-Tom Kean Jr. 
-</td>
-<td style="text-align:right;">
-Freshman
-</td>
-<td style="text-align:right;">
-<span
-style="display: inline-block; direction: rtl; unicode-bidi: plaintext; border-radius: 4px; padding-right: 2px; background-color: #6987a1; width: 26.03%">3.8</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-22129
-</td>
-<td style="text-align:right;">
-CA
-</td>
-<td style="text-align:right;">
-40
-</td>
-<td style="text-align:right;">
-Young Kim
-</td>
-<td style="text-align:right;">
-Sophmore
-</td>
-<td style="text-align:right;">
-<span
-style="display: inline-block; direction: rtl; unicode-bidi: plaintext; border-radius: 4px; padding-right: 2px; background-color: #6987a1; width: 13.01%">1.9</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-22335
-</td>
-<td style="text-align:right;">
-VA
-</td>
-<td style="text-align:right;">
-02
-</td>
-<td style="text-align:right;">
-Jen Kiggans
-</td>
-<td style="text-align:right;">
-Freshman
-</td>
-<td style="text-align:right;">
-<span
-style="display: inline-block; direction: rtl; unicode-bidi: plaintext; border-radius: 4px; padding-right: 2px; background-color: #6987a1; width: 13.01%">1.9</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-21105
-</td>
-<td style="text-align:right;">
-AZ
-</td>
-<td style="text-align:right;">
-01
-</td>
-<td style="text-align:right;">
-David Schweikert
-</td>
-<td style="text-align:right;">
-Upper-class
-</td>
-<td style="text-align:right;">
-<span
-style="display: inline-block; direction: rtl; unicode-bidi: plaintext; border-radius: 4px; padding-right: 2px; background-color: #6987a1; width: 10.27%">1.5</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-22337
-</td>
-<td style="text-align:right;">
-NY
-</td>
-<td style="text-align:right;">
-01
-</td>
-<td style="text-align:right;">
-Nick LaLota
-</td>
-<td style="text-align:right;">
-Freshman
-</td>
-<td style="text-align:right;">
-<span
-style="display: inline-block; direction: rtl; unicode-bidi: plaintext; border-radius: 4px; padding-right: 2px; background-color: #6987a1; width: 1.37%">0.2</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-22309
-</td>
-<td style="text-align:right;">
-AZ
-</td>
-<td style="text-align:right;">
-06
-</td>
-<td style="text-align:right;">
-Juan Ciscomani
-</td>
-<td style="text-align:right;">
-Freshman
-</td>
-<td style="text-align:right;">
-<span
-style="display: inline-block; direction: rtl; unicode-bidi: plaintext; border-radius: 4px; padding-right: 2px; background-color: #6987a1; width: 0.68%">0.1</span>
-</td>
-</tr>
-</tbody>
-</table>
+| icpsr | state_abbrev | district_code | house_rep           | Class       | Biden_Margin |
+|------:|:-----------|:------------|:-----------------|:-----------|-----------:|
+| 22313 | NY           | 04            | Anthony D’Esposito  | Freshman    |         14.6 |
+| 21307 | CA           | 22            | David Valadao       | Upper-class |         13.0 |
+| 21988 | CA           | 27            | Mike Garcia         | Upper-class |         12.4 |
+| 22317 | CA           | 13            | John Duarte         | Freshman    |         10.9 |
+| 22340 | NY           | 17            | Mike Lawler         | Freshman    |         10.1 |
+| 22308 | OR           | 05            | Lori Chavez-DeRemer | Freshman    |          8.8 |
+| 22362 | NY           | 03            | George Santos       | Freshman    |          8.2 |
+| 22372 | NY           | 22            | Brandon Williams    | Freshman    |          7.4 |
+| 21701 | NE           | 02            | Don Bacon           | Upper-class |          6.4 |
+| 22152 | CA           | 45            | Michelle Steel      | Sophmore    |          6.1 |
+| 22351 | NY           | 19            | Marc Molinaro       | Freshman    |          4.6 |
+| 21718 | PA           | 01            | Brian Fitzpatrick   | Upper-class |          4.6 |
+| 22334 | NJ           | 07            | Tom Kean Jr.        | Freshman    |          3.8 |
+| 22129 | CA           | 40            | Young Kim           | Sophmore    |          1.9 |
+| 22335 | VA           | 02            | Jen Kiggans         | Freshman    |          1.9 |
+| 21105 | AZ           | 01            | David Schweikert    | Upper-class |          1.5 |
+| 22337 | NY           | 01            | Nick LaLota         | Freshman    |          0.2 |
+| 22309 | AZ           | 06            | Juan Ciscomani      | Freshman    |          0.1 |
 
 ## Fin
