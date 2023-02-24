@@ -190,8 +190,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(chamber != 'President') }) 
 ```
 
-    ## [1] "/tmp/RtmpAJgOkK/Hall_members.csv"
-    ## [1] "/tmp/RtmpAJgOkK/Sall_members.csv"
+    ## [1] "/tmp/RtmpjA3XR2/Hall_members.csv"
+    ## [1] "/tmp/RtmpjA3XR2/Sall_members.csv"
 
 ``` r
 congress00 <- vvo |>
