@@ -1,6 +1,6 @@
 # American political data & R
 
-*Updated: 2023-02-23*
+*Updated: 2023-02-24*
 
 ![](README_files/figure-markdown_github/collage1.png)
 
@@ -190,8 +190,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(chamber != 'President') }) 
 ```
 
-    ## [1] "/tmp/RtmpuiWHHM/Hall_members.csv"
-    ## [1] "/tmp/RtmpuiWHHM/Sall_members.csv"
+    ## [1] "/tmp/RtmpZHgmQf/Hall_members.csv"
+    ## [1] "/tmp/RtmpZHgmQf/Sall_members.csv"
 
 ``` r
 congress00 <- vvo |>
@@ -823,7 +823,9 @@ gens |> knitr::kable()
 
 ### Generational control in the Senate
 
-> Each column represents a congress; each tile represents a Senator.
+> Each column represents a congress; each tile represents a Senator. See
+> [this post](https://www.wcd.fyi/features/senate-generations/) for a
+> cool, interactive version.
 
 ``` r
 sens00 <- sens
@@ -836,12 +838,14 @@ sens00 <- sens00 |>
   arrange(order) |>
   mutate(generation = as.factor(generation)) |>
   mutate(generation = forcats::fct_relevel(generation, 
-                                           gens$generation))
-
-sens00 |>
+                                           gens$generation)) |>
   group_by(congress) |>
-  mutate(nn = row_number()) |>
-  ggplot(aes(x = year, y = nn, fill = generation)) +
+  arrange(desc(order)) |>
+  mutate(nn = row_number()) |> ungroup() |>
+  select(year, nn, generation, order)
+
+sens00  |>
+  ggplot(aes(x = year, y = (nn), fill = generation)) +
   geom_tile(color = 'white', size = .35) +
   ggthemes::scale_fill_stata() +
   theme_minimal() +
