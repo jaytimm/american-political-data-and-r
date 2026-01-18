@@ -185,8 +185,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(chamber != 'President') }) 
 ```
 
-    ## [1] "/tmp/RtmpC6M6CK/Hall_members.csv"
-    ## [1] "/tmp/RtmpC6M6CK/Sall_members.csv"
+    ## [1] "/tmp/RtmpMzgyG7/Hall_members.csv"
+    ## [1] "/tmp/RtmpMzgyG7/Sall_members.csv"
 
 ``` r
 congress00 <- vvo |>
@@ -279,7 +279,8 @@ pres1 |>
   
   xlim(-30, 30) +
   labs(title ='National popular vote margins',
-       subtitle = '1868 to 2024')
+       subtitle = '1868 to 2024',
+       caption = 'Data source: Britannica')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-11-1.png)
@@ -309,7 +310,8 @@ PresElectionResults::pres_results |>
       legend.position = 'none') +
   scale_y_continuous(breaks = seq(1824, 2024, by = 20)) +
   labs(title ="President-elect's share of electoral and popular votes",
-       subtitle = '1828 to 2024')
+       subtitle = '1828 to 2024',
+       caption = 'Data source: Britannica')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-12-1.png)
@@ -346,7 +348,8 @@ mp |>
                         limit = max(abs(mp$margins)) * c(-1, 1)) +
   facet_wrap(~year, ncol = 4) +
   theme_minimal()+ theme_guide() +
-  labs(title = "Voting margins in Presidential elections 1980-2024")
+  labs(title = "Voting margins in Presidential elections 1980-2024",
+       caption = 'Data sources: Wikipedia & Daily Kos')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-13-1.png)
@@ -396,7 +399,8 @@ PresElectionResults::xsf_TileOutv10 |>
   theme_minimal() + 
   theme_guide() + 
   ggthemes::scale_fill_economist()+
-  labs(title = "When each state last voted for a Democratic presidential nominee")
+  labs(title = "When each state last voted for a Democratic presidential nominee",
+       caption = 'Data sources: Wikipedia & Daily Kos')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-16-1.png)
@@ -441,7 +445,8 @@ PresElectionResults::xsf_TileOutv10 |>
   
   theme_minimal() + theme_guide() + 
   labs(title = "Largest vote share for Presidential nominee",
-  subtitle = "By state since 1864")
+  subtitle = "By state since 1864",
+  caption = 'Data sources: Wikipedia & Daily Kos')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
@@ -584,7 +589,8 @@ split_senate |>
   theme(axis.text.x = element_text(angle = 90, hjust = 1),
         axis.title.x=element_blank()) +
   scale_x_continuous(breaks = seq(1921, 2025, 4)) +
-  labs(title = "Split Senate delegations since 1921")
+  labs(title = "Split Senate delegations since 1921",
+       caption = 'Data source: VoteView')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
@@ -646,7 +652,8 @@ split_senate |>
   scale_fill_manual(values = split_pal) +
   scale_x_continuous(breaks = seq(1921, 2025, 4)) +
   xlab('') +
-  ggtitle('US Senate delegations, by party composition')
+  labs(title = 'US Senate delegations, by party composition',
+       caption = 'Data source: VoteView')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
@@ -707,7 +714,8 @@ wpops |>
         legend.title = element_blank()) +
   
   scale_x_continuous(breaks = seq(min(wpops$year), max(wpops$year), 4)) +
-  labs(subtitle = "Republican Senate share v. Share Americans represented by Republican senator") 
+  labs(subtitle = "Republican Senate share v. Share Americans represented by Republican senator",
+       caption = 'Data sources: VoteView & FRED') 
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-29-1.png)
@@ -753,7 +761,8 @@ congress_south |>
         axis.text.y=element_blank(),
         axis.text.x = element_text(angle = 90, hjust = 1)) +
   
-  labs(title = "House composition since 1920")
+  labs(title = "House composition since 1920",
+       caption = 'Data source: VoteView')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-31-1.png)
@@ -793,7 +802,8 @@ congress_south |>
   theme(legend.title=element_blank(),
         legend.position = 'bottom') +
   labs(title="The evolution of the Southern Republican",
-       subtitle = 'In two dimensions: from 1959 to 2023')
+       subtitle = 'In two dimensions: from 1959 to 2023',
+       caption = 'Data source: VoteView')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
@@ -840,7 +850,8 @@ congress |>
         axis.title.x=element_blank()) +
   
   scale_x_continuous(breaks=seq(1921, 2025, 4)) +
-  labs(title = "Average age of congress members by party") 
+  labs(title = "Average age of congress members by party",
+       caption = 'Data source: VoteView') 
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
@@ -910,7 +921,8 @@ congress |>
         axis.text.y=element_blank()) +
   #ylim (0, .5) +
   
-  labs(title = "Age distribution of the 119th House by party, generation & class")
+  labs(title = "Age distribution of the 119th House by party, generation & class",
+       caption = 'Data sources: VoteView & AmericanGenerations')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-36-1.png)
@@ -955,7 +967,8 @@ freshmen1 |>
         axis.text.x = element_text(angle = 90, hjust = 1)) +
   
   scale_x_continuous(breaks=seq(1963,2025,2)) +
-  labs(title = "Freshman House members by party")
+  labs(title = "Freshman House members by party",
+       caption = 'Data source: VoteView')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
@@ -1010,7 +1023,8 @@ PresElectionResults::xsf_TileOutv10 |>
   ggthemes::scale_fill_stata()+
   #scale_fill_brewer(palette = 'YlGnBu') +
   labs(title = "Class II Senators, 2026",
-       subtitle = 'With 2024 Harris margins')
+       subtitle = 'With 2024 Harris margins',
+       caption = 'Data sources: unitedstates.io, Wikipedia & Daily Kos')
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
