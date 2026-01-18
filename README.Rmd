@@ -30,7 +30,7 @@ Hopefully **a useful open source & transparent framework** for investigating pas
 
 
 ```{r echo=FALSE}
-render_toc("/home/jtimm/Dropbox/GitHub/git-projects/American-political-data-and-R/README (Copy).Rmd")
+render_toc("/home/jtimm/Dropbox/GitHub/git-projects/American-political-data-and-R/README.Rmd")
 ```
 
 

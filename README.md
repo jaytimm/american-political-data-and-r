@@ -25,40 +25,39 @@ Hopefully **a useful open source & transparent framework** for
 investigating past & future election results and congresses using R. All
 work presented here can be reproduced in its entirety.
 
-    ## - [American political data & R](#americanpoliticaldatar)
-    ## - [Quick preliminaries](#quickpreliminaries)
-    ##   - [Some geo-spatial data](#somegeo-spatialdata)
-    ##     - [State-based geo-data](#state-basedgeo-data)
-    ##   - [A simple add-on map theme](#asimpleadd-onmaptheme)
-    ##   - [Some quick definitions](#somequickdefinitions)
-    ## - [Data sources](#datasources)
+    ## - [American political data & R](#american-political-data-r)
+    ## - [Quick preliminaries](#quick-preliminaries)
+    ##   - [Some geo-spatial data](#some-geo-spatial-data)
+    ##     - [State-based geo-data](#state-based-geo-data)
+    ##   - [A simple add-on map theme](#a-simple-add-on-map-theme)
+    ##   - [Some quick definitions](#some-quick-definitions)
+    ## - [Data sources](#data-sources)
     ##   - [VoteView](#voteview)
-    ## - [NOTE: election years.  term begins year + 1](#noteelectionyearstermbeginsyear1)
     ##   - [PresElectionResults](#preselectionresults)
-    ##   - [Legislator details](#legislatordetails)
-    ## - [Historical presidential election results ](#historicalpresidentialelectionresults)
-    ##   - [National popular vote is becoming more competitive ](#nationalpopularvoteisbecomingmorecompetitive)
-    ##   - [National popular vote and electoral landslides in the 20th century](#nationalpopularvoteandelectorallandslidesinthe20thcentury)
-    ##   - [Voting margins in Presidential elections by state 1980-2024](#votingmarginsinpresidentialelectionsbystate1980-2024)
-    ##   - [When each state last voted for a Democratic presidential nominee](#wheneachstatelastvotedforademocraticpresidentialnominee)
-    ##   - [Presidential elections and vote shares by state](#presidentialelectionsandvotesharesbystate)
-    ##   - [Presidential elections and the disappearance of competitive counties ](#presidentialelectionsandthedisappearanceofcompetitivecounties)
-    ## - [Historical composition of the Senate](#historicalcompositionofthesenate)
-    ##   - [Split Senate delegations and shifting ideologies](#splitsenatedelegationsandshiftingideologies)
-    ##   - [Split Senate delegations on the wane again](#splitsenatedelegationsonthewaneagain)
-    ##   - [Split Senate delegations in the current Congress](#splitsenatedelegationsinthecurrentcongress)
-    ##   - [US Senate delegations by party composition](#ussenatedelegationsbypartycomposition)
-    ##   - [Republican Senators and a minority of Americans](#republicansenatorsandaminorityofamericans)
-    ## - [Historical composition of the House](#historicalcompositionofthehouse)
-    ##   - [Political realignment in the South](#politicalrealignmentinthesouth)
-    ##   - [On the evolution of the Southern Republican](#ontheevolutionofthesouthernrepublican)
-    ## - [Age, generations & freshman classes in the House](#agegenerationsfreshmanclassesinthehouse)
-    ##   - [Average age of House members](#averageageofhousemembers)
-    ##   - [Introducing Generation Z](#introducinggenerationz)
-    ##   - [First-timers in the House](#first-timersinthehouse)
-    ## - [Towards 2026](#towards2026)
-    ##   - [Class II Senators](#classiisenators)
-    ##   - [Vulnerable Republican House Members](#vulnerablerepublicanhousemembers)
+    ##   - [Legislator details](#legislator-details)
+    ## - [Historical presidential election results](#historical-presidential-election-results)
+    ##   - [National popular vote is becoming more competitive](#national-popular-vote-is-becoming-more-competitive)
+    ##   - [National popular vote and electoral landslides in the 20th century](#national-popular-vote-and-electoral-landslides-in-the-20th-century)
+    ##   - [Voting margins in Presidential elections by state 1980-2024](#voting-margins-in-presidential-elections-by-state-1980-2024)
+    ##   - [When each state last voted for a Democratic presidential nominee](#when-each-state-last-voted-for-a-democratic-presidential-nominee)
+    ##   - [Presidential elections and vote shares by state](#presidential-elections-and-vote-shares-by-state)
+    ##   - [Presidential elections and the disappearance of competitive counties](#presidential-elections-and-the-disappearance-of-competitive-counties)
+    ## - [Historical composition of the Senate](#historical-composition-of-the-senate)
+    ##   - [Split Senate delegations and shifting ideologies](#split-senate-delegations-and-shifting-ideologies)
+    ##   - [Split Senate delegations on the wane again](#split-senate-delegations-on-the-wane-again)
+    ##   - [Split Senate delegations in the current Congress](#split-senate-delegations-in-the-current-congress)
+    ##   - [US Senate delegations by party composition](#us-senate-delegations-by-party-composition)
+    ##   - [Republican Senators and a minority of Americans](#republican-senators-and-a-minority-of-americans)
+    ## - [Historical composition of the House](#historical-composition-of-the-house)
+    ##   - [Political realignment in the South](#political-realignment-in-the-south)
+    ##   - [On the evolution of the Southern Republican](#on-the-evolution-of-the-southern-republican)
+    ## - [Age, generations & freshman classes in the House](#age-generations-freshman-classes-in-the-house)
+    ##   - [Average age of House members](#average-age-of-house-members)
+    ##   - [Introducing Generation Z](#introducing-generation-z)
+    ##   - [First-timers in the House](#first-timers-in-the-house)
+    ## - [Towards 2026](#towards-2026)
+    ##   - [Class II Senators](#class-ii-senators)
+    ##   - [Vulnerable Republican House Members](#vulnerable-republican-house-members)
     ## - [Fin](#fin)
 
 ## Quick preliminaries
@@ -141,7 +140,7 @@ states_sf |>
   ggtitle('Dixie + Kentucky + Oklahoma')
 ```
 
-![](README--Copy-_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
 ------------------------------------------------------------------------
 
@@ -168,8 +167,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(chamber != 'President') }) 
 ```
 
-    ## [1] "/tmp/RtmpoVflqm/Hall_members.csv"
-    ## [1] "/tmp/RtmpoVflqm/Sall_members.csv"
+    ## [1] "/tmp/RtmpJdIgmH/Hall_members.csv"
+    ## [1] "/tmp/RtmpJdIgmH/Sall_members.csv"
 
 ``` r
 congress00 <- vvo |>
@@ -265,7 +264,7 @@ pres1 |>
        subtitle = '1868 to 2024')
 ```
 
-![](README--Copy-_files/figure-markdown_github/unnamed-chunk-11-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
 ### National popular vote and electoral landslides in the 20th century
 
@@ -295,7 +294,7 @@ PresElectionResults::pres_results |>
        subtitle = '1828 to 2024')
 ```
 
-![](README--Copy-_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
 ### Voting margins in Presidential elections by state 1980-2024
 
@@ -332,7 +331,7 @@ mp |>
   labs(title = "Voting margins in Presidential elections 1980-2024")
 ```
 
-![](README--Copy-_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 ### When each state last voted for a Democratic presidential nominee
 
@@ -382,7 +381,7 @@ PresElectionResults::xsf_TileOutv10 |>
   labs(title = "When each state last voted for a Democratic presidential nominee")
 ```
 
-![](README--Copy-_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
 ### Presidential elections and vote shares by state
 
@@ -427,7 +426,7 @@ PresElectionResults::xsf_TileOutv10 |>
   subtitle = "By state since 1864")
 ```
 
-![](README--Copy-_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 ### Presidential elections and the disappearance of competitive counties
 
@@ -530,7 +529,7 @@ PresElectionResults::xsf_TileOutv10 |>
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
-![](README--Copy-_files/figure-markdown_github/unnamed-chunk-23-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
 ### Split Senate delegations on the wane again
 
@@ -570,7 +569,7 @@ split_senate |>
   labs(title = "Split Senate delegations since 1921")
 ```
 
-![](README--Copy-_files/figure-markdown_github/unnamed-chunk-25-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
 ### Split Senate delegations in the current Congress
 
@@ -632,7 +631,7 @@ split_senate |>
   ggtitle('US Senate delegations, by party composition')
 ```
 
-![](README--Copy-_files/figure-markdown_github/unnamed-chunk-27-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 ### Republican Senators and a minority of Americans
 
@@ -692,7 +691,7 @@ wpops |>
   labs(subtitle = "Republican Senate share v. Share Americans represented by Republican senator") 
 ```
 
-![](README--Copy-_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-29-1.png)
 
 ------------------------------------------------------------------------
 
@@ -738,7 +737,7 @@ congress_south |>
   labs(title = "House composition since 1920")
 ```
 
-![](README--Copy-_files/figure-markdown_github/unnamed-chunk-31-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-31-1.png)
 
 ### On the evolution of the Southern Republican
 
@@ -778,7 +777,7 @@ congress_south |>
        subtitle = 'In two dimensions: from 1959 to 2023')
 ```
 
-![](README--Copy-_files/figure-markdown_github/unnamed-chunk-32-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 ------------------------------------------------------------------------
 
@@ -825,7 +824,7 @@ congress |>
   labs(title = "Average age of congress members by party") 
 ```
 
-![](README--Copy-_files/figure-markdown_github/unnamed-chunk-34-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 ### Introducing Generation Z
 
@@ -895,7 +894,7 @@ congress |>
   labs(title = "Age distribution of the 119th House by party, generation & class")
 ```
 
-![](README--Copy-_files/figure-markdown_github/unnamed-chunk-36-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-36-1.png)
 
 ### First-timers in the House
 
@@ -940,7 +939,7 @@ freshmen1 |>
   labs(title = "Freshman House members by party")
 ```
 
-![](README--Copy-_files/figure-markdown_github/unnamed-chunk-37-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
 
 ------------------------------------------------------------------------
 
@@ -995,7 +994,7 @@ PresElectionResults::xsf_TileOutv10 |>
        subtitle = 'With 2024 Harris margins')
 ```
 
-![](README--Copy-_files/figure-markdown_github/unnamed-chunk-39-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 ### Vulnerable Republican House Members
 
