@@ -25,40 +25,58 @@ Hopefully **a useful open source & transparent framework** for
 investigating past & future election results and congresses using R. All
 work presented here can be reproduced in its entirety.
 
-    ## - [American political data & R](#american-political-data-r)
-    ## - [Quick preliminaries](#quick-preliminaries)
-    ##   - [Some geo-spatial data](#some-geo-spatial-data)
-    ##     - [State-based geo-data](#state-based-geo-data)
-    ##   - [A simple add-on map theme](#a-simple-add-on-map-theme)
-    ##   - [Some quick definitions](#some-quick-definitions)
-    ## - [Data sources](#data-sources)
-    ##   - [VoteView](#voteview)
-    ##   - [PresElectionResults](#preselectionresults)
-    ##   - [Legislator details](#legislator-details)
-    ## - [Historical presidential election results](#historical-presidential-election-results)
-    ##   - [National popular vote is becoming more competitive](#national-popular-vote-is-becoming-more-competitive)
-    ##   - [National popular vote and electoral landslides in the 20th century](#national-popular-vote-and-electoral-landslides-in-the-20th-century)
-    ##   - [Voting margins in Presidential elections by state 1980-2024](#voting-margins-in-presidential-elections-by-state-1980-2024)
-    ##   - [When each state last voted for a Democratic presidential nominee](#when-each-state-last-voted-for-a-democratic-presidential-nominee)
-    ##   - [Presidential elections and vote shares by state](#presidential-elections-and-vote-shares-by-state)
-    ##   - [Presidential elections and the disappearance of competitive counties](#presidential-elections-and-the-disappearance-of-competitive-counties)
-    ## - [Historical composition of the Senate](#historical-composition-of-the-senate)
-    ##   - [Split Senate delegations and shifting ideologies](#split-senate-delegations-and-shifting-ideologies)
-    ##   - [Split Senate delegations on the wane again](#split-senate-delegations-on-the-wane-again)
-    ##   - [Split Senate delegations in the current Congress](#split-senate-delegations-in-the-current-congress)
-    ##   - [US Senate delegations by party composition](#us-senate-delegations-by-party-composition)
-    ##   - [Republican Senators and a minority of Americans](#republican-senators-and-a-minority-of-americans)
-    ## - [Historical composition of the House](#historical-composition-of-the-house)
-    ##   - [Political realignment in the South](#political-realignment-in-the-south)
-    ##   - [On the evolution of the Southern Republican](#on-the-evolution-of-the-southern-republican)
-    ## - [Age, generations & freshman classes in the House](#age-generations-freshman-classes-in-the-house)
-    ##   - [Average age of House members](#average-age-of-house-members)
-    ##   - [Introducing Generation Z](#introducing-generation-z)
-    ##   - [First-timers in the House](#first-timers-in-the-house)
-    ## - [Towards 2026](#towards-2026)
-    ##   - [Class II Senators](#class-ii-senators)
-    ##   - [Vulnerable Republican House Members](#vulnerable-republican-house-members)
-    ## - [Fin](#fin)
+-   [American political data & R](#american-political-data-r)
+-   [Quick preliminaries](#quick-preliminaries)
+    -   [Some geo-spatial data](#some-geo-spatial-data)
+        -   [State-based geo-data](#state-based-geo-data)
+    -   [A simple add-on map theme](#a-simple-add-on-map-theme)
+    -   [Some quick definitions](#some-quick-definitions)
+-   [Data sources](#data-sources)
+    -   [VoteView](#voteview)
+    -   [PresElectionResults](#preselectionresults)
+    -   [Legislator details](#legislator-details)
+-   [Historical presidential election
+    results](#historical-presidential-election-results)
+    -   [National popular vote is becoming more
+        competitive](#national-popular-vote-is-becoming-more-competitive)
+    -   [National popular vote and electoral landslides in the 20th
+        century](#national-popular-vote-and-electoral-landslides-in-the-20th-century)
+    -   [Voting margins in Presidential elections by state
+        1980-2024](#voting-margins-in-presidential-elections-by-state-1980-2024)
+    -   [When each state last voted for a Democratic presidential
+        nominee](#when-each-state-last-voted-for-a-democratic-presidential-nominee)
+    -   [Presidential elections and vote shares by
+        state](#presidential-elections-and-vote-shares-by-state)
+    -   [Presidential elections and the disappearance of competitive
+        counties](#presidential-elections-and-the-disappearance-of-competitive-counties)
+-   [Historical composition of the
+    Senate](#historical-composition-of-the-senate)
+    -   [Split Senate delegations and shifting
+        ideologies](#split-senate-delegations-and-shifting-ideologies)
+    -   [Split Senate delegations on the wane
+        again](#split-senate-delegations-on-the-wane-again)
+    -   [Split Senate delegations in the current
+        Congress](#split-senate-delegations-in-the-current-congress)
+    -   [US Senate delegations by party
+        composition](#us-senate-delegations-by-party-composition)
+    -   [Republican Senators and a minority of
+        Americans](#republican-senators-and-a-minority-of-americans)
+-   [Historical composition of the
+    House](#historical-composition-of-the-house)
+    -   [Political realignment in the
+        South](#political-realignment-in-the-south)
+    -   [On the evolution of the Southern
+        Republican](#on-the-evolution-of-the-southern-republican)
+-   [Age, generations & freshman classes in the
+    House](#age-generations-freshman-classes-in-the-house)
+    -   [Average age of House members](#average-age-of-house-members)
+    -   [Introducing Generation Z](#introducing-generation-z)
+    -   [First-timers in the House](#first-timers-in-the-house)
+-   [Towards 2026](#towards-2026)
+    -   [Class II Senators](#class-ii-senators)
+    -   [Vulnerable Republican House
+        Members](#vulnerable-republican-house-members)
+-   [Fin](#fin)
 
 ## Quick preliminaries
 
@@ -167,8 +185,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(chamber != 'President') }) 
 ```
 
-    ## [1] "/tmp/RtmpJdIgmH/Hall_members.csv"
-    ## [1] "/tmp/RtmpJdIgmH/Sall_members.csv"
+    ## [1] "/tmp/RtmpcKXjjW/Hall_members.csv"
+    ## [1] "/tmp/RtmpcKXjjW/Sall_members.csv"
 
 ``` r
 congress00 <- vvo |>
@@ -1008,18 +1026,19 @@ vrs <- PresElectionResults::pres_by_cd |>
   filter(house_rep_party == 'republican',
          party_win == 'democrat') |>
   left_join(freshmen) |>
-  mutate(Biden_Margin = democrat - republican,
+  mutate(Harris_Margin = democrat - republican,
          district = paste0(state_abbrev, '-', district_code)) |>
   
-  select(1, 13, 4, 11:12) |> arrange(-Biden_Margin)
+  select(district, house_rep, Class, Harris_Margin) |> 
+  arrange(-Harris_Margin)
  
 vrs |> knitr::kable()
 ```
 
-| state_abbrev | district | house_rep_party | Class       | Biden_Margin |
-|:-------------|:---------|:----------------|:------------|-------------:|
-| NE           | NE-02    | republican      | Upper-class |         4.62 |
-| NY           | NY-17    | republican      | Sophmore    |         0.56 |
-| PA           | PA-01    | republican      | Upper-class |         0.32 |
+| district | house_rep            | Class       | Harris_Margin |
+|:---------|:---------------------|:------------|--------------:|
+| NE-02    | Don Bacon            | Upper-class |          4.62 |
+| NY-17    | Michael Lawler       | Sophmore    |          0.56 |
+| PA-01    | Brian K. Fitzpatrick | Upper-class |          0.32 |
 
 ## Fin

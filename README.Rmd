@@ -29,7 +29,7 @@ Election returns have been collated from [Daily Kos](https://www.dailykos.com/),
 Hopefully **a useful open source & transparent framework** for investigating past & future election results and congresses using R. All work presented here can be reproduced in its entirety.  
 
 
-```{r echo=FALSE}
+```{r echo=FALSE, results='asis'}
 render_toc("/home/jtimm/Dropbox/GitHub/git-projects/American-political-data-and-R/README.Rmd")
 ```
 
@@ -992,10 +992,11 @@ vrs <- PresElectionResults::pres_by_cd |>
   filter(house_rep_party == 'republican',
          party_win == 'democrat') |>
   left_join(freshmen) |>
-  mutate(Biden_Margin = democrat - republican,
+  mutate(Harris_Margin = democrat - republican,
          district = paste0(state_abbrev, '-', district_code)) |>
   
-  select(1, 13, 4, 11:12) |> arrange(-Biden_Margin)
+  select(district, house_rep, Class, Harris_Margin) |> 
+  arrange(-Harris_Margin)
  
 vrs |> knitr::kable()
 ```
