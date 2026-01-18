@@ -9,7 +9,7 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-source("render_toc.r")
+source("/home/jtimm/pCloudDrive/GitHub/git-projects/render_toc.r")
 ```
 
 
@@ -24,13 +24,13 @@ source("render_toc.r")
 
 Election returns have been collated from [Daily Kos](https://www.dailykos.com/), [MIT Election Data and Science Lab](MIT Election Data and Science Lab) and Wikipedia; the R package [Rvoteview](https://github.com/voteview/Rvoteview) is used extensively to characterize lawmakers and congress.
 
-**January 2026 version**.  Most plots have been updated, some added, some abandoned.  I have removed all census based examples this time around.  And focused more on national-level Presidential election results.  Previous versions are available [here](https://github.com/jaytimm/american-political-data-and-r/tree/master/versions).  
+**Winter 2023 version**.  Most plots have been updated, some added, some abandoned.  I have removed all census based examples this time around.  And focused more on national-level Presidential election results, as well as generational control in congress.  Previous versions are available [here](https://github.com/jaytimm/american-political-data-and-r/tree/master/versions).  
 
 Hopefully **a useful open source & transparent framework** for investigating past & future election results and congresses using R. All work presented here can be reproduced in its entirety.  
 
 
 ```{r echo=FALSE}
-render_toc("/home/jtimm/Dropbox/GitHub/git-projects/American-political-data-and-R/README (Copy).Rmd")
+render_toc("/home/jtimm/pCloudDrive/GitHub/git-projects/American-political-data-and-R/README.Rmd")
 ```
 
 
@@ -136,13 +136,13 @@ states_sf |>
 
 ```{r}
 ## NOTE: election years.  term begins year + 1
-ccr <- data.frame(year = c(1786 + 2*rep(c(1:119))), 
-                  congress = c(1:119)) 
+ccr <- data.frame(year = c(1786 + 2*rep(c(1:118))), 
+                  congress = c(1:118)) 
 ```
 
 
 ```{r message=TRUE, warning=FALSE}
-con <- 66 #66
+con <- 65 #66
 
 vvo <- lapply(c('house', 'senate'), function(x) {
               Rvoteview::download_metadata(type = 'members', 
@@ -172,23 +172,23 @@ congress <- congress00 |>
 ```
 
 
-### PresElectionResults
+### PresElectionData
 
-> The [`PresElectionResults` package](https://github.com/jaytimm/PresElectionResults) includes US Presidential Election Results by county (2000-2024), congressional district (2024), and state (1864-2024).  Additionally included are FRED population data and equal-area simple feature geometries (via Daily Kos).  Full package build details are available [here](https://github.com/jaytimm/PresElectionResults/blob/master/builds.md).
+> The [`PresElectionResults` package](https://github.com/jaytimm/PresElectionResults) includes US Presidential Election Results by county (2000-2020), congressional district (2020), and state (1864-2020).  Additionally included are FRED population data and equal-area simple feature geometries (via Daily Kos).  Full package build details are available [here](https://github.com/jaytimm/PresElectionResults/blob/master/builds.md).
 
 
 ```{r eval=FALSE}
-devtools::install_github("jaytimm/PresElectionResults")
+devtools::install_github("jaytimm/PresElectionData")
 ```
 
 
 
 ### Legislator details
 
-> Via [unitedstates.github.io](https://github.com/unitedstates/congress-legislators)
+> Via [theuntiedstates.io](https://theunitedstates.io/)
 
 ```{r}
-leg_dets <- 'https://unitedstates.github.io/congress-legislators/legislators-current.csv'
+leg_dets <- 'https://theunitedstates.io/congress-legislators/legislators-current.csv'
 leg_dets0 <- read.csv((url(leg_dets)), stringsAsFactors = FALSE) |>
   rename(state_abbrev = state)
 ```
@@ -216,7 +216,7 @@ pres1 <- PresElectionResults::pres_results |>
   tidyr::spread(party, pop_per) |>
   
   mutate(delta = Republican - Democratic,
-         d20 = ifelse(year %% 20 == 4, year, '')) 
+         d20 = ifelse(year %% 20 == 0, year, '')) 
 
 pres1 |> 
   ggplot2::ggplot(aes(x = delta,
@@ -239,7 +239,7 @@ pres1 |>
   
   xlim(-30, 30) +
   labs(title ='National popular vote margins',
-       subtitle = '1868 to 2024')
+       subtitle = '1868 to 2020')
 ```
 
 
@@ -269,9 +269,8 @@ PresElectionResults::pres_results |>
   ggthemes::scale_colour_economist() +
   theme(axis.ticks = element_blank(),
       legend.position = 'none') +
-  scale_y_continuous(breaks = seq(1824, 2024, by = 20)) +
   labs(title ="President-elect's share of electoral and popular votes",
-       subtitle = '1828 to 2024')
+       subtitle = '1828 to 2020')
 ```
 
 
@@ -279,16 +278,14 @@ PresElectionResults::pres_results |>
 
 
 
-### Voting margins in Presidential elections by state 1980-2024
+### Voting margins in Presidential elections by state since 1976
 
 > Historical Presidential election results by state [via Wikipedia](https://github.com/jaytimm/uspols#4-wikipedia-presidential-returns-by-state-1864-). Equal-area state geometry via [Daily Kos](https://docs.google.com/spreadsheets/d/1LrBXlqrtSZwyYOkpEEXFwQggvtR0bHHTxs9kq4kjOjw/edit#gid=1278876419).
-
-
 
 ```{r fig.height=5.5, message=FALSE, warning=FALSE}
 mp <- PresElectionResults::xsf_TileOutv10 |>
   left_join(PresElectionResults::pres_by_state |>
-              filter(year >= 1980, year <= 2024) |>
+              filter(year > 1975) |>
               mutate(margins = republican - democrat)) 
 
 mp |> 
@@ -310,7 +307,7 @@ mp |>
                         limit = max(abs(mp$margins)) * c(-1, 1)) +
   facet_wrap(~year, ncol = 4) +
   theme_minimal()+ theme_guide() +
-  labs(title = "Voting margins in Presidential elections 1980-2024")
+  labs(title = "Voting margins in Presidential elections since 1976")
 ```
 
 
@@ -443,6 +440,62 @@ cl2 |>
   knitr::kable()
 ```
 
+
+
+```{r}
+p1 <- counties |>
+  left_join(cl2, by = 'GEOID') |>
+  filter(year %in% c(2000)) |>
+  ggplot() +
+  geom_sf(aes(fill = dcat),
+          color = 'white',
+          size = .1) + 
+  
+ scale_fill_manual(values = c("#819c70", # competitive 
+                              "#5f8bd7",
+                              "#e75848")) +
+  
+  theme_minimal() +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        legend.position = 'none') +
+  labs(title = '2000')
+```
+
+
+```{r echo=FALSE, fig.height=10}
+p2 <- counties |>
+  left_join(cl2, by = 'GEOID') |>
+  filter(year %in% c(2020)) |>
+  ggplot() +
+  geom_sf(aes(fill = dcat),
+          color = 'white',
+          size = .1) + 
+  
+ scale_fill_manual(values = c("#819c70", # competitive 
+                              "#5f8bd7",
+                              "#e75848")) +
+  
+  theme_minimal() +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        legend.position = 'bottom') +
+  labs(title = '2020')
+
+
+library(patchwork)
+p1 + p2 + 
+  patchwork::plot_layout(nrow = 2) +
+  patchwork::plot_annotation(
+    title = 'Competitive counties')
+```
+
+
+
 ---
 
 
@@ -451,7 +504,7 @@ cl2 |>
 
 ### Split Senate delegations and shifting ideologies
 
-> A **Senate delegation** for a given state is said to be **split** when comprised of Senators from different parties, eg, one Republican and one Democrat -- as is the case with, eg, Pennsylvania in the (present) 119th Congress. 
+> A **Senate delegation** for a given state is said to be **split** when comprised of Senators from different parties, eg, one Republican and one Democrat -- as is the case with, eg, West Virginia in the (present) 118th Congress. 
 
 ```{r message=FALSE, warning=FALSE}
 sens <- congress00 |>
@@ -470,9 +523,9 @@ sens <- congress00 |>
 
 ```{r}
 sens2 <- sens |>
-  filter(congress %in% c(71, 77, 83,
-                         89, 95, 101, 
-                         107, 113, 119)) |>
+  filter(congress %in% c(70, 76, 82,
+                         88, 94, 100, 
+                         106, 112, 118)) |>
   
   group_by(year, congress, state_abbrev) |>
   arrange (party_name) |>
@@ -510,7 +563,7 @@ PresElectionResults::xsf_TileOutv10 |>
   theme(legend.position = 'bottom') +
   
   facet_wrap(~year + congress) +
-  labs(title = "Senate composition by state since 1929",
+  labs(title = "Senate composition by state since 1927",
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
@@ -518,6 +571,7 @@ PresElectionResults::xsf_TileOutv10 |>
 
 ### Split Senate delegations on the wane again
 
+> With three more in danger come 2024 -- Montanta, West Virginia, and Ohio.
 
 ```{r message=FALSE, warning=FALSE}
 split_senate <- sens |>
@@ -552,33 +606,8 @@ split_senate |>
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1),
         axis.title.x=element_blank()) +
-  scale_x_continuous(breaks = seq(1921, 2025, 4)) +
-  labs(title = "Split Senate delegations since 1921")
-```
-
-### Split Senate delegations in the current Congress
-
-> Note: King (Maine) and Sanders (Vermont) are Independents that caucus with Democrats, so there are only two actual splits with different party control.
-
-```{r message=FALSE, warning=FALSE}
-split_senate_details <- sens |>
-  filter(congress > con) |>
-  filter(congress == max(congress)) |>
-  group_by(year, congress, state_abbrev) |>
-  filter(n_distinct(party_name) == 2) |>
-  arrange(party_name) |>
-  mutate(senator_num = row_number()) |>
-  ungroup() |>
-  select(congress, year, state_abbrev, bioname, party_name, senator_num) |>
-  tidyr::pivot_wider(names_from = senator_num, 
-                     values_from = c(bioname, party_name),
-                     names_sep = "_") |>
-  select(congress, year, state_abbrev, 
-         senator_1 = bioname_1, party_1 = party_name_1,
-         senator_2 = bioname_2, party_2 = party_name_2) |>
-  arrange(state_abbrev)
-
-split_senate_details |> knitr::kable()
+  scale_x_continuous(breaks = seq(1919, 2023, 4)) +
+  labs(title = "Split Senate delegations since 1919")
 ```
 
 
@@ -603,7 +632,7 @@ split_senate |>
   theme(legend.position = "bottom",
         legend.title=element_blank())+
   scale_fill_manual(values = split_pal) +
-  scale_x_continuous(breaks = seq(1921, 2025, 4)) +
+  scale_x_continuous(breaks = seq(1919, 2023, 4)) +
   xlab('') +
   ggtitle('US Senate delegations, by party composition')
 ```
@@ -634,7 +663,7 @@ wpops <- sens |> #yy |>
 ```
 
 
-> *Gray highlight*: Congresses in which (1) GOP senators hold a majority in the Senate AND (2) a minority of Americans are represented by a Republican senator. We are presently in a Republican-controlled Senate that does not represent the majority of Americans.
+> *Gray highlight*: Congresses in which (1) GOP senators hold a majority in the Senate AND (2) a minority of Americans are represented by a Repbulican senator.
 
 
 ```{r fig.height=5.5, message=FALSE, warning=FALSE}
@@ -642,12 +671,6 @@ wpops |>
   ggplot() +
   geom_rect(aes(xmin = 2015, 
                 xmax = 2019,
-                ymin = -Inf, 
-                ymax = Inf),
-            fill = 'lightgray') +
-  
-   geom_rect(aes(xmin = 2024, 
-                xmax = 2026,
                 ymin = -Inf, 
                 ymax = Inf),
             fill = 'lightgray') +
@@ -715,7 +738,7 @@ congress_south |>
         axis.text.y=element_blank(),
         axis.text.x = element_text(angle = 90, hjust = 1)) +
   
-  labs(title = "House composition since 1920")
+  labs(title = "House composition since 1919")
 ```
 
 
@@ -728,9 +751,9 @@ congress_south |>
 ```{r fig.height=7.5, message=FALSE, warning=FALSE}
 congress_south |>
   mutate(year = year + 1) |>
-  filter (congress %in% c(87, 91, 95, 
-                          99, 103, 107, 
-                          111, 115, 119)) |>
+  filter (congress %in% c(86, 90, 94, 
+                          98, 102, 106, 
+                          110, 114, 118)) |>
   
   ggplot(aes(x = nominate_dim1, 
              y = nominate_dim2) ) +
@@ -760,11 +783,81 @@ congress_south |>
 
 ---
 
+
+## Fourteen generations of American Senators
+
+> [Pew Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/) generations & [Strauss-Howe](https://en.wikipedia.org/wiki/Strauss%E2%80%93Howe_generational_theory) generations
+
+
 ```{r}
 gens <- read.csv('https://raw.githubusercontent.com/jaytimm/AmericanGenerations/main/data/pew-plus-strauss-generations.csv') |>
   mutate(order = row_number()) |>
   filter(order %in% c(5:19))
+
+gens |> knitr::kable()
 ```
+
+
+
+### Generational control in the Senate
+
+> Each column represents a congress; each tile represents a Senator.  See [this post](https://www.wcd.fyi/features/senate-generations/) for a cool, interactive version.
+
+```{r fig.height=9, message=FALSE, warning=FALSE}
+sens00 <- sens
+
+sens00$generation <- gens$generation[
+  findInterval(x = sens00$born, vec = gens$start)]
+
+sens00 <- sens00 |>
+  left_join(gens) |>
+  arrange(order) |>
+  mutate(generation = as.factor(generation)) |>
+  mutate(generation = forcats::fct_relevel(generation, 
+                                           gens$generation)) |>
+  group_by(congress) |>
+  arrange(desc(order)) |>
+  mutate(nn = row_number()) |> ungroup() |>
+  select(year, nn, generation, order)
+
+sens00  |>
+  ggplot(aes(x = year, y = (nn), fill = generation)) +
+  geom_tile(color = 'white', size = .35) +
+  ggthemes::scale_fill_stata() +
+  theme_minimal() +
+  theme(legend.position = 'top',
+        legend.title=element_blank()) +
+  ggtitle('Generational control of the Senate')
+```
+
+
+
+### Profiling control over generational lifespans
+
+> The Transendental generation's run in the Senate lasted just over 40 years; at its peak (in 1859), members of this generation comprised ~ 95% of the Senate.  
+
+```{r fig.height=7}
+sens00 |>
+  count(year, generation) |>
+  group_by(generation) |>
+  mutate(t = row_number()) |>
+  group_by(year) |>
+  mutate(per = round(n/sum(n), 2)) |> ungroup() |>
+  
+  ggplot() +
+  geom_line(aes(x = t, 
+                y = per, 
+                color = generation), 
+            size = 1) +
+  ggthemes::scale_color_stata() +
+  theme_minimal() +
+  theme(legend.position = 'top',
+        legend.title=element_blank()) +
+  ggtitle('Generational profiles in the US Senate')
+```
+
+
+
 
 ## Age, generations & freshman classes in the House
 
@@ -778,7 +871,7 @@ congress |>
   group_by(party_name, year) |>
   summarize(age = round(mean(age, na.rm = T), 1)) |>
   mutate(label = if_else(year == max(year) | year == min(year), 
-                         age, NA_real_)) |>
+                         age, NULL)) |>
   
   ggplot() +
   geom_line(aes(x = year + 1, 
@@ -799,7 +892,7 @@ congress |>
         axis.text.x = element_text(angle = 90, hjust = 1),
         axis.title.x=element_blank()) +
   
-  scale_x_continuous(breaks=seq(1921, 2025, 4)) +
+  scale_x_continuous(breaks=seq(1919, 2023, 4)) +
   labs(title = "Average age of congress members by party") 
 ```
 
@@ -813,7 +906,7 @@ freshmen <- congress |>
   group_by(icpsr, bioname) |>
   mutate(n = length(congress)) |>
   ungroup() |>
-  filter(congress == 119) |> # only correct here -- not older congresses
+  filter(congress == 118) |> # only correct here -- not older congresses
   
   mutate (Class = case_when (n == 1 ~ 'Freshman',
                              n == 2 ~ 'Sophmore',
@@ -822,7 +915,7 @@ freshmen <- congress |>
   select(icpsr, party_code, Class)
 
 gens1 <- gens |>
-  mutate(age = 2026 - as.integer(end)) |>
+  mutate(age = 2023 - as.integer(end)) |>
   filter(order %in% c(15:19))
 ```
 
@@ -831,7 +924,7 @@ gens1 <- gens |>
 ```{r fig.height=6.25, message=FALSE, warning=FALSE}
 congress |>
   filter (party_code %in% c('100', '200'), 
-          congress == 119) |> 
+          congress == 118) |> 
   mutate(age = year - born,
          party_code = ifelse(party_code == '100', 
                              'House Democrats', 
@@ -851,7 +944,7 @@ congress |>
                stackgroups=TRUE,
                binwidth = 1) + 
   
-  geom_vline(xintercept =gens1$age - 0.5,
+  geom_vline(xintercept =gens$age - 0.5,
              linetype =2, 
              color = 'black', 
              size = .25) +
@@ -865,7 +958,6 @@ congress |>
   theme_minimal() + 
   ggthemes::scale_fill_economist() +
   ggthemes::scale_color_economist() +
-  scale_x_continuous(breaks = gens1$age) +
   
   facet_wrap(~party_code, nrow = 2) +
   theme(legend.position = "bottom",
@@ -873,7 +965,7 @@ congress |>
         axis.text.y=element_blank()) +
   #ylim (0, .5) +
   
-  labs(title = "Age distribution of the 119th House by party, generation & class")
+  labs(title = "Age distribution of the 118th House by party, generation & class")
 ```
 
 
@@ -917,7 +1009,7 @@ freshmen1 |>
         axis.title.x=element_blank(),
         axis.text.x = element_text(angle = 90, hjust = 1)) +
   
-  scale_x_continuous(breaks=seq(1963,2025,2)) +
+  scale_x_continuous(breaks=seq(1961,2023,2)) +
   labs(title = "Freshman House members by party")
 
 ```
@@ -925,15 +1017,15 @@ freshmen1 |>
 
 ---
 
-## Towards 2026
+## Towards 2024
 
-### Class II Senators
+### Class I Senators
 
 ```{r message=FALSE, warning=FALSE}
 class1 <- states |> filter(!state_code %in% nonx[1:5]) |>
-  left_join(leg_dets0 |> filter(senate_class == 2)) |>
+  left_join(leg_dets0 |> filter(senate_class == 1)) |>
   left_join(PresElectionResults::pres_by_state |>
-              filter(year == 2024)) |>
+              filter(year == 2020)) |>
   mutate(bmar = round(democrat - republican, 1),
          bmar = ifelse(bmar < 0, paste0('(', gsub('-', '', bmar), ')'), bmar)) |>
   mutate(label = ifelse(is.na(senate_class), state_abbrev,
@@ -974,8 +1066,8 @@ PresElectionResults::xsf_TileOutv10 |>
   #theme(legend.position = 'none') +
   ggthemes::scale_fill_stata()+
   #scale_fill_brewer(palette = 'YlGnBu') +
-  labs(title = "Class II Senators, 2026",
-       subtitle = 'With 2024 Harris margins')
+  labs(title = "Class I Senators, 2024",
+       subtitle = 'With 2020 Biden margins')
 ```
 
 
@@ -983,9 +1075,7 @@ PresElectionResults::xsf_TileOutv10 |>
 
 ### Vulnerable Republican House Members
 
-> House Republicans in 119th representing districts Harris won in 2024.
-
-> Note: There are a few new re-worked districts in California from mid-census redistricting that are not included here.
+> House Republicans in 118th  representing districts Biden won in 2020.
 
 ```{r message=FALSE, warning=FALSE}
 vrs <- PresElectionResults::pres_by_cd |>
@@ -994,7 +1084,6 @@ vrs <- PresElectionResults::pres_by_cd |>
   left_join(freshmen) |>
   mutate(Biden_Margin = democrat - republican,
          district = paste0(state_abbrev, '-', district_code)) |>
-  
   select(1, 13, 4, 11:12) |> arrange(-Biden_Margin)
  
 vrs |> knitr::kable()

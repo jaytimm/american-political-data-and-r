@@ -1,52 +1,100 @@
----
-output:
-  md_document:
-    variant: markdown_github
----
-  
 # American political data & R
 
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-source("render_toc.r")
-```
-
-
-
-`r paste0('*Updated: ', Sys.Date(),'*')` 
+*Updated: 2023-02-24*
 
 ![](README_files/figure-markdown_github/collage1.png)
 
 <br>
 
-**An R-based guide** to accessing, exploring & visualizing US political data via a collection of publicly available resources.  
+**An R-based guide** to accessing, exploring & visualizing US political
+data via a collection of publicly available resources.
 
-Election returns have been collated from [Daily Kos](https://www.dailykos.com/), [MIT Election Data and Science Lab](MIT Election Data and Science Lab) and Wikipedia; the R package [Rvoteview](https://github.com/voteview/Rvoteview) is used extensively to characterize lawmakers and congress.
+Election returns have been collated from [Daily
+Kos](https://www.dailykos.com/), [MIT Election Data and Science
+Lab](MIT%20Election%20Data%20and%20Science%20Lab) and Wikipedia; the R
+package [Rvoteview](https://github.com/voteview/Rvoteview) is used
+extensively to characterize lawmakers and congress.
 
-**January 2026 version**.  Most plots have been updated, some added, some abandoned.  I have removed all census based examples this time around.  And focused more on national-level Presidential election results.  Previous versions are available [here](https://github.com/jaytimm/american-political-data-and-r/tree/master/versions).  
+**Winter 2023 version**. Most plots have been updated, some added, some
+abandoned. I have removed all census based examples this time around.
+And focused more on national-level Presidential election results, as
+well as generational control in congress. Previous versions are
+available
+[here](https://github.com/jaytimm/american-political-data-and-r/tree/master/versions).
 
-Hopefully **a useful open source & transparent framework** for investigating past & future election results and congresses using R. All work presented here can be reproduced in its entirety.  
+Hopefully **a useful open source & transparent framework** for
+investigating past & future election results and congresses using R. All
+work presented here can be reproduced in its entirety.
 
-
-```{r echo=FALSE}
-render_toc("/home/jtimm/Dropbox/GitHub/git-projects/American-political-data-and-R/README (Copy).Rmd")
-```
-
+-   [American political data & R](#american-political-data-&-r)
+    -   [Quick preliminaries](#quick-preliminaries)
+        -   [Some geo-spatial data](#some-geo-spatial-data)
+        -   [A simple add-on map theme](#a-simple-add-on-map-theme)
+        -   [Some quick definitions](#some-quick-definitions)
+    -   [Data sources](#data-sources)
+        -   [VoteView](#voteview)
+        -   [PresElectionData](#preselectiondata)
+        -   [Legislator details](#legislator-details)
+    -   [Historical presidential election
+        results](#historical-presidential-election-results)
+        -   [National popular vote is becoming more
+            competitive](#national-popular-vote-is-becoming-more-competitive)
+        -   [National popular vote and electoral landslides in the 20th
+            century](#national-popular-vote-and-electoral-landslides-in-the-20th-century)
+        -   [Voting margins in Presidential elections by state since
+            1976](#voting-margins-in-presidential-elections-by-state-since-1976)
+        -   [When each state last voted for a Democratic presidential
+            nominee](#when-each-state-last-voted-for-a-democratic-presidential-nominee)
+        -   [Presidential elections and vote shares by
+            state](#presidential-elections-and-vote-shares-by-state)
+        -   [Presidential elections and the disappearance of competitive
+            counties](#presidential-elections-and-the-disappearance-of-competitive-counties)
+    -   [Historical composition of the
+        Senate](#historical-composition-of-the-senate)
+        -   [Split Senate delegations and shifting
+            ideologies](#split-senate-delegations-and-shifting-ideologies)
+        -   [Split Senate delegations on the wane
+            again](#split-senate-delegations-on-the-wane-again)
+        -   [US Senate delegations by party
+            composition](#us-senate-delegations-by-party-composition)
+        -   [Republican Senators and a minority of
+            Americans](#republican-senators-and-a-minority-of-americans)
+    -   [Historical composition of the
+        House](#historical-composition-of-the-house)
+        -   [Political realignment in the
+            South](#political-realignment-in-the-south)
+        -   [On the evolution of the Southern
+            Republican](#on-the-evolution-of-the-southern-republican)
+    -   [Fourteen generations of American
+        Senators](#fourteen-generations-of-american-senators)
+        -   [Generational control in the
+            Senate](#generational-control-in-the-senate)
+        -   [Profiling control over generational
+            lifespans](#profiling-control-over-generational-lifespans)
+    -   [Age, generations & freshman classes in the
+        House](#age,-generations-&-freshman-classes-in-the-house)
+        -   [Average age of House
+            members](#average-age-of-house-members)
+        -   [Introducing Generation Z](#introducing-generation-z)
+        -   [First-timers in the House](#first-timers-in-the-house)
+    -   [Towards 2024](#towards-2024)
+        -   [Class I Senators](#class-i-senators)
+        -   [Vulnerable Republican House
+            Members](#vulnerable-republican-house-members)
+    -   [Fin](#fin)
 
 ## Quick preliminaries
 
-```{r message=FALSE, warning=FALSE}
+``` r
 library(dplyr)
 library(ggplot2)
 ```
-
 
 ### Some geo-spatial data
 
 #### State-based geo-data
 
-```{r message=FALSE, warning=FALSE}
+``` r
 library(sf)
 library(tigris)
 options(tigris_use_cache = TRUE, tigris_class = "sf")
@@ -63,12 +111,9 @@ states <- states_sf |>
 laea <- sf::st_crs("+proj=laea +lat_0=30 +lon_0=-95") 
 ```
 
-
-
-
 ### A simple add-on map theme
 
-```{r}
+``` r
 theme_guide <- function () {
   
     theme(axis.title.x=element_blank(), 
@@ -80,22 +125,18 @@ theme_guide <- function () {
           complete = F) }
 ```
 
-
-
-
 ### Some quick definitions
 
 > Per VoteView definition: The South = Dixie + Kentucky + Oklahoma
 
-```{r message=FALSE, warning=FALSE}
+``` r
 south <- c('SC', 'MS', 'FL', 
            'AL', 'GA', 'LA', 'TX', 
            'VA', 'AR', 'NC', 'TN',
            'OK', 'KY')
 ```
 
-
-```{r fig.height=5, message=FALSE, warning=FALSE}
+``` r
 states_sf |>
   filter(!state_code %in% nonx) |>
   mutate(south = ifelse(state_abbrev %in% south, 
@@ -122,33 +163,37 @@ states_sf |>
   ggtitle('Dixie + Kentucky + Oklahoma')
 ```
 
+![](README_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
----
+------------------------------------------------------------------------
 
 ## Data sources
 
 ### VoteView
 
-> The [VoteView](https://voteview.com/) project provides roll call-based political ideology scores for all lawmakers in the history of the US Congress. The R package `Rvoteview` provides access to these data.
+> The [VoteView](https://voteview.com/) project provides roll call-based
+> political ideology scores for all lawmakers in the history of the US
+> Congress. The R package `Rvoteview` provides access to these data.
 
-
-
-
-```{r}
+``` r
 ## NOTE: election years.  term begins year + 1
-ccr <- data.frame(year = c(1786 + 2*rep(c(1:119))), 
-                  congress = c(1:119)) 
+ccr <- data.frame(year = c(1786 + 2*rep(c(1:118))), 
+                  congress = c(1:118)) 
 ```
 
-
-```{r message=TRUE, warning=FALSE}
-con <- 66 #66
+``` r
+con <- 65 #66
 
 vvo <- lapply(c('house', 'senate'), function(x) {
               Rvoteview::download_metadata(type = 'members', 
                                     chamber = x) |>
     filter(chamber != 'President') }) 
+```
 
+    ## [1] "/tmp/RtmpjA3XR2/Hall_members.csv"
+    ## [1] "/tmp/RtmpjA3XR2/Sall_members.csv"
+
+``` r
 congress00 <- vvo |>
   bind_rows() |>
   mutate(x = length(unique(district_code))) |>
@@ -171,42 +216,41 @@ congress <- congress00 |>
   filter(congress > con)
 ```
 
+### PresElectionData
 
-### PresElectionResults
+> The [`PresElectionResults`
+> package](https://github.com/jaytimm/PresElectionResults) includes US
+> Presidential Election Results by county (2000-2020), congressional
+> district (2020), and state (1864-2020). Additionally included are FRED
+> population data and equal-area simple feature geometries (via Daily
+> Kos). Full package build details are available
+> [here](https://github.com/jaytimm/PresElectionResults/blob/master/builds.md).
 
-> The [`PresElectionResults` package](https://github.com/jaytimm/PresElectionResults) includes US Presidential Election Results by county (2000-2024), congressional district (2024), and state (1864-2024).  Additionally included are FRED population data and equal-area simple feature geometries (via Daily Kos).  Full package build details are available [here](https://github.com/jaytimm/PresElectionResults/blob/master/builds.md).
-
-
-```{r eval=FALSE}
-devtools::install_github("jaytimm/PresElectionResults")
+``` r
+devtools::install_github("jaytimm/PresElectionData")
 ```
-
-
 
 ### Legislator details
 
-> Via [unitedstates.github.io](https://github.com/unitedstates/congress-legislators)
+> Via [theuntiedstates.io](https://theunitedstates.io/)
 
-```{r}
-leg_dets <- 'https://unitedstates.github.io/congress-legislators/legislators-current.csv'
+``` r
+leg_dets <- 'https://theunitedstates.io/congress-legislators/legislators-current.csv'
 leg_dets0 <- read.csv((url(leg_dets)), stringsAsFactors = FALSE) |>
   rename(state_abbrev = state)
 ```
 
+------------------------------------------------------------------------
 
+## Historical presidential election results
 
+> National popular and electoral presidential election results made
+> available at
+> [britannica.com](https://www.britannica.com/topic/United-States-Presidential-Election-Results-1788863).
 
----
+### National popular vote is becoming more competitive
 
-
-## Historical presidential election results 
-
-> National popular and electoral presidential election results made available at [britannica.com](https://www.britannica.com/topic/United-States-Presidential-Election-Results-1788863).
-
-
-### National popular vote is becoming more competitive 
-
-```{r fig.height=5.5, message=FALSE, warning=FALSE}
+``` r
 library(ggplot2)
 pres1 <- PresElectionResults::pres_results |>
   filter(year > 1864, 
@@ -216,7 +260,7 @@ pres1 <- PresElectionResults::pres_results |>
   tidyr::spread(party, pop_per) |>
   
   mutate(delta = Republican - Democratic,
-         d20 = ifelse(year %% 20 == 4, year, '')) 
+         d20 = ifelse(year %% 20 == 0, year, '')) 
 
 pres1 |> 
   ggplot2::ggplot(aes(x = delta,
@@ -239,16 +283,14 @@ pres1 |>
   
   xlim(-30, 30) +
   labs(title ='National popular vote margins',
-       subtitle = '1868 to 2024')
+       subtitle = '1868 to 2020')
 ```
 
-
-
-
+![](README_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
 ### National popular vote and electoral landslides in the 20th century
 
-```{r fig.height=5.5}
+``` r
 PresElectionResults::pres_results |>
   filter(year > 1828, !is.na(ec_votes)) |>
   group_by(year) |>
@@ -269,26 +311,23 @@ PresElectionResults::pres_results |>
   ggthemes::scale_colour_economist() +
   theme(axis.ticks = element_blank(),
       legend.position = 'none') +
-  scale_y_continuous(breaks = seq(1824, 2024, by = 20)) +
   labs(title ="President-elect's share of electoral and popular votes",
-       subtitle = '1828 to 2024')
+       subtitle = '1828 to 2020')
 ```
 
+![](README_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
+### Voting margins in Presidential elections by state since 1976
 
+> Historical Presidential election results by state [via
+> Wikipedia](https://github.com/jaytimm/uspols#4-wikipedia-presidential-returns-by-state-1864-).
+> Equal-area state geometry via [Daily
+> Kos](https://docs.google.com/spreadsheets/d/1LrBXlqrtSZwyYOkpEEXFwQggvtR0bHHTxs9kq4kjOjw/edit#gid=1278876419).
 
-
-
-### Voting margins in Presidential elections by state 1980-2024
-
-> Historical Presidential election results by state [via Wikipedia](https://github.com/jaytimm/uspols#4-wikipedia-presidential-returns-by-state-1864-). Equal-area state geometry via [Daily Kos](https://docs.google.com/spreadsheets/d/1LrBXlqrtSZwyYOkpEEXFwQggvtR0bHHTxs9kq4kjOjw/edit#gid=1278876419).
-
-
-
-```{r fig.height=5.5, message=FALSE, warning=FALSE}
+``` r
 mp <- PresElectionResults::xsf_TileOutv10 |>
   left_join(PresElectionResults::pres_by_state |>
-              filter(year >= 1980, year <= 2024) |>
+              filter(year > 1975) |>
               mutate(margins = republican - democrat)) 
 
 mp |> 
@@ -310,24 +349,21 @@ mp |>
                         limit = max(abs(mp$margins)) * c(-1, 1)) +
   facet_wrap(~year, ncol = 4) +
   theme_minimal()+ theme_guide() +
-  labs(title = "Voting margins in Presidential elections 1980-2024")
+  labs(title = "Voting margins in Presidential elections since 1976")
 ```
 
-
-
+![](README_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 ### When each state last voted for a Democratic presidential nominee
 
-```{r}
+``` r
 clean_prex <-  PresElectionResults::pres_by_state |>
   mutate(winner = gsub('Franklin D. Roosevelt', 'FDR', winner),
          winner = gsub('Lyndon B. Johnson', 'LBJ', winner),
          winner = gsub('Hillary Clinton', 'HRC', winner)) 
 ```
 
-
-
-```{r message=FALSE, warning=FALSE}
+``` r
 last_dem <- clean_prex |>
   group_by(state_abbrev, party_win) |>
   filter(year == max(year),
@@ -336,12 +372,10 @@ last_dem <- clean_prex |>
   mutate(lab = paste0(year, ' - ', winner))
 ```
 
+> **Nine US states** have not voted for a Democratic Presidential
+> candidate since LBJ.
 
-
-> **Nine US states** have not voted for a Democratic Presidential candidate since LBJ.  
-
-
-```{r fig.height=6, message=FALSE, warning=FALSE}
+``` r
 new1 <- PresElectionResults::xsf_TileInv10 |> 
   left_join(last_dem, by ='state_abbrev') |>
   mutate(label = paste0(state_abbrev, 
@@ -368,13 +402,11 @@ PresElectionResults::xsf_TileOutv10 |>
   labs(title = "When each state last voted for a Democratic presidential nominee")
 ```
 
-
-
-
+![](README_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
 ### Presidential elections and vote shares by state
 
-```{r}
+``` r
 vote_share <- clean_prex |>
   select(-party_win) |>
   tidyr::gather(key = 'party', value = 'per', democrat:republican) |>
@@ -384,9 +416,7 @@ vote_share <- clean_prex |>
   mutate(label = paste0(year, ' - ', winner))
 ```
 
-
-
-```{r fig.height=6, message=FALSE, warning=FALSE}
+``` r
 new <- PresElectionResults::xsf_TileInv10 |> 
   left_join(vote_share, by ='state_abbrev') |>
   mutate(per = round(per, 1)) |>
@@ -417,17 +447,17 @@ PresElectionResults::xsf_TileOutv10 |>
   subtitle = "By state since 1864")
 ```
 
+![](README_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
+### Presidential elections and the disappearance of competitive counties
 
-### Presidential elections and the disappearance of competitive counties 
-
-```{r message=FALSE, warning=FALSE}
+``` r
 counties <- tigris::counties(cb = TRUE) |> 
   filter(!STATEFP %in% nonx) |>
   sf::st_transform(laea)
 ```
 
-```{r}
+``` r
 cutoff <- 10
 
 cl2 <- PresElectionResults::pres_by_county |>
@@ -443,17 +473,51 @@ cl2 |>
   knitr::kable()
 ```
 
----
+| year | competitive | DEM \> +10 | REP \> +10 |
+|-----:|------------:|-----------:|-----------:|
+| 2000 |         734 |        382 |       2036 |
+| 2004 |         586 |        332 |       2236 |
+| 2008 |         663 |        577 |       1914 |
+| 2012 |         516 |        503 |       2138 |
+| 2016 |         299 |        370 |       2488 |
+| 2020 |         302 |        410 |       2443 |
 
+``` r
+p1 <- counties |>
+  left_join(cl2, by = 'GEOID') |>
+  filter(year %in% c(2000)) |>
+  ggplot() +
+  geom_sf(aes(fill = dcat),
+          color = 'white',
+          size = .1) + 
+  
+ scale_fill_manual(values = c("#819c70", # competitive 
+                              "#5f8bd7",
+                              "#e75848")) +
+  
+  theme_minimal() +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        legend.position = 'none') +
+  labs(title = '2000')
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-22-1.png)
+
+------------------------------------------------------------------------
 
 ## Historical composition of the Senate
 
-
 ### Split Senate delegations and shifting ideologies
 
-> A **Senate delegation** for a given state is said to be **split** when comprised of Senators from different parties, eg, one Republican and one Democrat -- as is the case with, eg, Pennsylvania in the (present) 119th Congress. 
+> A **Senate delegation** for a given state is said to be **split** when
+> comprised of Senators from different parties, eg, one Republican and
+> one Democrat – as is the case with, eg, West Virginia in the (present)
+> 118th Congress.
 
-```{r message=FALSE, warning=FALSE}
+``` r
 sens <- congress00 |>
   filter(chamber == 'Senate') |>
   mutate(party_name = as.factor(party_name)) |>
@@ -466,13 +530,11 @@ sens <- congress00 |>
   ungroup() 
 ```
 
-
-
-```{r}
+``` r
 sens2 <- sens |>
-  filter(congress %in% c(71, 77, 83,
-                         89, 95, 101, 
-                         107, 113, 119)) |>
+  filter(congress %in% c(70, 76, 82,
+                         88, 94, 100, 
+                         106, 112, 118)) |>
   
   group_by(year, congress, state_abbrev) |>
   arrange (party_name) |>
@@ -480,10 +542,7 @@ sens2 <- sens |>
   ungroup()
 ```
 
-
-
-
-```{r fig.height=8, message=FALSE, warning=FALSE}
+``` r
 PresElectionResults::xsf_TileOutv10 |>
   left_join(sens2 |> filter(layer == 2)) |>
   ggplot() + 
@@ -510,16 +569,18 @@ PresElectionResults::xsf_TileOutv10 |>
   theme(legend.position = 'bottom') +
   
   facet_wrap(~year + congress) +
-  labs(title = "Senate composition by state since 1929",
+  labs(title = "Senate composition by state since 1927",
        caption = 'Data sources: Daily Kos & VoteView')
 ```
 
-
+![](README_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
 ### Split Senate delegations on the wane again
 
+> With three more in danger come 2024 – Montanta, West Virginia, and
+> Ohio.
 
-```{r message=FALSE, warning=FALSE}
+``` r
 split_senate <- sens |>
   filter(congress > con) |>
   group_by(year, congress, state_abbrev) |>
@@ -537,8 +598,7 @@ split_senate$parts <- factor(split_senate$parts,
                                         'Both other')) 
 ```
 
-
-```{r message=FALSE, warning=FALSE}
+``` r
 split_senate |>
   filter(splits == 2) |>
   group_by(year, congress) |>
@@ -552,39 +612,15 @@ split_senate |>
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1),
         axis.title.x=element_blank()) +
-  scale_x_continuous(breaks = seq(1921, 2025, 4)) +
-  labs(title = "Split Senate delegations since 1921")
+  scale_x_continuous(breaks = seq(1919, 2023, 4)) +
+  labs(title = "Split Senate delegations since 1919")
 ```
 
-### Split Senate delegations in the current Congress
-
-> Note: King (Maine) and Sanders (Vermont) are Independents that caucus with Democrats, so there are only two actual splits with different party control.
-
-```{r message=FALSE, warning=FALSE}
-split_senate_details <- sens |>
-  filter(congress > con) |>
-  filter(congress == max(congress)) |>
-  group_by(year, congress, state_abbrev) |>
-  filter(n_distinct(party_name) == 2) |>
-  arrange(party_name) |>
-  mutate(senator_num = row_number()) |>
-  ungroup() |>
-  select(congress, year, state_abbrev, bioname, party_name, senator_num) |>
-  tidyr::pivot_wider(names_from = senator_num, 
-                     values_from = c(bioname, party_name),
-                     names_sep = "_") |>
-  select(congress, year, state_abbrev, 
-         senator_1 = bioname_1, party_1 = party_name_1,
-         senator_2 = bioname_2, party_2 = party_name_2) |>
-  arrange(state_abbrev)
-
-split_senate_details |> knitr::kable()
-```
-
+![](README_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
 ### US Senate delegations by party composition
 
-```{r fig.height=6, message=FALSE, warning=FALSE}
+``` r
 split_pal <- c('#395f81', '#ead8c3', '#9e5055', '#b0bcc1')
 
 split_senate |>
@@ -603,20 +639,19 @@ split_senate |>
   theme(legend.position = "bottom",
         legend.title=element_blank())+
   scale_fill_manual(values = split_pal) +
-  scale_x_continuous(breaks = seq(1921, 2025, 4)) +
+  scale_x_continuous(breaks = seq(1919, 2023, 4)) +
   xlab('') +
   ggtitle('US Senate delegations, by party composition')
 ```
 
-
-
-
+![](README_files/figure-markdown_github/unnamed-chunk-28-1.png)
 
 ### Republican Senators and a minority of Americans
 
-> Senate seats held by Republicans via VoteView; population of states represented by Reublican senators via FRED.
+> Senate seats held by Republicans via VoteView; population of states
+> represented by Reublican senators via FRED.
 
-```{r message=FALSE, warning=FALSE}
+``` r
 wpops <- sens |> #yy |> 
   filter(congress > con) |>
   left_join(PresElectionResults::fred_pop_by_state,
@@ -633,21 +668,15 @@ wpops <- sens |> #yy |>
   tidyr::gather(-year, key = 'var', value = 'per')
 ```
 
+> *Gray highlight*: Congresses in which (1) GOP senators hold a majority
+> in the Senate AND (2) a minority of Americans are represented by a
+> Repbulican senator.
 
-> *Gray highlight*: Congresses in which (1) GOP senators hold a majority in the Senate AND (2) a minority of Americans are represented by a Republican senator. We are presently in a Republican-controlled Senate that does not represent the majority of Americans.
-
-
-```{r fig.height=5.5, message=FALSE, warning=FALSE}
+``` r
 wpops |>
   ggplot() +
   geom_rect(aes(xmin = 2015, 
                 xmax = 2019,
-                ymin = -Inf, 
-                ymax = Inf),
-            fill = 'lightgray') +
-  
-   geom_rect(aes(xmin = 2024, 
-                xmax = 2026,
                 ymin = -Inf, 
                 ymax = Inf),
             fill = 'lightgray') +
@@ -668,15 +697,13 @@ wpops |>
   labs(subtitle = "Republican Senate share v. Share Americans represented by Republican senator") 
 ```
 
+![](README_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
-
-
----
+------------------------------------------------------------------------
 
 ## Historical composition of the House
 
-
-```{r}
+``` r
 congress_south <- congress |> 
   filter(party_code %in% c(100, 200), chamber == 'House') |>
   mutate(Member = as.factor(paste0(party_name, ', ', southerner))) |>
@@ -685,11 +712,9 @@ congress_south <- congress |>
                                        after = 3)) 
 ```
 
-
-
 ### Political realignment in the South
 
-```{r fig.height=6, message=FALSE, warning=FALSE}
+``` r
 congress_south |>
   group_by(year, Member) |>
   summarize(n = n()) |>
@@ -715,22 +740,24 @@ congress_south |>
         axis.text.y=element_blank(),
         axis.text.x = element_text(angle = 90, hjust = 1)) +
   
-  labs(title = "House composition since 1920")
+  labs(title = "House composition since 1919")
 ```
 
-
+![](README_files/figure-markdown_github/unnamed-chunk-32-1.png)
 
 ### On the evolution of the Southern Republican
 
-> **DW-NOMINATE ideal points in two dimensions**. The first dimension captures ideological variation based in the standard liberal-conservative divide. The second captures variation based in social conservatism that crosscuts political affiliation.  
+> **DW-NOMINATE ideal points in two dimensions**. The first dimension
+> captures ideological variation based in the standard
+> liberal-conservative divide. The second captures variation based in
+> social conservatism that crosscuts political affiliation.
 
-
-```{r fig.height=7.5, message=FALSE, warning=FALSE}
+``` r
 congress_south |>
   mutate(year = year + 1) |>
-  filter (congress %in% c(87, 91, 95, 
-                          99, 103, 107, 
-                          111, 115, 119)) |>
+  filter (congress %in% c(86, 90, 94, 
+                          98, 102, 106, 
+                          110, 114, 118)) |>
   
   ggplot(aes(x = nominate_dim1, 
              y = nominate_dim2) ) +
@@ -756,21 +783,112 @@ congress_south |>
        subtitle = 'In two dimensions: from 1959 to 2023')
 ```
 
+![](README_files/figure-markdown_github/unnamed-chunk-33-1.png)
 
+------------------------------------------------------------------------
 
----
+## Fourteen generations of American Senators
 
-```{r}
+> [Pew
+> Research](http://www.pewresearch.org/fact-tank/2018/04/11/millennials-largest-generation-us-labor-force/ft_15-05-11_millennialsdefined/)
+> generations &
+> [Strauss-Howe](https://en.wikipedia.org/wiki/Strauss%E2%80%93Howe_generational_theory)
+> generations
+
+``` r
 gens <- read.csv('https://raw.githubusercontent.com/jaytimm/AmericanGenerations/main/data/pew-plus-strauss-generations.csv') |>
   mutate(order = row_number()) |>
   filter(order %in% c(5:19))
+
+gens |> knitr::kable()
 ```
+
+| generation     | start |  end | model   | order |
+|:---------------|------:|-----:|:--------|------:|
+| Awakening      |  1701 | 1723 | strauss |     5 |
+| Liberty        |  1724 | 1741 | strauss |     6 |
+| Republican     |  1742 | 1766 | strauss |     7 |
+| Compromise     |  1767 | 1791 | strauss |     8 |
+| Transcendental |  1792 | 1821 | strauss |     9 |
+| Gilded         |  1822 | 1842 | strauss |    10 |
+| Progressive    |  1843 | 1859 | strauss |    11 |
+| Missionary     |  1860 | 1882 | strauss |    12 |
+| Lost           |  1883 | 1900 | strauss |    13 |
+| Greatest       |  1901 | 1927 | pew     |    14 |
+| Silent         |  1928 | 1945 | pew     |    15 |
+| Boomers        |  1946 | 1964 | pew     |    16 |
+| Gen X          |  1965 | 1980 | pew     |    17 |
+| Millenials     |  1981 | 1996 | pew     |    18 |
+| Gen Z          |  1997 | 2012 | pew     |    19 |
+
+### Generational control in the Senate
+
+> Each column represents a congress; each tile represents a Senator. See
+> [this post](https://www.wcd.fyi/features/senate-generations/) for a
+> cool, interactive version.
+
+``` r
+sens00 <- sens
+
+sens00$generation <- gens$generation[
+  findInterval(x = sens00$born, vec = gens$start)]
+
+sens00 <- sens00 |>
+  left_join(gens) |>
+  arrange(order) |>
+  mutate(generation = as.factor(generation)) |>
+  mutate(generation = forcats::fct_relevel(generation, 
+                                           gens$generation)) |>
+  group_by(congress) |>
+  arrange(desc(order)) |>
+  mutate(nn = row_number()) |> ungroup() |>
+  select(year, nn, generation, order)
+
+sens00  |>
+  ggplot(aes(x = year, y = (nn), fill = generation)) +
+  geom_tile(color = 'white', size = .35) +
+  ggthemes::scale_fill_stata() +
+  theme_minimal() +
+  theme(legend.position = 'top',
+        legend.title=element_blank()) +
+  ggtitle('Generational control of the Senate')
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
+
+### Profiling control over generational lifespans
+
+> The Transendental generation’s run in the Senate lasted just over 40
+> years; at its peak (in 1859), members of this generation comprised \~
+> 95% of the Senate.
+
+``` r
+sens00 |>
+  count(year, generation) |>
+  group_by(generation) |>
+  mutate(t = row_number()) |>
+  group_by(year) |>
+  mutate(per = round(n/sum(n), 2)) |> ungroup() |>
+  
+  ggplot() +
+  geom_line(aes(x = t, 
+                y = per, 
+                color = generation), 
+            size = 1) +
+  ggthemes::scale_color_stata() +
+  theme_minimal() +
+  theme(legend.position = 'top',
+        legend.title=element_blank()) +
+  ggtitle('Generational profiles in the US Senate')
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-36-1.png)
 
 ## Age, generations & freshman classes in the House
 
 ### Average age of House members
 
-```{r message=FALSE, warning=FALSE}
+``` r
 congress |>
   mutate(age = year - born) |>
   filter (party_code %in% c('100', '200')) |>
@@ -778,7 +896,7 @@ congress |>
   group_by(party_name, year) |>
   summarize(age = round(mean(age, na.rm = T), 1)) |>
   mutate(label = if_else(year == max(year) | year == min(year), 
-                         age, NA_real_)) |>
+                         age, NULL)) |>
   
   ggplot() +
   geom_line(aes(x = year + 1, 
@@ -799,21 +917,20 @@ congress |>
         axis.text.x = element_text(angle = 90, hjust = 1),
         axis.title.x=element_blank()) +
   
-  scale_x_continuous(breaks=seq(1921, 2025, 4)) +
+  scale_x_continuous(breaks=seq(1919, 2023, 4)) +
   labs(title = "Average age of congress members by party") 
 ```
 
-
-
+![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
 
 ### Introducing Generation Z
 
-```{r}
+``` r
 freshmen <- congress |>
   group_by(icpsr, bioname) |>
   mutate(n = length(congress)) |>
   ungroup() |>
-  filter(congress == 119) |> # only correct here -- not older congresses
+  filter(congress == 118) |> # only correct here -- not older congresses
   
   mutate (Class = case_when (n == 1 ~ 'Freshman',
                              n == 2 ~ 'Sophmore',
@@ -822,16 +939,14 @@ freshmen <- congress |>
   select(icpsr, party_code, Class)
 
 gens1 <- gens |>
-  mutate(age = 2026 - as.integer(end)) |>
+  mutate(age = 2023 - as.integer(end)) |>
   filter(order %in% c(15:19))
 ```
 
-
-
-```{r fig.height=6.25, message=FALSE, warning=FALSE}
+``` r
 congress |>
   filter (party_code %in% c('100', '200'), 
-          congress == 119) |> 
+          congress == 118) |> 
   mutate(age = year - born,
          party_code = ifelse(party_code == '100', 
                              'House Democrats', 
@@ -851,7 +966,7 @@ congress |>
                stackgroups=TRUE,
                binwidth = 1) + 
   
-  geom_vline(xintercept =gens1$age - 0.5,
+  geom_vline(xintercept =gens$age - 0.5,
              linetype =2, 
              color = 'black', 
              size = .25) +
@@ -865,7 +980,6 @@ congress |>
   theme_minimal() + 
   ggthemes::scale_fill_economist() +
   ggthemes::scale_color_economist() +
-  scale_x_continuous(breaks = gens1$age) +
   
   facet_wrap(~party_code, nrow = 2) +
   theme(legend.position = "bottom",
@@ -873,14 +987,14 @@ congress |>
         axis.text.y=element_blank()) +
   #ylim (0, .5) +
   
-  labs(title = "Age distribution of the 119th House by party, generation & class")
+  labs(title = "Age distribution of the 118th House by party, generation & class")
 ```
 
-
+![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
 
 ### First-timers in the House
 
-```{r message=FALSE, warning=FALSE}
+``` r
 freshmen1 <- congress |>
   group_by(icpsr, bioname, party_name) |>
   summarize(min = min(year),
@@ -917,23 +1031,23 @@ freshmen1 |>
         axis.title.x=element_blank(),
         axis.text.x = element_text(angle = 90, hjust = 1)) +
   
-  scale_x_continuous(breaks=seq(1963,2025,2)) +
+  scale_x_continuous(breaks=seq(1961,2023,2)) +
   labs(title = "Freshman House members by party")
-
 ```
 
+![](README_files/figure-markdown_github/unnamed-chunk-40-1.png)
 
----
+------------------------------------------------------------------------
 
-## Towards 2026
+## Towards 2024
 
-### Class II Senators
+### Class I Senators
 
-```{r message=FALSE, warning=FALSE}
+``` r
 class1 <- states |> filter(!state_code %in% nonx[1:5]) |>
-  left_join(leg_dets0 |> filter(senate_class == 2)) |>
+  left_join(leg_dets0 |> filter(senate_class == 1)) |>
   left_join(PresElectionResults::pres_by_state |>
-              filter(year == 2024)) |>
+              filter(year == 2020)) |>
   mutate(bmar = round(democrat - republican, 1),
          bmar = ifelse(bmar < 0, paste0('(', gsub('-', '', bmar), ')'), bmar)) |>
   mutate(label = ifelse(is.na(senate_class), state_abbrev,
@@ -950,9 +1064,7 @@ class1 <- states |> filter(!state_code %in% nonx[1:5]) |>
                                         after = 2))
 ```
 
-
-
-```{r fig.height=6, message=FALSE, warning=FALSE}
+``` r
 new2 <- PresElectionResults::xsf_TileInv10 |> 
   left_join(class1)
 
@@ -974,33 +1086,47 @@ PresElectionResults::xsf_TileOutv10 |>
   #theme(legend.position = 'none') +
   ggthemes::scale_fill_stata()+
   #scale_fill_brewer(palette = 'YlGnBu') +
-  labs(title = "Class II Senators, 2026",
-       subtitle = 'With 2024 Harris margins')
+  labs(title = "Class I Senators, 2024",
+       subtitle = 'With 2020 Biden margins')
 ```
 
-
-
+![](README_files/figure-markdown_github/unnamed-chunk-42-1.png)
 
 ### Vulnerable Republican House Members
 
-> House Republicans in 119th representing districts Harris won in 2024.
+> House Republicans in 118th representing districts Biden won in 2020.
 
-> Note: There are a few new re-worked districts in California from mid-census redistricting that are not included here.
-
-```{r message=FALSE, warning=FALSE}
+``` r
 vrs <- PresElectionResults::pres_by_cd |>
   filter(house_rep_party == 'republican',
          party_win == 'democrat') |>
   left_join(freshmen) |>
   mutate(Biden_Margin = democrat - republican,
          district = paste0(state_abbrev, '-', district_code)) |>
-  
   select(1, 13, 4, 11:12) |> arrange(-Biden_Margin)
  
 vrs |> knitr::kable()
 ```
 
-
-
+| icpsr | district | house_rep           | Class       | Biden_Margin |
+|------:|:---------|:--------------------|:------------|-------------:|
+| 22313 | NY-04    | Anthony D’Esposito  | Freshman    |         14.6 |
+| 21307 | CA-22    | David Valadao       | Upper-class |         13.0 |
+| 21988 | CA-27    | Mike Garcia         | Upper-class |         12.4 |
+| 22317 | CA-13    | John Duarte         | Freshman    |         10.9 |
+| 22340 | NY-17    | Mike Lawler         | Freshman    |         10.1 |
+| 22308 | OR-05    | Lori Chavez-DeRemer | Freshman    |          8.8 |
+| 22362 | NY-03    | George Santos       | Freshman    |          8.2 |
+| 22372 | NY-22    | Brandon Williams    | Freshman    |          7.4 |
+| 21701 | NE-02    | Don Bacon           | Upper-class |          6.4 |
+| 22152 | CA-45    | Michelle Steel      | Sophmore    |          6.1 |
+| 22351 | NY-19    | Marc Molinaro       | Freshman    |          4.6 |
+| 21718 | PA-01    | Brian Fitzpatrick   | Upper-class |          4.6 |
+| 22334 | NJ-07    | Tom Kean Jr.        | Freshman    |          3.8 |
+| 22129 | CA-40    | Young Kim           | Sophmore    |          1.9 |
+| 22335 | VA-02    | Jen Kiggans         | Freshman    |          1.9 |
+| 21105 | AZ-01    | David Schweikert    | Upper-class |          1.5 |
+| 22337 | NY-01    | Nick LaLota         | Freshman    |          0.2 |
+| 22309 | AZ-06    | Juan Ciscomani      | Freshman    |          0.1 |
 
 ## Fin
