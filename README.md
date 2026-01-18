@@ -186,8 +186,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(chamber != 'President') }) 
 ```
 
-    ## [1] "/tmp/Rtmp5WmqX0/Hall_members.csv"
-    ## [1] "/tmp/Rtmp5WmqX0/Sall_members.csv"
+    ## [1] "/tmp/RtmpofIFUd/Hall_members.csv"
+    ## [1] "/tmp/RtmpofIFUd/Sall_members.csv"
 
 ``` r
 congress00 <- vvo |>
@@ -405,6 +405,10 @@ PresElectionResults::xsf_TileOutv10 |>
 ![](README_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
 ### Presidential elections and vote shares by state
+
+> Shows the **maximum vote share (percentage of votes received)** by any
+> presidential nominee in each state from 1864 to 2024, not the margin
+> of victory.
 
 ``` r
 vote_share <- clean_prex |>

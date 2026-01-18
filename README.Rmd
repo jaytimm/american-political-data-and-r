@@ -377,6 +377,8 @@ PresElectionResults::xsf_TileOutv10 |>
 
 ### Presidential elections and vote shares by state
 
+> Shows the **maximum vote share (percentage of votes received)** by any presidential nominee in each state from 1864 to 2024, not the margin of victory.
+
 ```{r}
 vote_share <- clean_prex |>
   select(-party_win) |>
