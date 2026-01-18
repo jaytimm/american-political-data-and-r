@@ -634,7 +634,7 @@ wpops <- sens |> #yy |>
 ```
 
 
-> *Gray highlight*: Congresses in which (1) GOP senators hold a majority in the Senate AND (2) a minority of Americans are represented by a Republican senator. We are presently in a Republican-controlled Senate that does not represent the majority of Americans.
+> *Gray highlight*: Congresses in which (1) GOP senators hold a majority in the Senate AND (2) Republican senators collectively represent less than half of the U.S. population. We are presently in a Republican-controlled Senate where Republican senators represent a minority of Americans.
 
 
 ```{r fig.height=5.5, message=FALSE, warning=FALSE}

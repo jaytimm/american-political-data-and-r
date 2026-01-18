@@ -185,8 +185,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(chamber != 'President') }) 
 ```
 
-    ## [1] "/tmp/RtmpcKXjjW/Hall_members.csv"
-    ## [1] "/tmp/RtmpcKXjjW/Sall_members.csv"
+    ## [1] "/tmp/RtmpC6M6CK/Hall_members.csv"
+    ## [1] "/tmp/RtmpC6M6CK/Sall_members.csv"
 
 ``` r
 congress00 <- vvo |>
@@ -674,9 +674,10 @@ wpops <- sens |> #yy |>
 ```
 
 > *Gray highlight*: Congresses in which (1) GOP senators hold a majority
-> in the Senate AND (2) a minority of Americans are represented by a
-> Republican senator. We are presently in a Republican-controlled Senate
-> that does not represent the majority of Americans.
+> in the Senate AND (2) Republican senators collectively represent less
+> than half of the U.S. population. We are presently in a
+> Republican-controlled Senate where Republican senators represent a
+> minority of Americans.
 
 ``` r
 wpops |>
