@@ -1,6 +1,6 @@
 # American political data & R
 
-*Updated: 2026-01-18*
+*Updated: 2026-01-19*
 
 ![](README_files/figure-markdown_github/collage1.png)
 
@@ -186,8 +186,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(chamber != 'President') }) 
 ```
 
-    ## [1] "/tmp/RtmpofIFUd/Hall_members.csv"
-    ## [1] "/tmp/RtmpofIFUd/Sall_members.csv"
+    ## [1] "/tmp/Rtmp7M6yQG/Hall_members.csv"
+    ## [1] "/tmp/Rtmp7M6yQG/Sall_members.csv"
 
 ``` r
 congress00 <- vvo |>
@@ -600,8 +600,9 @@ split_senate |>
 ### Split Senate delegations in the current Congress
 
 > Note: King (Maine) and Sanders (Vermont) are Independents that caucus
-> with Democrats, so there are only two actual splits with different
-> party control.
+> with Democrats. There are three actual splits with different party
+> control: King/Collins in Maine, Fetterman/McCormick in Pennsylvania,
+> and Baldwin/Johnson in Wisconsin.
 
 ``` r
 split_senate_details <- sens |>
@@ -616,7 +617,7 @@ split_senate_details <- sens |>
   tidyr::pivot_wider(names_from = senator_num, 
                      values_from = c(bioname, party_name),
                      names_sep = "_") |>
-  select(congress, year, state_abbrev, 
+  select(state_abbrev, 
          senator_1 = bioname_1, party_1 = party_name_1,
          senator_2 = bioname_2, party_2 = party_name_2) |>
   arrange(state_abbrev)
@@ -624,12 +625,12 @@ split_senate_details <- sens |>
 split_senate_details |> knitr::kable()
 ```
 
-| congress | year | state_abbrev | senator_1 | party_1 | senator_2 | party_2 |
-|------:|----:|:---------|:----------------|:--------|:-----------------|:--------|
-| 119 | 2025 | ME | COLLINS, Susan Margaret | Republican | KING, Angus Stanley, Jr. | other |
-| 119 | 2025 | PA | FETTERMAN, John Karl | Democrat | MCCORMICK, David Harold | Republican |
-| 119 | 2025 | VT | WELCH, Peter | Democrat | SANDERS, Bernard | other |
-| 119 | 2025 | WI | BALDWIN, Tammy | Democrat | JOHNSON, Ron | Republican |
+| state_abbrev | senator_1 | party_1 | senator_2 | party_2 |
+|:-----------|:-------------------|:---------|:--------------------|:---------|
+| ME | COLLINS, Susan Margaret | Republican | KING, Angus Stanley, Jr. | other |
+| PA | FETTERMAN, John Karl | Democrat | MCCORMICK, David Harold | Republican |
+| VT | WELCH, Peter | Democrat | SANDERS, Bernard | other |
+| WI | BALDWIN, Tammy | Democrat | JOHNSON, Ron | Republican |
 
 ### US Senate delegations by party composition
 
@@ -749,6 +750,7 @@ congress_south |>
   geom_area(alpha = 0.65, color = 'gray') +
   
   geom_hline(yintercept = 0.5, color = 'white', linetype = 2) +
+  geom_vline(xintercept = 1964, color = 'black', linetype = 2, size = 0.5) +
 
   scale_x_continuous(breaks=seq(min(congress_south$year+1),
                                 max(congress_south$year+ 1), 4)) +

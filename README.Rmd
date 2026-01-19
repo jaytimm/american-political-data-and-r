@@ -564,7 +564,7 @@ split_senate |>
 
 ### Split Senate delegations in the current Congress
 
-> Note: King (Maine) and Sanders (Vermont) are Independents that caucus with Democrats, so there are only two actual splits with different party control.
+> Note: King (Maine) and Sanders (Vermont) are Independents that caucus with Democrats. There are three actual splits with different party control: King/Collins in Maine, Fetterman/McCormick in Pennsylvania, and Baldwin/Johnson in Wisconsin.
 
 ```{r message=FALSE, warning=FALSE}
 split_senate_details <- sens |>
@@ -579,7 +579,7 @@ split_senate_details <- sens |>
   tidyr::pivot_wider(names_from = senator_num, 
                      values_from = c(bioname, party_name),
                      names_sep = "_") |>
-  select(congress, year, state_abbrev, 
+  select(state_abbrev, 
          senator_1 = bioname_1, party_1 = party_name_1,
          senator_2 = bioname_2, party_2 = party_name_2) |>
   arrange(state_abbrev)
@@ -709,6 +709,7 @@ congress_south |>
   geom_area(alpha = 0.65, color = 'gray') +
   
   geom_hline(yintercept = 0.5, color = 'white', linetype = 2) +
+  geom_vline(xintercept = 1964, color = 'black', linetype = 2, size = 0.5) +
 
   scale_x_continuous(breaks=seq(min(congress_south$year+1),
                                 max(congress_south$year+ 1), 4)) +
