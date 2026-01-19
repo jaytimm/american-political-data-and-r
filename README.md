@@ -186,8 +186,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(chamber != 'President') }) 
 ```
 
-    ## [1] "/tmp/RtmpCE4LzN/Hall_members.csv"
-    ## [1] "/tmp/RtmpCE4LzN/Sall_members.csv"
+    ## [1] "/tmp/RtmpmXIQAQ/Hall_members.csv"
+    ## [1] "/tmp/RtmpmXIQAQ/Sall_members.csv"
 
 ``` r
 congress00 <- vvo |>
@@ -1030,7 +1030,8 @@ trump_midterm <- freshmen1 |>
   filter(min == 2018) |>
   summarise(min = first(min),
             count = sum(count)) |>
-  mutate(txt = 'Trump 1st midterm')
+  mutate(txt = 'Trump 1st midterm',
+         min = min + 1)  # Match the plot's x = min + 1
 
 labs <- bind_rows(labs, trump_midterm)
 

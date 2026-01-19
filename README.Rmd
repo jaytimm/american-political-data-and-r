@@ -971,7 +971,8 @@ trump_midterm <- freshmen1 |>
   filter(min == 2018) |>
   summarise(min = first(min),
             count = sum(count)) |>
-  mutate(txt = 'Trump 1st midterm')
+  mutate(txt = 'Trump 1st midterm',
+         min = min + 1)  # Match the plot's x = min + 1
 
 labs <- bind_rows(labs, trump_midterm)
 
