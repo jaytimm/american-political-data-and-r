@@ -155,7 +155,7 @@ states_sf |>
   theme_guide() +
   theme(panel.background = 
           element_rect(fill = '#d5e4eb', color = NA)) +
-  labs(title = 'Dixie + Kentucky + Oklahoma',
+  labs(title = 'American South = Dixie + Kentucky + Oklahoma',
        caption = 'Data source: tigris')
 ```
 
@@ -186,8 +186,8 @@ vvo <- lapply(c('house', 'senate'), function(x) {
     filter(chamber != 'President') }) 
 ```
 
-    ## [1] "/tmp/Rtmp7M6yQG/Hall_members.csv"
-    ## [1] "/tmp/Rtmp7M6yQG/Sall_members.csv"
+    ## [1] "/tmp/RtmpCE4LzN/Hall_members.csv"
+    ## [1] "/tmp/RtmpCE4LzN/Sall_members.csv"
 
 ``` r
 congress00 <- vvo |>
@@ -667,19 +667,60 @@ split_senate |>
 > represented by Reublican senators via FRED.
 
 ``` r
-wpops <- sens |> #yy |> 
+wpops_wide <- sens |> 
   filter(congress > con) |>
   left_join(PresElectionResults::fred_pop_by_state,
-            by = c('year', 'state_abbrev')) |> #yy |>
+            by = c('year', 'state_abbrev')) |>
   group_by(year, party_name) |>
   summarize(n = n(),
-            #n = sum(n),
             pop = sum(population)) |>
   group_by(year) |>
   mutate(Senate_share = round(n/sum(n) * 100, 1),
          Population_share = round(pop/sum(pop) * 100, 1)) |>
   filter(party_name == 'Republican') |>
-  select(year, Senate_share, Population_share) |>
+  select(year, Senate_share, Population_share)
+
+# Identify periods where GOP has Senate majority but represents < 50% of population
+gray_years_df <- wpops_wide |>
+  filter(Senate_share > 50, Population_share < 50) |>
+  arrange(year)
+
+if(nrow(gray_years_df) > 0) {
+  # Only group truly consecutive years (gap = 1 or 2 for biennial elections)
+  # Break period if gap > 2 years (to avoid including years that don't meet condition)
+  gray_years <- gray_years_df$year
+  gaps <- diff(gray_years)
+  
+  # Find where to break periods (gaps > 2)
+  break_points <- which(gaps > 2)
+  
+  if(length(break_points) > 0) {
+    # Create periods between break points
+    period_starts <- c(1, break_points + 1)
+    period_ends <- c(break_points, length(gray_years))
+  } else {
+    # All years are consecutive
+    period_starts <- 1
+    period_ends <- length(gray_years)
+  }
+  
+  gray_periods <- data.frame(
+    period_id = seq_along(period_starts),
+    xmin = gray_years[period_starts],
+    xmax = gray_years[period_ends]
+  ) |>
+    # Make single-year periods span 2 years, multi-year periods get 0.5 padding
+    mutate(
+      is_single = (xmin == xmax),
+      xmin = xmin - 0.5,
+      xmax = ifelse(is_single, xmax + 1.5, xmax + 0.5)
+    ) |>
+    select(-is_single)
+} else {
+  gray_periods <- data.frame(xmin = numeric(0), xmax = numeric(0))
+}
+
+wpops <- wpops_wide |>
   tidyr::gather(-year, key = 'var', value = 'per')
 ```
 
@@ -690,25 +731,29 @@ wpops <- sens |> #yy |>
 > minority of Americans.
 
 ``` r
-wpops |>
-  ggplot() +
-  geom_rect(aes(xmin = 2015, 
-                xmax = 2019,
-                ymin = -Inf, 
-                ymax = Inf),
-            fill = 'lightgray') +
-  
-   geom_rect(aes(xmin = 2024, 
-                xmax = 2026,
-                ymin = -Inf, 
-                ymax = Inf),
-            fill = 'lightgray') +
-  
+p <- wpops |>
+  ggplot()
+
+if(nrow(gray_periods) > 0) {
+  p <- p + geom_rect(data = gray_periods,
+                     aes(xmin = xmin, 
+                         xmax = xmax,
+                         ymin = -Inf, 
+                         ymax = Inf),
+                     fill = 'lightgray',
+                     inherit.aes = FALSE)
+}
+
+p <- p +
   geom_hline(yintercept = 50, color = 'black', lwd = .2) +
   geom_line(aes(x = year, 
                 y = per, 
                 color = var), 
             size = 1) +
+  geom_point(aes(x = year, 
+                 y = per, 
+                 color = var), 
+             size = 1.5) +
   ggthemes::scale_color_few()+
   theme_minimal() +
   theme(legend.position = 'bottom',
@@ -717,8 +762,11 @@ wpops |>
         legend.title = element_blank()) +
   
   scale_x_continuous(breaks = seq(min(wpops$year), max(wpops$year), 4)) +
-  labs(title = "Republican Senate share v. Share Americans represented by Republican senator, 1921 to 2025",
-       caption = 'Data sources: VoteView & FRED') 
+  labs(title = "Republican Senate share v. Population share, 1921 to 2025",
+       subtitle = "Gray areas reflect periods where GOP holds Senate majority but represents < 50% of population",
+       caption = 'Data sources: VoteView & FRED')
+
+p 
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-29-1.png)
@@ -738,6 +786,12 @@ congress_south <- congress |>
 
 ### Political realignment in the South
 
+> Prior to the Civil Rights Act, Republicans were virtually nonexistent
+> in the South at the congressional level. Following the Civil Rights
+> era, conservative Southern whites gradually realigned with the
+> Republican Party over the course of several decades, transforming the
+> “Solid South” from reliably Democratic to reliably Republican.
+
 ``` r
 congress_south |>
   group_by(year, Member) |>
@@ -751,6 +805,8 @@ congress_south |>
   
   geom_hline(yintercept = 0.5, color = 'white', linetype = 2) +
   geom_vline(xintercept = 1964, color = 'black', linetype = 2, size = 0.5) +
+  annotate("text", x = 1965, y = 0.95, label = "Civil Rights Act 1964", 
+           angle = 0, hjust = 0, vjust = 0, size = 3) +
 
   scale_x_continuous(breaks=seq(min(congress_south$year+1),
                                 max(congress_south$year+ 1), 4)) +
@@ -773,10 +829,15 @@ congress_south |>
 
 ### On the evolution of the Southern Republican
 
-> **DW-NOMINATE ideal points in two dimensions**. The first dimension
-> captures ideological variation based in the standard
-> liberal-conservative divide. The second captures variation based in
-> social conservatism that crosscuts political affiliation.
+> DW-NOMINATE ideal points in two dimensions. The first dimension
+> represents the familiar left-right ideological spectrum. The second
+> dimension captures a separate axis of political division—before the
+> 1960s, this primarily reflected the North-South split on civil rights.
+> Southern Democrats (shown in light blue) cluster separately from other
+> Democrats due to their socially conservative positions, appearing as a
+> distinct voting bloc in earlier Congresses. After the Civil Rights
+> Act, this regional-conservative coalition gradually realigned into the
+> Republican Party.
 
 ``` r
 congress_south |>
@@ -814,13 +875,29 @@ congress_south |>
 
 ------------------------------------------------------------------------
 
+## Age, generations & freshman classes in the House
+
 ``` r
 gens <- read.csv('https://raw.githubusercontent.com/jaytimm/AmericanGenerations/main/data/pew-plus-strauss-generations.csv') |>
   mutate(order = row_number()) |>
   filter(order %in% c(5:19))
 ```
 
-## Age, generations & freshman classes in the House
+``` r
+gens1 <- gens |>
+  mutate(age = 2026 - as.integer(end)) |>
+  filter(order %in% c(15:19))
+
+gens1 |> knitr::kable()
+```
+
+| generation | start |  end | model | order | age |
+|:-----------|------:|-----:|:------|------:|----:|
+| Silent     |  1928 | 1945 | pew   |    15 |  81 |
+| Boomers    |  1946 | 1964 | pew   |    16 |  62 |
+| Gen X      |  1965 | 1980 | pew   |    17 |  46 |
+| Millenials |  1981 | 1996 | pew   |    18 |  30 |
+| Gen Z      |  1997 | 2012 | pew   |    19 |  14 |
 
 ### Average age of House members
 
@@ -858,7 +935,7 @@ congress |>
        caption = 'Data source: VoteView') 
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-34-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-35-1.png)
 
 ### Introducing Generation Z
 
@@ -874,10 +951,6 @@ freshmen <- congress |>
                              n > 2 ~ 'Upper-class')) |>
   
   select(icpsr, party_code, Class)
-
-gens1 <- gens |>
-  mutate(age = 2026 - as.integer(end)) |>
-  filter(order %in% c(15:19))
 ```
 
 ``` r
@@ -929,7 +1002,7 @@ congress |>
        caption = 'Data sources: VoteView & AmericanGenerations')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-36-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
 
 ### First-timers in the House
 
@@ -951,6 +1024,15 @@ labs <- freshmen1 |>
                  'Clinton 1st midterm', 
                  '"Watergate babies"', 
                  'LBJ atop ticket'))
+
+# Add Trump's first midterm (2018 election, 2019 Congress)
+trump_midterm <- freshmen1 |>
+  filter(min == 2018) |>
+  summarise(min = first(min),
+            count = sum(count)) |>
+  mutate(txt = 'Trump 1st midterm')
+
+labs <- bind_rows(labs, trump_midterm)
 
 freshmen1 |>
   ggplot() +
@@ -975,7 +1057,7 @@ freshmen1 |>
        caption = 'Data source: VoteView')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-37-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-38-1.png)
 
 ------------------------------------------------------------------------
 
@@ -1031,7 +1113,7 @@ PresElectionResults::xsf_TileOutv10 |>
        caption = 'Data sources: unitedstates.io, Wikipedia & Daily Kos')
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-39-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-40-1.png)
 
 ### Vulnerable Republican House Members
 
